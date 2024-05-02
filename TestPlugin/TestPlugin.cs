@@ -71,14 +71,13 @@ namespace TestPlugin
             LoadConfig();
             GeneralHooks.ReloadEvent += LoadConfig;
             GetDataHandlers.KillMe += (EventHandler<KillMeEventArgs>)OnKillMe!;
+            ServerApi.Hooks.GamePostInitialize.Register((TerrariaPlugin)(object)this, PostInitialize);
             ServerApi.Hooks.NpcSpawn.Register((TerrariaPlugin)(object)this, NpcSpawn);
             ServerApi.Hooks.NpcKilled.Register((TerrariaPlugin)(object)this, NpcKilled);
             ServerApi.Hooks.NetSendData.Register((TerrariaPlugin)(object)this, SendData);
             On.Terraria.NPC.SetDefaults += OnSetDefaults;
             On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
         }
-
-
 
         protected override void Dispose(bool disposing)
         {
@@ -93,8 +92,15 @@ namespace TestPlugin
                 ServerApi.Hooks.NpcSpawn.Deregister((TerrariaPlugin)(object)this, NpcSpawn);
                 ServerApi.Hooks.NpcKilled.Deregister((TerrariaPlugin)(object)this, NpcKilled);
                 ServerApi.Hooks.NetSendData.Deregister((TerrariaPlugin)(object)this, SendData);
+                ServerApi.Hooks.GamePostInitialize.Deregister((TerrariaPlugin)(object)this, PostInitialize);
             }
             base.Dispose(disposing);
+        }
+
+        public void PostInitialize(EventArgs e)
+        {
+            Update.Elapsed += OnUpdate!;
+            Update.Start();
         }
 
         #region 配置文件创建与重读加载方法
