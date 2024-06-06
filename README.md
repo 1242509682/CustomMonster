@@ -11,10 +11,9 @@
 修改随从怪物、拉取玩家、  
 修改防御、修改无敌、修改免疫岩浆、  
 修改免疫陷阱、控制指定怪物数量、NPC保护等等  
-
-
 ```
-[配置编写教学视频](https://www.bilibili.com/video/BV1Te411U7Ld/?share_source=copy_web&vd_source=93a056214987e80811b94cfc3c9328a6)  
+  
+[配置编写教学视频](https://www.bilibili.com/video/BV1Te411U7Ld/?share_source=copy_web&vd_source=93a056214987e80811b94cfc3c9328a6)   
   
 ## 插件版本
 ```
