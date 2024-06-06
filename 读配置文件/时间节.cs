@@ -82,9 +82,9 @@
 
         public int 怪物无敌 = 0;
 
-        public int 拉取起始 = 50;
+        public int 拉取起始 = 0;
 
-        public int 拉取范围 = 100;
+        public int 拉取范围 = 0;
 
         public int 拉取止点 = 0;
 
@@ -92,9 +92,9 @@
 
         public float 拉取点Y轴偏移 = 0f;
 
-        public int 击退范围 = 30;
+        public int 击退范围 = 0;
 
-        public int 击退力度 = 5;
+        public int 击退力度 = 0;
 
         public int 杀伤范围 = 0;
 

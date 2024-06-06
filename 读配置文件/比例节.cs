@@ -80,9 +80,9 @@ namespace TestPlugin
 
         public int 杀伤伤害 = 0;
 
-        public int 击退范围 = 30;
+        public int 击退范围 = 0;
 
-        public int 击退力度 = 5;
+        public int 击退力度 = 0;
 
         public List<弹幕节> 释放弹幕 = new List<弹幕节>();
 

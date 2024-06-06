@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System.ComponentModel;
+using System.Configuration;
 using System.Timers;
 using Terraria;
 using Terraria.DataStructures;
@@ -21,20 +22,6 @@ namespace TestPlugin
     [ApiVersion(2, 1)]
     public class TestPlugin : TerrariaPlugin
     {
-        public 读配置文件.配置文件 config = new 读配置文件.配置文件();
-
-        private static readonly System.Timers.Timer Update = new System.Timers.Timer(100.0);
-
-        public static bool ULock = false;
-
-        public int LRespawnSeconds = -1;
-
-
-
-        public int LRespawnBossSeconds = -1;
-
-        public int TeamP = 0;
-
         public override string Author => "GK 羽学";
 
         public override string Description => "自定义怪物出没时的血量,当然不止这些！";
@@ -43,16 +30,17 @@ namespace TestPlugin
 
         public override Version Version => new Version(1, 0, 4, 9);
 
+        public 读配置文件.配置文件 config = new 读配置文件.配置文件();
+        private static readonly System.Timers.Timer Update = new System.Timers.Timer(100.0);
+        public static bool ULock = false;
+        public int LRespawnSeconds = -1;
+        public int LRespawnBossSeconds = -1;
+        public int TeamP = 0;
         public string _配置路径 => Path.Combine(TShock.SavePath, "自定义怪物血量.json");
-
         public string NPCKillPath => Path.Combine(TShock.SavePath, "自定义怪物血量存档.txt");
-
         public DateTime NPCKillDataTime { get; set; }
-
         public DateTime OServerDataTime { get; set; }
-
         private static List<LNKC>? LNkc { get; set; }
-
         public static LNPC[]? LNpcs { get; set; }
 
         public TestPlugin(Main game)
@@ -69,6 +57,10 @@ namespace TestPlugin
         {
             RD();
             LoadConfig();
+            Commands.ChatCommands.Add(new Command("重读自定义怪物血量权限", CRS, "改怪物", "ggw")
+            {
+                HelpText = "输入 /改怪物 会隐藏或显示自定义怪物血量配置项"
+            });
             GeneralHooks.ReloadEvent += LoadConfig;
             GetDataHandlers.KillMe += (EventHandler<KillMeEventArgs>)OnKillMe!;
             ServerApi.Hooks.GamePostInitialize.Register((TerrariaPlugin)(object)this, PostInitialize);
@@ -111,8 +103,18 @@ namespace TestPlugin
             config.Write(_配置路径);
             if (args != null && args.Player != null)
             {
-                args.Player.SendSuccessMessage("[自定义怪物血量]重新加载配置完毕。");
+                args.Player.SendSuccessMessage("[自定义怪物血量] 重新加载配置完毕。");
             }
+        }
+
+        private void CRS(CommandArgs args)
+        {
+            LoadConfig();
+            config.是否隐藏没用到的配置项 = !config.是否隐藏没用到的配置项;
+            config.Write(_配置路径);
+
+            args.Player.SendSuccessMessage("[自定义怪物血量] 隐藏配置项： " +
+                (config.是否隐藏没用到的配置项 ? "已隐藏" : "已显示"));
         }
 
         public void SD(bool notime)

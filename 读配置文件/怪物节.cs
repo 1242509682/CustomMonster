@@ -104,11 +104,11 @@ namespace TestPlugin
 
         public bool 不宣读信息 = false;
 
-        public int 状态范围 = 100;
+        public int 状态范围 = 0;
 
         public List<状态节> 周围状态 = new List<状态节>();
 
-        public int 死状范围 = 100;
+        public int 死状范围 = 0;
 
         public Dictionary<int, int> 死亡状态 = new Dictionary<int, int>();
 
