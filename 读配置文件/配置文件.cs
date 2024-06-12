@@ -1,11 +1,7 @@
-﻿using IL.Terraria;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Org.BouncyCastle.Crypto.Tls;
+﻿using Newtonsoft.Json;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 using System.Text;
-using TShockAPI;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace TestPlugin.读配置文件
 {
@@ -59,6 +55,7 @@ namespace TestPlugin.读配置文件
         [JsonProperty(PropertyName = "自定义强制隐藏哪些配置项的指令/Reload", Order = -9)]
         public List<string> 自定义强制隐藏哪些配置项 = new List<string>();
 
+        #region 隐藏默认值
         public class ContractResolver : DefaultContractResolver
         {
             private readonly 读配置文件.配置文件 config;
@@ -68,6 +65,7 @@ namespace TestPlugin.读配置文件
                 config = Config;
                 this.hide = hide;
             }
+
             protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
             {
                 JsonProperty property = base.CreateProperty(member, memberSerialization);
@@ -87,18 +85,18 @@ namespace TestPlugin.读配置文件
                 }
                 return property;
             }
-        }
+        } 
+        #endregion
 
-        public void Write(string 路径)
+        public 配置文件 Write(string 路径)
         {
             var settings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented,
                 NullValueHandling = 是否隐藏没用到的配置项 ? NullValueHandling.Ignore : NullValueHandling.Include,
                 DefaultValueHandling = 是否隐藏没用到的配置项 ? DefaultValueHandling.Ignore : DefaultValueHandling.Include,
-                ContractResolver = new ContractResolver(this,是否隐藏没用到的配置项),
+                ContractResolver = new ContractResolver(this, 是否隐藏没用到的配置项),
             };
-
 
             using (var fs = new FileStream(路径, FileMode.Create, FileAccess.Write, FileShare.Write))
             using (var sw = new StreamWriter(fs, new UTF8Encoding(false)))
@@ -106,69 +104,36 @@ namespace TestPlugin.读配置文件
             {
                 JsonSerializer.CreateDefault(settings).Serialize(jtw, this);
             }
+            return this;
         }
 
         public static 配置文件 Read(string 路径)
         {
             if (!File.Exists(路径))
             {
-                TShock.Log.ConsoleError("未找到自定义怪物血量配置，已为您创建！\n" +
-                    "修改配置后输入：/reload 即可重新载入数据。");
-                var defaultConfig = new 配置文件
-                {
-                    是否隐藏没用到的配置项 = false,
-                    自定义强制隐藏哪些配置项 = new List<string>
-                    {
-                        "覆盖原血量",
-                        "不低于正常",
-                        "不小于正常",
-                        "覆盖原强化",
-                        "出没率子",
-                        "出没率母",
-                        "智慧机制",
-                        "出场放音",
-                        "死亡放音",
-                        "播放声音"
-                    },
-                    启动错误报告 = false,
-                    启动死亡队友视角 = false,
-                    队友视角仅BOSS时 = true,
-                    队友视角流畅度 = -1,
-                    队友视角等待范围 = 18,
-                    统一对怪物伤害修正 = 1f,
-                    统一怪物弹幕伤害修正 = 1f,
-                    统一初始怪物玩家系数 = 0,
-                    统一初始玩家系数不低于人数 = true,
-                    统一初始怪物强化系数 = 0f,
-                    统一怪物血量倍数 = 1.0,
-                    统一血量不低于正常 = true,
-                    统一怪物强化倍数 = 1.0,
-                    统一免疫熔岩类型 = 1,
-                    统一免疫陷阱类型 = 0,
-                    统一设置例外怪物 = new List<int>(),
-                    启动动态血量上限 = true,
-                    启动怪物时间限制 = true,
-                    启动动态时间限制 = true,
-                    怪物节集 = new 怪物节[0]
-                };
-                defaultConfig.Write(路径);
-                return defaultConfig;
+                WriteExample(路径);
             }
+            return JsonConvert.DeserializeObject<配置文件>(File.ReadAllText(路径));
+        }
 
-            try
+        public static void WriteExample(string 路径)
+        {
+            Assembly executingAssembly = Assembly.GetExecutingAssembly();
+            string projectNamespace = executingAssembly.GetName().Name.Trim();
+            string resourceFolderName = "自定义怪物血量".Trim();
+            string resourceFullName = $"{projectNamespace}.{resourceFolderName}.自定义怪物血量.json";
+
+            Stream manifestResourceStream = executingAssembly.GetManifestResourceStream(resourceFullName);
+
+            if (manifestResourceStream == null)
             {
-                using (var fs = new FileStream(路径, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (var sr = new StreamReader(fs))
-                {
-                    var json = sr.ReadToEnd();
-                    var config = JsonConvert.DeserializeObject<配置文件>(json);
-                    return config;
-                }
+                throw new InvalidOperationException($"无法找到嵌入资源：{resourceFullName}");
             }
-            catch (Exception ex)
+            using (StreamReader streamReader = new StreamReader(manifestResourceStream))
             {
-                TShock.Log.ConsoleError($"[自定义怪物血量] 配置错误:\n" + ex.Message + "\n");
-                return null!;
+                string text = streamReader.ReadToEnd();
+                配置文件 配置文件2 = JsonConvert.DeserializeObject<配置文件>(text);
+                配置文件2.Write(路径);
             }
         }
     }

@@ -100,7 +100,7 @@
 
         public bool 仅扇形锁定 = false;
 
-        public int 扇形半偏角 = 60;
+        public int 扇形半偏角 = 0;
 
         public bool 以锁定为点 = false;
 

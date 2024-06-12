@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
 using System.ComponentModel;
 using System.Configuration;
 using System.Timers;
@@ -11,7 +13,7 @@ using TerrariaApi.Server;
 using TestPlugin.读配置文件;
 using TShockAPI;
 using TShockAPI.Configuration;
-using TShockAPI.Hooks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 using static TShockAPI.GetDataHandlers;
 using Main = Terraria.Main;
 using NPC = Terraria.NPC;
@@ -22,27 +24,44 @@ namespace TestPlugin
     [ApiVersion(2, 1)]
     public class TestPlugin : TerrariaPlugin
     {
-        public override string Author => "GK 羽学";
+
+        #region 插件信息
+        public override string Author => "GK、羽学";
 
         public override string Description => "自定义怪物出没时的血量,当然不止这些！";
 
         public override string Name => "自定义怪物血量";
 
         public override Version Version => new Version(1, 0, 4, 9);
+        #endregion
 
-        public 读配置文件.配置文件 config = new 读配置文件.配置文件();
-        private static readonly System.Timers.Timer Update = new System.Timers.Timer(100.0);
-        public static bool ULock = false;
-        public int LRespawnSeconds = -1;
-        public int LRespawnBossSeconds = -1;
-        public int TeamP = 0;
+        #region 实例变量与配置存储路径
         public string _配置路径 => Path.Combine(TShock.SavePath, "自定义怪物血量.json");
-        public string NPCKillPath => Path.Combine(TShock.SavePath, "自定义怪物血量存档.txt");
-        public DateTime NPCKillDataTime { get; set; }
-        public DateTime OServerDataTime { get; set; }
-        private static List<LNKC>? LNkc { get; set; }
-        public static LNPC[]? LNpcs { get; set; }
 
+        public string NPCKillPath => Path.Combine(TShock.SavePath, "自定义怪物血量存档.txt");
+
+        public 读配置文件.配置文件 _配置 = new 读配置文件.配置文件();
+
+        private static readonly System.Timers.Timer Update = new System.Timers.Timer(100.0);
+
+        public static bool ULock = false;
+
+        public int LRespawnSeconds = -1;
+
+        public int LRespawnBossSeconds = -1;
+
+        public int TeamP = 0;
+
+        public DateTime NPCKillDataTime { get; set; }
+
+        public DateTime OServerDataTime { get; set; }
+
+        private static List<LNKC>? LNkc { get; set; }
+
+        public static LNPC[]? LNpcs { get; set; }
+        #endregion
+
+        #region 初始化与释放资源
         public TestPlugin(Main game)
             : base(game)
         {
@@ -55,20 +74,26 @@ namespace TestPlugin
 
         public override void Initialize()
         {
+            RC();
             RD();
-            LoadConfig();
-            Commands.ChatCommands.Add(new Command("重读自定义怪物血量权限", CRS, "改怪物", "ggw")
-            {
-                HelpText = "输入 /改怪物 会隐藏或显示自定义怪物血量配置项"
-            });
-            GeneralHooks.ReloadEvent += LoadConfig;
+            Commands.ChatCommands.Add(new Command("重读自定义怪物血量权限", CRS, "改怪物", "ggw"));
             GetDataHandlers.KillMe += (EventHandler<KillMeEventArgs>)OnKillMe!;
             ServerApi.Hooks.GamePostInitialize.Register((TerrariaPlugin)(object)this, PostInitialize);
+            ServerApi.Hooks.GameInitialize.Register((TerrariaPlugin)(object)this, OnInitialize);
             ServerApi.Hooks.NpcSpawn.Register((TerrariaPlugin)(object)this, NpcSpawn);
             ServerApi.Hooks.NpcKilled.Register((TerrariaPlugin)(object)this, NpcKilled);
             ServerApi.Hooks.NetSendData.Register((TerrariaPlugin)(object)this, SendData);
             On.Terraria.NPC.SetDefaults += OnSetDefaults;
             On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
+        }
+
+        private int Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float X, float Y, float SpeedX, float SpeedY, int Type, int Damage, float KnockBack, int Owner, float ai0, float ai1, float ai2)
+        {
+            if (Owner == Main.myPlayer && _配置.统一怪物弹幕伤害修正 != 1f)
+            {
+                Damage = (int)(Damage * _配置.统一怪物弹幕伤害修正);
+            }
+            return orig.Invoke(spawnSource, X, Y, SpeedX, SpeedY, Type, Damage, KnockBack, Owner, ai0, ai1, ai2);
         }
 
         protected override void Dispose(bool disposing)
@@ -79,12 +104,14 @@ namespace TestPlugin
                 {
                     SD(notime: true);
                 }
-                Update.Elapsed -= OnUpdate!;
+                Update.Elapsed -= OnUpdate;
+                Update.Stop();
                 KillMe -= (EventHandler<KillMeEventArgs>)OnKillMe!;
+                ServerApi.Hooks.GameInitialize.Deregister((TerrariaPlugin)(object)this, OnInitialize);
                 ServerApi.Hooks.NpcSpawn.Deregister((TerrariaPlugin)(object)this, NpcSpawn);
                 ServerApi.Hooks.NpcKilled.Deregister((TerrariaPlugin)(object)this, NpcKilled);
-                ServerApi.Hooks.NetSendData.Deregister((TerrariaPlugin)(object)this, SendData);
                 ServerApi.Hooks.GamePostInitialize.Deregister((TerrariaPlugin)(object)this, PostInitialize);
+                ServerApi.Hooks.NetSendData.Deregister((TerrariaPlugin)(object)this, SendData);
             }
             base.Dispose(disposing);
         }
@@ -94,88 +121,66 @@ namespace TestPlugin
             Update.Elapsed += OnUpdate!;
             Update.Start();
         }
+        #endregion
 
-        #region 配置文件创建与重读加载方法
-        private void LoadConfig(ReloadEventArgs args = null!)
+        #region 配置创建与指令方法
+
+        private void OnInitialize(EventArgs args)
         {
-            RD();
-            config = 配置文件.Read(_配置路径);
-            config.Write(_配置路径);
-            if (args != null && args.Player != null)
+            Commands.ChatCommands.Add(new Command("重读自定义怪物血量权限", new CommandDelegate(CRC), new string[2] { "重读自定义怪物血量", "reload" })
             {
-                args.Player.SendSuccessMessage("[自定义怪物血量] 重新加载配置完毕。");
-            }
+                HelpText = "输入 /reload 会重新读取重读自定义怪物血量表"
+            });
         }
 
         private void CRS(CommandArgs args)
         {
-            LoadConfig();
-            config.是否隐藏没用到的配置项 = !config.是否隐藏没用到的配置项;
-            config.Write(_配置路径);
+            RC();
+            _配置 = 配置文件.Read(_配置路径);
+
+            _配置.是否隐藏没用到的配置项 = !_配置.是否隐藏没用到的配置项;
+            _配置.Write(_配置路径);
 
             args.Player.SendSuccessMessage("[自定义怪物血量] 隐藏配置项： " +
-                (config.是否隐藏没用到的配置项 ? "已隐藏" : "已显示"));
+                (_配置.是否隐藏没用到的配置项 ? "已隐藏" : "已显示"));
         }
 
-        public void SD(bool notime)
+        private void RC()
         {
-            if (!notime)
+            try
             {
-                if ((DateTime.UtcNow - NPCKillDataTime).TotalMilliseconds < 15000.0)
+                if (!File.Exists(_配置路径))
                 {
-                    return;
+                    TShock.Log.ConsoleError("未找到自定义怪物血量配置，已为您创建！修改配置后重启即可重新载入数据。");
                 }
-                NPCKillDataTime = DateTime.UtcNow;
+                _配置 = 读配置文件.配置文件.Read(_配置路径).Write(_配置路径);
             }
-            using StreamWriter streamWriter = new StreamWriter(NPCKillPath);
-            string text = OServerDataTime.ToString();
-            for (int i = 0; i < LNkc.Count; i++)
+            catch (Exception ex)
             {
-                text += Environment.NewLine;
-                text = text + LNkc[i].ID + "|" + LNkc[i].KC;
+                TShock.Log.ConsoleError($"[自定义怪物血量] 配置错误:\n" + ex.Message + "\n");
             }
-            streamWriter.Write(text);
         }
 
-        public void RD()
+        private void CRC(CommandArgs args)
         {
-            if (!File.Exists(NPCKillPath))
-            {
-                File.Create(NPCKillPath).Close();
-            }
-            using StreamReader streamReader = new StreamReader(NPCKillPath);
-            string text = streamReader.ReadToEnd();
-            string[] array = text.Split(Environment.NewLine.ToCharArray());
-            if (array.Count() < 1 || !DateTime.TryParse(array[0], out var result))
-            {
-                return;
-            }
-            OServerDataTime = result;
-            for (int i = 1; i < array.Count(); i++)
-            {
-                string[] array2 = array[i].Split('|');
-                if (array2.Length == 2)
-                {
-                    LNkc.Add(new LNKC(int.Parse(array2[0]), long.Parse(array2[1])));
-                }
-            }
-        }
+            RC();
+            args.Player.SendSuccessMessage(args.Player.Name + " " + "[自定义怪物血量]配置重读完毕。");
+        } 
 
         #endregion
 
-
         private void OnSetDefaults(On.Terraria.NPC.orig_SetDefaults orig, NPC self, int Type, Terraria.NPCSpawnParams spawnparams)
         {
-            if (config.统一初始怪物玩家系数 > 0 || config.统一初始怪物强化系数 > 0f)
+            if (_配置.统一初始怪物玩家系数 > 0 || _配置.统一初始怪物强化系数 > 0f)
             {
-                if (config.统一初始怪物玩家系数 > 0)
+                if (_配置.统一初始怪物玩家系数 > 0)
                 {
-                    spawnparams.playerCountForMultiplayerDifficultyOverride = config.统一初始怪物玩家系数;
+                    spawnparams.playerCountForMultiplayerDifficultyOverride = _配置.统一初始怪物玩家系数;
                     if (spawnparams.playerCountForMultiplayerDifficultyOverride > 1000)
                     {
                         spawnparams.playerCountForMultiplayerDifficultyOverride = 1000;
                     }
-                    if (config.统一初始玩家系数不低于人数)
+                    if (_配置.统一初始玩家系数不低于人数)
                     {
                         int activePlayerCount = TShock.Utils.GetActivePlayerCount();
                         if (spawnparams.playerCountForMultiplayerDifficultyOverride < activePlayerCount)
@@ -184,9 +189,9 @@ namespace TestPlugin
                         }
                     }
                 }
-                if (config.统一初始怪物强化系数 > 0f)
+                if (_配置.统一初始怪物强化系数 > 0f)
                 {
-                    spawnparams.strengthMultiplierOverride = config.统一初始怪物强化系数;
+                    spawnparams.strengthMultiplierOverride = _配置.统一初始怪物强化系数;
                     if (spawnparams.strengthMultiplierOverride > 1000f)
                     {
                         spawnparams.strengthMultiplierOverride = 1000f;
@@ -194,15 +199,6 @@ namespace TestPlugin
                 }
             }
             orig.Invoke(self, Type, spawnparams);
-        }
-
-        private int Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float X, float Y, float SpeedX, float SpeedY, int Type, int Damage, float KnockBack, int Owner, float ai0, float ai1, float ai2)
-        {
-            if (Owner == Main.myPlayer && config.统一怪物弹幕伤害修正 != 1f)
-            {
-                Damage = (int)(Damage * config.统一怪物弹幕伤害修正);
-            }
-            return orig.Invoke(spawnSource, X, Y, SpeedX, SpeedY, Type, Damage, KnockBack, Owner, ai0, ai1, ai2);
         }
 
         private void NpcSpawn(NpcSpawnEventArgs args)
@@ -229,7 +225,7 @@ namespace TestPlugin
                 }
             }
             Random random = new Random();
-            怪物节[] 怪物节集 = this.config.怪物节集;
+            怪物节[] 怪物节集 = _配置.怪物节集;
             foreach (怪物节 怪物节 in 怪物节集)
             {
                 if (Main.npc[args.NpcId].netID != 怪物节.怪物ID && 怪物节.怪物ID != 0 || 怪物节.怪物ID == 0 && 怪物节.再匹配.Count() > 0 && !怪物节.再匹配.Contains(Main.npc[args.NpcId].netID))
@@ -297,7 +293,7 @@ namespace TestPlugin
                 {
                     continue;
                 }
-                if (this.config.启动怪物时间限制 && (怪物节.人秒系数 != 0 || 怪物节.出没秒数 != 0 || 怪物节.开服系秒 != 0 || 怪物节.杀数系秒 != 0))
+                if (_配置.启动怪物时间限制 && (怪物节.人秒系数 != 0 || 怪物节.出没秒数 != 0 || 怪物节.开服系秒 != 0 || 怪物节.杀数系秒 != 0))
                 {
                     int num3 = activePlayerCount * 怪物节.人秒系数;
                     num3 += 怪物节.出没秒数;
@@ -463,25 +459,25 @@ namespace TestPlugin
                 config = 怪物节;
                 break;
             }
-            if (!this.config.统一设置例外怪物.Contains(Main.npc[args.NpcId].netID))
+            if (!_配置.统一设置例外怪物.Contains(Main.npc[args.NpcId].netID))
             {
-                if (this.config.统一怪物血量倍数 != 1.0 && this.config.统一怪物血量倍数 > 0.0)
+                if (_配置.统一怪物血量倍数 != 1.0 && _配置.统一怪物血量倍数 > 0.0)
                 {
-                    Main.npc[args.NpcId].lifeMax = (int)(Main.npc[args.NpcId].lifeMax * this.config.统一怪物血量倍数);
+                    Main.npc[args.NpcId].lifeMax = (int)(Main.npc[args.NpcId].lifeMax * _配置.统一怪物血量倍数);
                     if (Main.npc[args.NpcId].lifeMax < 1)
                     {
                         Main.npc[args.NpcId].lifeMax = 1;
                     }
                     flag = true;
                 }
-                if (Main.npc[args.NpcId].lifeMax < lifeMax && this.config.统一血量不低于正常)
+                if (Main.npc[args.NpcId].lifeMax < lifeMax && _配置.统一血量不低于正常)
                 {
                     Main.npc[args.NpcId].lifeMax = lifeMax;
                     flag = false;
                 }
-                if (this.config.统一怪物强化倍数 != 1.0 && this.config.统一怪物强化倍数 > 0.0)
+                if (_配置.统一怪物强化倍数 != 1.0 && _配置.统一怪物强化倍数 > 0.0)
                 {
-                    float num6 = (float)(Main.npc[args.NpcId].strengthMultiplier * this.config.统一怪物强化倍数);
+                    float num6 = (float)(Main.npc[args.NpcId].strengthMultiplier * _配置.统一怪物强化倍数);
                     if (num6 > 1000f)
                     {
                         num6 = 1000f;
@@ -492,35 +488,35 @@ namespace TestPlugin
                         flag = false;
                     }
                 }
-                if (Main.npc[args.NpcId].strengthMultiplier < strengthMultiplier && this.config.统一强化不低于正常)
+                if (Main.npc[args.NpcId].strengthMultiplier < strengthMultiplier && _配置.统一强化不低于正常)
                 {
                     Main.npc[args.NpcId].strengthMultiplier = strengthMultiplier;
                     flag = false;
                 }
-                if (this.config.统一免疫熔岩类型 == 1)
+                if (_配置.统一免疫熔岩类型 == 1)
                 {
                     Main.npc[args.NpcId].lavaImmune = true;
                     Main.npc[args.NpcId].netUpdate = true;
                 }
-                if (this.config.统一免疫熔岩类型 == -1)
+                if (_配置.统一免疫熔岩类型 == -1)
                 {
                     Main.npc[args.NpcId].lavaImmune = false;
                     Main.npc[args.NpcId].netUpdate = true;
                 }
-                if (this.config.统一免疫陷阱类型 == 1)
+                if (_配置.统一免疫陷阱类型 == 1)
                 {
                     Main.npc[args.NpcId].trapImmune = true;
                     Main.npc[args.NpcId].netUpdate = true;
                 }
-                if (this.config.统一免疫陷阱类型 == -1)
+                if (_配置.统一免疫陷阱类型 == -1)
                 {
                     Main.npc[args.NpcId].trapImmune = false;
                     Main.npc[args.NpcId].netUpdate = true;
                 }
-                if (this.config.统一对怪物伤害修正 != 1f)
+                if (_配置.统一对怪物伤害修正 != 1f)
                 {
                     Terraria.NPC obj2 = Terraria.Main.npc[args.NpcId];
-                    obj2.takenDamageMultiplier *= this.config.统一对怪物伤害修正;
+                    obj2.takenDamageMultiplier *= _配置.统一对怪物伤害修正;
                 }
             }
             if (flag)
@@ -802,7 +798,7 @@ namespace TestPlugin
                         if (lNPC.PlayerCount < activePlayerCount)
                         {
                             lNPC.PlayerCount = activePlayerCount;
-                            if (config.启动动态时间限制 && (lNPC.Config.人秒系数 != 0 || lNPC.Config.出没秒数 != 0 || lNPC.Config.开服系秒 != 0 || lNPC.Config.杀数系秒 != 0))
+                            if (_配置.启动动态时间限制 && (lNPC.Config.人秒系数 != 0 || lNPC.Config.出没秒数 != 0 || lNPC.Config.开服系秒 != 0 || lNPC.Config.杀数系秒 != 0))
                             {
                                 int num2 = lNPC.PlayerCount * lNPC.Config.人秒系数;
                                 num2 += lNPC.Config.出没秒数;
@@ -831,7 +827,7 @@ namespace TestPlugin
                                     }
                                 }
                             }
-                            if (config.启动动态血量上限 && (lNPC.Config.玩家系数 != 0 || lNPC.Config.怪物血量 != 0 || lNPC.Config.开服系数 != 0 || lNPC.Config.杀数系数 != 0))
+                            if (_配置.启动动态血量上限 && (lNPC.Config.玩家系数 != 0 || lNPC.Config.怪物血量 != 0 || lNPC.Config.开服系数 != 0 || lNPC.Config.杀数系数 != 0))
                             {
                                 int num4 = activePlayerCount * lNPC.Config.玩家系数;
                                 num4 += lNPC.Config.怪物血量;
@@ -849,17 +845,17 @@ namespace TestPlugin
                                 {
                                     int lifeMax = npc.lifeMax;
                                     int num5 = num4;
-                                    if (!config.统一设置例外怪物.Contains(npc.netID))
+                                    if (!_配置.统一设置例外怪物.Contains(npc.netID))
                                     {
-                                        if (config.统一怪物血量倍数 != 1.0 && config.统一怪物血量倍数 > 0.0)
+                                        if (_配置.统一怪物血量倍数 != 1.0 && _配置.统一怪物血量倍数 > 0.0)
                                         {
-                                            num5 = (int)(num5 * config.统一怪物血量倍数);
+                                            num5 = (int)(num5 * _配置.统一怪物血量倍数);
                                             if (num5 < 1)
                                             {
                                                 num5 = 1;
                                             }
                                         }
-                                        if (config.统一血量不低于正常 && num5 < lNPC.MaxLife)
+                                        if (_配置.统一血量不低于正常 && num5 < lNPC.MaxLife)
                                         {
                                             num5 = lNPC.MaxLife;
                                         }
@@ -1814,9 +1810,9 @@ namespace TestPlugin
                     end_IL_0134:;
                     }
                 }
-                if (config.启动死亡队友视角 && (!config.队友视角仅BOSS时 || flag))
+                if (_配置.启动死亡队友视角 && (!_配置.队友视角仅BOSS时 || flag))
                 {
-                    if (TeamP <= config.队友视角流畅度)
+                    if (TeamP <= _配置.队友视角流畅度)
                     {
                         TeamP++;
                     }
@@ -1853,7 +1849,7 @@ namespace TestPlugin
                                     }
                                 }
                             }
-                            if (num29 != -1 && !val5.IsInRange(Terraria.Utils.ToTileCoordinates(Main.player[num29].position).X, Terraria.Utils.ToTileCoordinates(Main.player[num29].position).Y, config.队友视角等待范围))
+                            if (num29 != -1 && !val5.IsInRange(Terraria.Utils.ToTileCoordinates(Main.player[num29].position).X, Terraria.Utils.ToTileCoordinates(Main.player[num29].position).Y, _配置.队友视角等待范围))
                             {
                                 val5.TPlayer.position = Main.player[num29].position;
                                 Terraria.NetMessage.SendData(13, -1, -1, NetworkText.Empty, val5.Index, 0f, 0f, 0f, 0, 0, 0);
@@ -1864,7 +1860,7 @@ namespace TestPlugin
             }
             catch (Exception ex)
             {
-                if (config.启动错误报告)
+                if (_配置.启动错误报告)
                 {
                     TShock.Log.ConsoleError("自定义怪物血量时钟:" + ex.ToString());
                 }
@@ -1969,6 +1965,48 @@ namespace TestPlugin
             }
         }
 
+        public void SD(bool notime)
+        {
+            if (!notime)
+            {
+                if ((DateTime.UtcNow - NPCKillDataTime).TotalMilliseconds < 15000.0)
+                {
+                    return;
+                }
+                NPCKillDataTime = DateTime.UtcNow;
+            }
+            using StreamWriter streamWriter = new StreamWriter(NPCKillPath);
+            string text = OServerDataTime.ToString();
+            for (int i = 0; i < LNkc.Count; i++)
+            {
+                text += Environment.NewLine;
+                text = text + LNkc[i].ID + "|" + LNkc[i].KC;
+            }
+            streamWriter.Write(text);
+        }
 
+        public void RD()
+        {
+            if (!File.Exists(NPCKillPath))
+            {
+                File.Create(NPCKillPath).Close();
+            }
+            using StreamReader streamReader = new StreamReader(NPCKillPath);
+            string text = streamReader.ReadToEnd();
+            string[] array = text.Split(Environment.NewLine.ToCharArray());
+            if (array.Count() < 1 || !DateTime.TryParse(array[0], out var result))
+            {
+                return;
+            }
+            OServerDataTime = result;
+            for (int i = 1; i < array.Count(); i++)
+            {
+                string[] array2 = array[i].Split('|');
+                if (array2.Length == 2)
+                {
+                    LNkc.Add(new LNKC(int.Parse(array2[0]), long.Parse(array2[1])));
+                }
+            }
+        }
     }
 }
