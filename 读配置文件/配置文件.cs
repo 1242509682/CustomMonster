@@ -1,13 +1,23 @@
 ﻿using Newtonsoft.Json;
-using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 using System.Text;
 
 namespace TestPlugin.读配置文件
 {
     public class 配置文件
     {
+        public string 配置作者 = "GK 阁下";
+
+        public string 配置优化 = "羽学";
+
+        public bool 控制台广告 = false;
+
+        public string 配置说明 = "版本①;难度直线提升,怪物最低3个人血量,几乎全Boss加强!";
+
         public bool 启动错误报告 = false;
+
+        public string 配置文件插件版本号 = "1.0.4.36";
 
         public bool 启动死亡队友视角 = false;
 
@@ -49,10 +59,10 @@ namespace TestPlugin.读配置文件
 
         public 怪物节[] 怪物节集 = new 怪物节[0];
 
+
         [JsonProperty(PropertyName = "是否隐藏没用到配置项的指令/ggw", Order = -10)]
         public bool 是否隐藏没用到的配置项 { get; set; } = false;
-
-        [JsonProperty(PropertyName = "自定义强制隐藏哪些配置项的指令/Reload", Order = -9)]
+        [JsonProperty(PropertyName = "自定义强制隐藏哪些配置项", Order = -9)]
         public List<string> 自定义强制隐藏哪些配置项 = new List<string>();
 
         #region 隐藏默认值
@@ -85,7 +95,7 @@ namespace TestPlugin.读配置文件
                 }
                 return property;
             }
-        } 
+        }
         #endregion
 
         public 配置文件 Write(string 路径)
@@ -104,6 +114,8 @@ namespace TestPlugin.读配置文件
             {
                 JsonSerializer.CreateDefault(settings).Serialize(jtw, this);
             }
+
+            //File.WriteAllText(路径, JsonConvert.SerializeObject((object)this, (Formatting)1));
             return this;
         }
 

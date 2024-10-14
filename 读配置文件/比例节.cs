@@ -96,6 +96,8 @@ namespace TestPlugin
 
         public string 喊话 = "";
 
+        public bool 喊话无头 = false;
+
         public 比例节(int p, Dictionary<int, int> summon, string shout, int heal, int num)
         {
             血量剩余比例 = p;

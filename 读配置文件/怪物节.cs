@@ -10,6 +10,8 @@ namespace TestPlugin
 
         public int[] 再匹配 = new int[0];
 
+        public int[] 再匹配例外 = new int[0];
+
         public int 初始属性玩家系数 = 0;
 
         public float 初始属性强化系数 = 0f;
@@ -44,6 +46,10 @@ namespace TestPlugin
 
         public int 玩家复活时间 = -1;
 
+        public int 全局最大刷怪数 = -1;
+
+        public int 全局刷怪速度 = -1;
+
         public int 阻止传送器 = 0;
 
         public int 出没秒数 = 0;
@@ -58,6 +64,10 @@ namespace TestPlugin
 
         public int 出没率母 = 1;
 
+        public string[] 种子条件 = new string[0];
+
+        public int[] 难度条件 = new int[0];
+
         public int 杀数条件 = 0;
 
         public int 数量条件 = 0;
@@ -70,13 +80,19 @@ namespace TestPlugin
 
         public int 巨人条件 = 0;
 
+        public int 降雨条件 = 0;
+
         public int 血月条件 = 0;
+
+        public int 日食条件 = 0;
 
         public int 月总条件 = 0;
 
         public int 开服条件 = 0;
 
         public List<怪物条件节> 怪物条件 = new List<怪物条件节>();
+
+        public Dictionary<int, long> 杀怪条件 = new Dictionary<int, long>();
 
         public int 智慧机制 = -1;
 
@@ -100,7 +116,11 @@ namespace TestPlugin
 
         public string 出场喊话 = "";
 
+        public bool 出场喊话无头 = false;
+
         public string 死亡喊话 = "";
+
+        public bool 死亡喊话无头 = false;
 
         public bool 不宣读信息 = false;
 
@@ -128,6 +148,10 @@ namespace TestPlugin
 
         public List<string> 死亡命令 = new List<string>();
 
+        public List<怪物指示物修改节> 出场怪物指示物修改 = new List<怪物指示物修改节>();
+
+        public List<怪物指示物修改节> 死亡怪物指示物修改 = new List<怪物指示物修改节>();
+
         public int 血事件限 = 1;
 
         public List<比例节> 血量事件 = new List<比例节>();
@@ -135,6 +159,8 @@ namespace TestPlugin
         public int 时事件限 = 3;
 
         public List<时间节> 时间事件 = new List<时间节>();
+
+        public int 事件权重 = 0;
 
         public Dictionary<int, int> 随从怪物 = new Dictionary<int, int>();
 

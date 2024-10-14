@@ -1,4 +1,5 @@
 ﻿using TestPlugin.读配置文件;
+using Terraria;
 
 namespace TestPlugin
 {
@@ -38,9 +39,15 @@ namespace TestPlugin
 
         public int RespawnSeconds { get; set; }
 
+        public int DefaultMaxSpawns { get; set; }
+
+        public int DefaultSpawnRate { get; set; }
+
         public int BlockTeleporter { get; set; }
 
         public int OSTime { get; set; }
+
+        public int Struck { get; set; }
 
         public List<指示物组节> Markers { get; set; }
 
@@ -61,10 +68,13 @@ namespace TestPlugin
             OSTime = ostime;
             LKC = kc;
             Markers = new List<指示物组节>();
+            Struck = 0;
             if (Config != null)
             {
                 RespawnSeconds = config.玩家复活时间;
                 BlockTeleporter = config.阻止传送器;
+                DefaultMaxSpawns = config.全局最大刷怪数;
+                DefaultSpawnRate = config.全局刷怪速度;
                 PLife = new List<比例节>();
                 Config.血量事件.ForEach(delegate (比例节 i)
                 {
@@ -80,22 +90,124 @@ namespace TestPlugin
 
         public void setMarkers(string name, int num, bool reset)
         {
+            string Name = name;
+            if (!Markers.Exists((指示物组节 t) => t.名称 == name))
+            {
+                Markers.Add(new 指示物组节(Name, 0));
+            }
+            foreach (指示物组节 marker in Markers)
+            {
+                if (marker.名称 == Name)
+                {
+                    if (reset)
+                    {
+                        marker.数量 += num;
+                    }
+                    else
+                    {
+                        marker.数量 += num;
+                    }
+                    break;
+                }
+            }
+        }
+
+        public void setMarkers(string name, int num, bool reset, string inname, float infactor, string inop, int rmin, int rmax, ref Random rd, NPC npc)
+        {
+            string Name = name;
+            if (!Markers.Exists((指示物组节 t) => t.名称 == name))
+            {
+                Markers.Add(new 指示物组节(name, 0));
+            }
+            int num2 = 0;
+            if (rmax > rmin)
+            {
+                num2 = rd.Next(rmin, rmax);
+            }
+            int num3 = addMarkersIn(inname, infactor, npc);
             foreach (指示物组节 marker in Markers)
             {
                 if (marker.名称 == name)
                 {
                     if (reset)
                     {
-                        marker.数量 = num;
+                        marker.数量 = Sundry.intoperation(inop, 0, num + num2 + num3);
                     }
                     else
                     {
-                        marker.数量 += num;
+                        marker.数量 = Sundry.intoperation(inop, marker.数量, num + num2 + num3);
                     }
-                    return;
+                    break;
                 }
             }
-            Markers.Add(new 指示物组节(name, num));
+        }
+
+        public int addMarkersIn(string inname, float infactor, Terraria.NPC npc)
+        {
+            float num = 0f;
+            if (TestPlugin.LNpcs[npc.whoAmI] == null)
+            {
+                return (int)num;
+            }
+            if (inname != "")
+            {
+                if (inname == "[序号]" && npc != null)
+                {
+                    num = npc.whoAmI;
+                }
+                else
+                {
+                    switch (inname)
+                    {
+                        case "[被击]":
+                            num = TestPlugin.LNpcs[npc.whoAmI].Struck;
+                            break;
+                        case "[击杀]":
+                            num = TestPlugin.LNpcs[npc.whoAmI].KillPlay;
+                            break;
+                        case "[耗时]":
+                            num = (int)TestPlugin.LNpcs[npc.whoAmI].TiemN;
+                            break;
+                        case "[X坐标]":
+                            if (npc != null)
+                            {
+                                num = (int)npc.Center.X;
+                                break;
+                            }
+                            goto default;
+                        default:
+                            {
+                                if (inname == "[Y坐标]" && npc != null)
+                                {
+                                    num = (int)npc.Center.Y;
+                                    break;
+                                }
+                                if (inname == "[血量]" && npc != null)
+                                {
+                                    num = npc.life;
+                                    break;
+                                }
+                                if (!(inname == "[被杀]") || npc == null)
+                                {
+                                    num = ((inname == "[AI0]" && npc != null) ? npc.ai[0] : ((inname == "[AI1]" && npc != null) ? npc.ai[1] : ((inname == "[AI2]" && npc != null) ? npc.ai[2] : ((!(inname == "[AI3]") || npc == null) ? ((float)TestPlugin.LNpcs[npc.whoAmI].getMarkers(inname)) : npc.ai[3]))));
+                                    break;
+                                }
+                                long num2 = TestPlugin.getLNKC(npc.netID);
+                                if (num2 > int.MaxValue)
+                                {
+                                    num2 = 2147483647L;
+                                }
+                                num = (int)num2;
+                                break;
+                            }
+                    }
+                }
+            }
+            if (num != 0f)
+            {
+                num *= infactor;
+            }
+            return (int)num;
         }
 
         public int getMarkers(string name)
@@ -114,28 +226,74 @@ namespace TestPlugin
             return 0;
         }
 
-        public bool haveMarkers(List<指示物组节> list)
+        public string ReplaceMarkers(string text)
+        {
+            string text2 = text;
+            foreach (指示物组节 marker in Markers)
+            {
+                text2 = text2.Replace("[" + marker.名称 + "]", marker.数量.ToString());
+            }
+            return text2;
+        }
+
+        public bool haveMarkers(List<指示物组节> list, NPC npc)
         {
             bool flag = false;
             foreach (指示物组节 item in list)
             {
                 int markers = getMarkers(item.名称);
-                if (item.数量 == 0)
+                int num = item.数量 + addMarkersIn(item.指示物注入数量名, item.指示物注入数量系数, npc);
+                if (item.重定义判断符号 != "")
                 {
-                    continue;
-                }
-                if (item.数量 > 0)
-                {
-                    if (markers < item.数量)
+                    if (item.重定义判断符号 == "=")
+                    {
+                        if (markers != num)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    else if (item.重定义判断符号 == "!")
+                    {
+                        if (markers == num)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    else if (item.重定义判断符号 == ">")
+                    {
+                        if (markers <= num)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    else if (item.重定义判断符号 == "<" && markers >= num)
                     {
                         flag = true;
                         break;
                     }
                 }
-                else if (markers >= Math.Abs(item.数量))
+                else
                 {
-                    flag = true;
-                    break;
+                    if (num == 0)
+                    {
+                        continue;
+                    }
+                    if (num > 0)
+                    {
+                        if (markers < num)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    else if (markers >= Math.Abs(num))
+                    {
+                        flag = true;
+                        break;
+                    }
                 }
             }
             if (flag)

@@ -1,0 +1,614 @@
+{
+	public class 配置文件
+	{
+        public string 配置作者 = "GK 阁下";//你写的配置可以修改为你的名字
+        public string 配置说明 = "版本①;难度直线提升,怪物最低3个人血量,几乎全Boss加强!";//你关于你的配置的简单说明
+		
+
+        public bool 启动错误报告 = false;
+        public string 配置文件插件版本号 = "1.0.4.35";//此配置不要管他,会自定采取高版本//用于防止高版本插件配置进低版本配置被损毁问题
+
+        public bool 启动死亡队友视角 = false;//启动后死亡将追随队友(无队伍则不追随)视角
+		public bool 队友视角仅BOSS时 = true;
+		public int 队友视角流畅度 = -1;//越小越流畅,占用性能越大,可配合上面那个使用降低性能(-1是最大流畅)
+		public int 队友视角等待范围 = 18;//允许逃离范围
+
+        public float 统一对怪物伤害修正 = 1;//玩家的伤害将×这个数字
+
+        public float 统一怪物弹幕伤害修正 = 1;//怪物的弹幕的伤害将×这个数字
+
+        public int 统一初始怪物玩家系数 = 0;//0为不修改,若大于0则应用上
+		public bool 统一初始玩家系数不低于人数 = true;
+
+		public float 统一初始怪物强化系数 = 0;//0为不修改,若大于0则应用上(全体怪物默认是1)
+
+
+		public double 统一怪物血量倍数 = 1;//全体怪物血量倍数,在自定义血量后执行
+		public bool 统一血量不低于正常 = true;
+
+		public double 统一怪物强化倍数 = 1;//全体怪物强化倍数,在自定义强化后执行
+		public bool 统一强化不低于正常 = true;
+
+		public int 统一免疫熔岩类型 = 1;//全体怪物,-1全部不免疫,0不改变,1全体免疫
+		public int 统一免疫陷阱类型 = 0;//全体怪物,-1全部不免疫,0不改变,1全体免疫
+		public List<int> 统一设置例外怪物 = new List<int>();//把npc写上
+		public bool 启动动态血量上限 = true;//服务器人数变多时,根据玩家系数再度调整血量(以人数最大值为准)
+		public bool 启动怪物时间限制 = true;
+		public bool 启动动态时间限制 = true;//服务器人数变多时,根据玩家系数再度调整时间(以人数最大值为准)
+
+
+        public 怪物节[] 怪物节集 = new 怪物节[0];//此速度是更快的速度
+
+       }
+
+   
+    
+
+    public class 怪物节
+	{
+
+		public string 标志 = "";//用于后续判定
+		public int 怪物ID = 0;//欲修改血量的怪物id,若等于0则任何一个怪物都适配
+		public int[] 再匹配 = new int[0];//格式ID,ID,ID,用于怪物id是0时的批量适配,当存在时才匹配
+        public int[] 再匹配例外 = new int[0];//格式ID,ID,ID,用于怪物id是0时的批量适配,当不存在时才匹配
+
+        public int 初始属性玩家系数 = 0;//此属性只用于boss,调整boss的初始属性与人数相关//此值凌驾于统一之上
+		public float 初始属性强化系数 = 0;//调整初始强化系数//此值凌驾于统一之上
+
+        public float 初始属性对怪物伤害修正 = 1;//玩家的伤害将×这个数字
+
+
+        public int 怪物血量 = 0;//这个血量会加上玩家数量×玩家系数，如果小于或等于0则不会修改怪物血量
+		public int 玩家系数 = 0;
+		public int 开服系数 = 0;//根据开服时间进行血量计算
+		public int 杀数系数 = 0;//根据怪物的击杀次数计算怪物的血量//从此插件装上开始计算//特别说明,由于击杀次数可以很大会超出int类型所以谨慎使用
+
+		//杀怪系数可以根据别的怪进行计算,{XXX:+-XXX}这样,主要用点是掉落,根据某怪的击杀数量掉物品,但是目前懒得做
+
+		public int 开服时间型 = 0;//0表示取距离开服时间的小时,1表示24小时的天,2表示单纯天(只有日期不包含小时),怪物的开服条件和开服系数都选用此值
+		public bool 覆盖原血量 = true;//如果为假,则为原始血量加上怪物和玩家系数,如果为真则让怪物血量等于此值
+		public bool 不低于正常 = true;//使自定义的怪物血量比正常的血量低时以正常为准
+
+
+
+		public float 强化系数 = 0;//若小于等于0则不修改,最大不能超过1000,可以增加boss血条上限以及怪物伤害(注:为小数)
+		public bool 不小于正常 = true;//强化系数不小于正常
+		public float 玩家强化系数 = 0;
+		public float 开服强化系数 = 0;//根据开服时间进行强化计算
+		public float 杀数强化系数 = 0;//根据击杀次数进行强化计算//特别说明,由于击杀次数可以很大会超出int类型所以谨慎使用
+		public bool 覆盖原强化 = true;//覆盖原始强化系数
+
+		public int 玩家复活时间 = -1;//-1表示不定义
+        public int 全局最大刷怪数 = -1;//-1表示不定义
+        public int 全局刷怪速度 = -1;//-1表示不定义
+
+        public int 阻止传送器 = 0;//-1不阻止,0于之前一致,1阻止
+
+        public int 出没秒数 = 0;//几秒不杀死自动消失
+		public int 人秒系数 = 0;//与上一条都为0则不启动
+		public int 开服系秒 = 0;//根据开服时间进行时间计算
+		public int 杀数系秒 = 0;//根据击杀次数,计算时间//特别说明,由于击杀次数可以很大会超出int类型所以谨慎使用
+
+		public int 出没率子 = 1;//分子
+		public int 出没率母 = 1;//分母
+
+        public string[] 种子条件 = new string[0];//为空不匹配种子,值 getGoodWorld 为ftw,值 tenthAnniversaryWorld 为十周年 值 notTheBeesWorld 为蜂蜜 值dontStarveWorld 为 永恒 值 drunkWorld 为醉酒 值 remixWorld 为颠倒 值 noTrapsWorld 为陷阱 值 zenithWorld 为天顶,值前加!为不包括,设置时为同时包括设置内容才可触发
+        public int[] 难度条件 = new int[0];//为空不匹配难度,0为普通,1专家,2大师,3旅者,当设置时,只有设置的难度能用
+
+        public int 杀数条件 = 0;//0不限,负值小于,正值大于//从此插件装上开始计算
+		public int 数量条件 = 0;//0不限,负值小于,正值大于//同时存在的npcid数量(包含)包含自身
+		public int 人数条件 = 0;//0不限,负值小于,正值大于(包含)
+		public int 昼夜条件 = 0;//0不限,-1晚上,1白天
+		public int 肉山条件 = 0;//0不限,-1未打,1打了
+		public int 巨人条件 = 0;//0不限,-1未打,1打了
+        public int 降雨条件 = 0;//0不限,-1不是,1是
+        public int 血月条件 = 0;//0不限,-1不是,1是
+        public int 日食条件 = 0;//0不限,-1不是,1是
+        public int 月总条件 = 0;//0不限,-1不是,1是
+		public int 开服条件 = 0;//0不限,负值小于,正值大于(包含)距离开服时间的条件//从此插件装上开始计算
+
+		public List<怪物条件节> 怪物条件 = new List<怪物条件节> { };//必须存在或不存在某些怪物(不包含自身)
+        public Dictionary<int, long> 杀怪条件 = new Dictionary<int, long> { };//格式 怪物id:数值 //0不限,负值小于,正值大于//从此插件装上开始计算
+
+
+        public int 智慧机制 = -1;//-1表示不修改
+		public int 免疫熔岩 = 0;//0不修改,1启动,-1不启动,适用于无法被秒杀的怪
+		public int 免疫陷阱 = 0;//0不修改,1启动,-1不启动,适用于无法被秒杀的怪
+		public int 能够穿墙 = 0;//0不修改,1启动,-1不启动,如果ai不支持启动则会使怪物掉到地底
+		public int 无视重力 = 0;//0不修改,1启动,-1不启动,如果ai不支持启动则会使怪物掉到地底
+		public int 设为老怪 = 0;//0不修改,1启动,-1不启动
+		public bool 修改防御 = false;//不建议修改,除非不能秒杀的时候
+		public int 怪物防御 = 0;//怪物血量少时会闪,然后一地尸体...
+		public int 怪物无敌 = 0;//0不修改,1启动,-1不启动
+
+		public string 自定缀称 = "";//名字后跟随的名字
+
+		public string 出场喊话 = "";
+        public bool 出场喊话无头 = false;
+
+        public string 死亡喊话 = "";
+        public bool 死亡喊话无头 = false;
+
+        public bool 不宣读信息 = false;//不宣读出没、人数变动等讯息
+
+
+		public int 状态范围 = 0;//赋予玩家状态的最大范围,为0则不赋予
+		public List<状态节> 周围状态 = new List<状态节> { };
+
+		public int 死状范围 = 0;//怪物死亡时赋予玩家状态的范围,0不赋予
+		public Dictionary<int, int> 死亡状态 = new Dictionary<int, int> { };//格式 "ID":秒
+
+		public List<弹幕节> 出场弹幕 = new List<弹幕节> { };
+		public List<弹幕节> 死亡弹幕 = new List<弹幕节> { };
+		public List<声音节> 出场放音 = new List<声音节> { };
+		public List<声音节> 死亡放音 = new List<声音节> { };
+		public List<怪物杀伤节> 出场伤怪 = new List<怪物杀伤节> { };//怪物出现时杀伤的怪物(不包含自身)
+		public List<怪物杀伤节> 死亡伤怪 = new List<怪物杀伤节> { };//怪物死亡时杀伤的怪物(不包含自身)
+
+        public List<string> 出场命令 = new List<string> { };//无需追加指令前缀,为安静执行模式
+        public List<string> 死亡命令 = new List<string> { };//无需追加指令前缀,为安静执行模式//此命令支持指示物替换,格式为"[指示物名]"将被替换为对应的数量
+
+        public List<怪物指示物修改节> 出场怪物指示物修改 = new List<怪物指示物修改节> { };
+        public List<怪物指示物修改节> 死亡怪物指示物修改 = new List<怪物指示物修改节> { };
+
+        public int 血事件限 = 1;//设置最多触发几个事件
+		public List<比例节> 血量事件 = new List<比例节> { };//自动排序小的优先发动//涉及优先级不能排序
+		public int 时事件限 = 3;//设置最多触发几个事件
+		public List<时间节> 时间事件 = new List<时间节> { };//自动排序小的优先发动//涉及优先级不能排序
+        public int 事件权重 = 0;//此值用于事件的处理优先级,越大越优先执行
+
+        public Dictionary<int, int> 随从怪物 = new Dictionary<int, int> { };//怪物出场时召唤的怪物,若要循环请好好考虑,无法随从肉墙,格式 "ID":数量
+		public Dictionary<int, int> 遗言怪物 = new Dictionary<int, int> { };//怪物死亡时召唤的怪物,无法遗言肉墙,格式 "ID":数量
+		public int 掉落组限 = 1;//额外掉落能掉落几组(带条件的算一组)
+		public List<掉落节> 额外掉落 = new List<掉落节> { };//怪物死亡时额外掉落的物品
+		public string 备注 = "";
+
+
+		}
+
+	public class 掉落节
+	{
+		public int 掉落率子 = 1;//分子
+		public int 掉落率母 = 1;//分母
+
+        public string[] 种子条件 = new string[0];
+		public int[] 难度条件 = new int[0];
+
+        public int 杀数条件 = 0;//0不限,负值小于,正值大于//从此插件装上开始计算
+		public int 人数条件 = 0;//0不限,负值小于,正值大于(包含)
+		public int 杀死条件 = 0;//0不限,负值小于,正值大于(包含),杀死玩家数的
+        public int 被击条件 = 0;//0不限,负值小于,正值大于(包含),怪物被击打的数量
+        public int 昼夜条件 = 0;//0不限,-1晚上,1白天
+        public int 耗时条件 = 0;//0不限,负值小于,正值大于(包含)
+		public int 肉山条件 = 0;//0不限,-1未打,1打了
+		public int 巨人条件 = 0;//0不限,-1未打,1打了
+        public int 降雨条件 = 0;//0不限,-1不是,1是
+        public int 血月条件 = 0;//0不限,-1不是,1是
+        public int 日食条件 = 0;//0不限,-1不是,1是
+        public int 月总条件 = 0;//0不限,-1不是,1是
+		public int 开服条件 = 0;//0不限,负值小于,正值大于(包含)距离开服时间的条件//从此插件装上开始计算
+        public Dictionary<string, float> AI条件 = new Dictionary<string, float> { };//针对怪物当前的ai段(即怪物的当前动作,目前共0~3四个ai)进行条件判断//倘若ai段数字前为!表示不等于,>和<表示大于和小于
+        public bool 跳出掉落 = false;//不执行后面的内容
+		public List<怪物条件节> 怪物条件 = new List<怪物条件节> { };//必须存在或不存在某些怪物(不包含自身)
+        public Dictionary<int, long> 杀怪条件 = new Dictionary<int, long> { };//格式 怪物id:数值 //0不限,负值小于,正值大于//从此插件装上开始计算
+        public List<指示物组节> 指示物条件 = new List<指示物组节> { };
+        public List<物品节> 掉落物品 = new List<物品节> { };
+        public string 喊话 = "";//此喊话支持指示物替换,格式为"[指示物名]"将被替换为对应的数量
+        public bool 喊话无头 = false;
+        public string 备注 = "";
+
+
+	}
+	public class 物品节
+	{
+		public int 物品ID = 0;//欲修改血量的怪物id
+		public int 物品数量 = 0;//请尽量不要超过上限
+		public int 物品前缀 = -1;//前缀,小于0不修改例如-1
+		public bool 独立掉落 = false;//所有参与攻击者均掉落(且不能相互拾取),就像宝藏带,否则正常掉落,独立掉落无前缀
+
+	
+	}
+	public class 比例节 
+	{
+		public int 血量剩余比例 = 0;//百分比,最初怪物血量为100%
+		public int 可触发次 = 1;//-1表示无限触发
+
+		public int 触发率子 = 1;//分子
+		public int 触发率母 = 1;//分母
+
+		public int 杀数条件 = 0;//0不限,负值小于,正值大于//从此插件装上开始计算
+		public int 人数条件 = 0;//0不限,负值小于,正值大于(包含)
+
+		public int 杀死条件 = 0;//0不限,负值小于,正值大于(包含),杀死玩家数的
+
+		public int 昼夜条件 = 0;//0不限,-1晚上,1白天
+
+		public int 耗时条件 = 0;//0不限,负值小于,正值大于(包含)
+
+		public int ID条件 = 0;//0不限,如为ID,表示当前怪物ID为何种时候才怎么样,用于会变形的怪
+
+		public int 肉山条件 = 0;//0不限,-1未打,1打了
+		public int 巨人条件 = 0;//0不限,-1未打,1打了
+		public int 血月条件 = 0;//0不限,-1不是,1是
+		public int 月总条件 = 0;//0不限,-1不是,1是
+		public int 开服条件 = 0;//0不限,负值小于,正值大于(包含)距离开服时间的条件//从此插件装上开始计算
+
+		public int X轴条件 = 0;//0不限,负值小于,正值大于(包含)
+		public int Y轴条件 = 0;//0不限,负值小于,正值大于(包含)
+
+		public int 面向条件 = 0;//0不限,值为1~8时根据怪物的当前面向进行判断,1右2右下3下4左下5左6左上7上8右上9右10下11左12上
+
+		public bool 跳出事件 = false;//不执行后面的内容
+
+		public List<怪物条件节> 怪物条件 = new List<怪物条件节> { };//必须存在或不存在某些怪物(不包含自身)
+		public List<玩家条件节> 玩家条件 = new List<玩家条件节> { };//必须存在或不存在某些怪物(不包含自身)
+
+		public bool 直接撤退 = false;//不掉物品
+		public int 玩家复活时间 = -2;//-1表示不定义,-2表示不对之前的修改
+
+		public int 切换智慧 = -1;//-1表示不修改
+		public int 能够穿墙 = 0;//0不修改,1启动,-1不启动,如果ai不支持启动则会使怪物掉到地底
+		public int 无视重力 = 0;//0不修改,1启动,-1不启动,如果ai不支持启动则会使怪物掉到地底
+		public bool 修改防御 = false;//不建议修改,除非不能秒杀的时候
+		public int 怪物防御 = 0;
+		public int 恢复血量 = 0;//恢复怪物血量
+		public int 比例回血 = 0;//按百分比恢复血量,在恢复血量之后
+
+		public int 怪物无敌 = 0;//0不修改,1启动,-1不启动
+
+		public int 拉取起始 = 0;
+		public int 拉取范围 = 0;//0为不拉取,将范围内的全部玩家传送到止点,上一条配合可实现环形
+		public int 拉取止点 = 0;//为零到boss身上,为范围则是怪物范围内而非身上
+        public float 拉取点X轴偏移 = 0;//拉取点起点的偏移
+        public float 拉取点Y轴偏移 = 0;
+
+
+        public int 杀伤范围 = 0;//击退范围内的玩家
+		public int 杀伤伤害 = 0;//基于伤害,当然负数可以是给玩家加血
+
+		public int 击退范围 = 0;//击退范围内的玩家
+		public int 击退力度 = 0;//以此力度击退
+
+		public List<弹幕节> 释放弹幕 = new List<弹幕节> { };
+
+		public int 状态范围 = 0;//大于0则覆盖上次定义的范围状态
+		public List<状态节> 周围状态 = new List<状态节> { };
+		public List<怪物杀伤节> 杀伤怪物 = new List<怪物杀伤节> { };
+		public Dictionary<int, int> 召唤怪物 = new Dictionary<int, int> { };//无法随从肉墙
+		public string 喊话 = "";
+        public bool 喊话无头 = false;
+       
+		
+	}//已废弃,留着而已
+	public class 时间节
+	{
+		public float 消耗时间 = 1;//召唤之后的计时//让速度更快
+		public bool 循环执行 = true;
+		public float 延迟秒数 = 0;//在实际时间后延迟多久执行
+		public int 可触发次 = -1;//-1表示无限触发
+
+		public int 触发率子 = 1;//分子
+		public int 触发率母 = 1;//分母
+
+
+        //public bool 条件反向 = false;//正常条件是如何时执行,倘若此值为真,则条件为真时不执行,只有不符合时才执行
+
+        public string[] 种子条件 = new string[0];
+        public int[] 难度条件 = new int[0];
+
+        public int 杀数条件 = 0;//0不限,负值小于,正值大于//从此插件装上开始计算
+		public int 人数条件 = 0;//0不限,负值小于,正值大于(包含)
+		public int 昼夜条件 = 0;//0不限,-1晚上,1白天★
+		public int 血比条件 = 0;//0不限,负值小于,正值大于(包含),血量比例的条件
+        public int 血量条件 = 0;//0不限,负值小于,正值大于(包含),血量的数值条件
+        public int 被击条件 = 0;//0不限,负值小于,正值大于(包含),怪物被击打的数量
+        public int 杀死条件 = 0;//0不限,负值小于,正值大于(包含),杀死玩家数的
+        public int 怪数条件 = 0;//0不限,负值小于,正值大于(包含),指同时存在的怪物数量条件
+        public int 耗时条件 = 0;//0不限,负值小于,正值大于(包含)
+
+		public int ID条件 = 0;//0不限,如为ID,表示当前怪物ID为何种时候才怎么样,用于会变形的怪
+
+		public Dictionary<string, float> AI条件 = new Dictionary<string, float> { };//针对怪物当前的ai段(即怪物的当前动作,目前共0~3四个ai)进行条件判断//倘若ai段数字前为!表示不等于,>和<表示大于和小于
+
+		public int 肉山条件 = 0;//0不限,-1未打,1打了
+		public int 巨人条件 = 0;//0不限,-1未打,1打了
+        public int 降雨条件 = 0;//0不限,-1不是,1是
+        public int 血月条件 = 0;//0不限,-1不是,1是
+        public int 日食条件 = 0;//0不限,-1不是,1是
+        public int 月总条件 = 0;//0不限,-1不是,1是
+		public int 开服条件 = 0;//0不限,负值小于,正值大于(包含)距离开服时间的条件//从此插件装上开始计算
+		public int X轴条件 = 0;//0不限,负值小于,正值大于(包含)
+		public int Y轴条件 = 0;//0不限,负值小于,正值大于(包含)
+
+		public int 面向条件 = 0;//0不限,值为1~8时根据怪物的当前面向进行判断,1右2右下3下4左下5左6左上7上8右上9右10下11左12上
+
+		public bool 跳出事件 = false;//不执行后面的内容
+
+		public List<怪物条件节> 怪物条件 = new List<怪物条件节> { };//必须存在或不存在某些怪物(不包含自身)
+        public Dictionary<int, long> 杀怪条件 = new Dictionary<int, long> { };//格式 怪物id:数值 //0不限,负值小于,正值大于//从此插件装上开始计算
+        public List<玩家条件节> 玩家条件 = new List<玩家条件节> { };//必须存在或不存在某些怪物(不包含自身)
+
+		public List<指示物组节> 指示物条件 = new List<指示物组节> { };
+		public List<指示物节> 指示物修改 = new List<指示物节> { };
+        public List<怪物指示物修改节> 怪物指示物修改 = new List<怪物指示物修改节> { };
+
+        public bool 直接撤退 = false;//不掉物品
+		public int 玩家复活时间 = -2;//-1表示不定义,-2表示不对之前的修改
+        public int 全局最大刷怪数 = -2;//-1表示不定义,-2表示不对之前的修改
+        public int 全局刷怪速度 = -2;//-1表示不定义,-2表示不对之前的修改
+        public int 阻止传送器 = 0;//-1不阻止,0于之前一致,1阻止
+        public int 切换智慧 = -1;//-1表示不修改
+        public int 怪物变形 = -1;//-1表示不修改,会变换怪物的id,切换形态
+
+        public int 能够穿墙 = 0;//0不修改,1启动,-1不启动,如果ai不支持启动则会使怪物掉到地底
+		public int 无视重力 = 0;//0不修改,1启动,-1不启动,如果ai不支持启动则会使怪物掉到地底
+		public bool 修改防御 = false;//不建议修改,除非不能秒杀的时候
+		public int 怪物防御 = 0;
+
+		public Dictionary<int, float> AI赋值 = new Dictionary<int, float> { };
+        public Dictionary<int, string> 指示物注入AI赋值 = new Dictionary<int, string> { };//格式为ai:指示物名,可以用*分割使得系数
+
+
+        public int 恢复血量 = 0;//恢复怪物血量
+		public int 比例回血 = 0;//按百分比恢复血量
+
+		public int 怪物无敌 = 0;//0不修改,1启动,-1不启动
+
+		public int 拉取起始 = 0;
+		public int 拉取范围 = 0;//将范围内的全部玩家传送到止点
+		public int 拉取止点 = 0;//为零到boss身上,为范围则是怪物范围内而非身上
+        public float 拉取点X轴偏移 = 0;//拉取点起点的偏移
+        public float 拉取点Y轴偏移 = 0;
+        public string 指示物数量注入拉取点X轴偏移名 = "";
+        public float 指示物数量注入拉取点X轴偏移系数 = 1;
+        public string 指示物数量注入拉取点Y轴偏移名 = "";
+        public float 指示物数量注入拉取点Y轴偏移系数 = 1;
+        public bool 初始拉取点坐标为零 = false;//使得拉取点初始点为0而非怪物
+
+
+        public int 击退范围 = 0;//击退范围内的玩家
+		public int 击退力度 = 0;//以此力度击退
+
+		public int 杀伤范围 = 0;//击退范围内的玩家
+		public int 杀伤伤害 = 0;//基于伤害,当然负数可以是给玩家加血,若为999999999(九个9)则为秒杀
+
+		public int 反射范围 = 0;//反射范围内弹幕,若大于0则将可反射弹幕向反方向弹开
+
+		public List<弹幕节> 释放弹幕 = new List<弹幕节> { };
+		public int 状态范围 = 0;//大于0则覆盖上次定义的范围状态
+		public List<状态节> 周围状态 = new List<状态节> { };
+		public List<怪物杀伤节> 杀伤怪物 = new List<怪物杀伤节> { };
+		public Dictionary<int, int> 召唤怪物 = new Dictionary<int, int> { };//无法随从肉墙
+		public List<声音节> 播放声音 = new List<声音节> { };
+        public List<string> 释放命令 = new List<string> { };//无需追加指令前缀,为安静执行模式//此命令支持指示物替换,格式为"[指示物名]"将被替换为对应的数量
+        public string 喊话 = "";//此喊话支持指示物替换,格式为"[指示物名]"将被替换为对应的数量
+        public bool 喊话无头 = false;
+
+      
+		
+	}
+	public class 状态节
+	{
+		public int 状态ID = 0;
+		public int 状态起始范围 = 0;//为0不限,需大于起始范围
+		public int 状态结束范围 = 0;//为0不限,需小于结束范围,与上个组合形成环形
+		public string 头顶提示 = "";//不停提示
+
+		
+	}
+	public class 怪物条件节
+	{
+		public int 怪物ID = 0;
+		public string 查标志 = "";//如果不为空则需要目标标志符合
+		public List<指示物组节> 指示物 = new List<指示物组节> { };//必须指定指示物
+		public int 范围内 = 0;//0不限制,大于0必须在范围内
+		public int 血量比 = 0;//0不限,-小于,正大于
+		public int 符合数 = 0;//0不限,正值大于,负值小于(注:目标值与此值对比,例如此值设置1目标为1,则过,若目标0则不过,若设置-1,目标1不过,0过)
+
+		
+	}
+	public class 声音节
+    {
+		//public ushort 声音序号 = 1;//默认1
+		public  int 声音ID = -1;//
+		public float 声音规模 = -1;//约等于声音的大小
+		public float 高音补偿 = -1;//
+	}
+	public class 玩家条件节
+	{
+		public int 范围起 = 0;//0不限制,大于0必须不在范围内
+		public int 范围内 = 0;//不能为0,必须在范围内
+		public int 符合数 = 0;//0不限,正值大于,负值小于
+
+	
+	}
+	public class 怪物杀伤节
+	{
+		public int 怪物ID = 0;//0任意怪物
+
+        public string 查标志 = "";//如果不为空则需要目标标志符合
+        public List<指示物组节> 指示物 = new List<指示物组节> { };//必须指定指示物
+
+        public int 范围内 = 0;//0不限制,大于0必须在范围内
+		public int 造成伤害 = 0;
+
+        public string 指示物数量注入造成伤害名 = "";
+        public float 指示物数量注入造成伤害系数 = 1;
+
+        public bool 直接伤害 = false;//无视防御,但不能杀死怪物(剩余1血)当然如果是负数可以变成加血
+		public bool 直接清除 = false;//清除无法掉落物品,但能杀死无敌怪
+		
+
+	}
+
+    public class 怪物指示物修改节
+    {
+        public int 怪物ID = 0;//0任意怪物
+        public string 查标志 = "";//如果不为空则需要目标标志符合
+        public List<指示物组节> 指示物条件 = new List<指示物组节> { };//必须指定指示物
+        public int 范围内 = 0;//0不限制,大于0必须在范围内
+        public List<指示物节> 指示物修改 = new List<指示物节> { };//注意,此配置中的特殊替换为本怪物的特殊替换,而非目标怪物的
+
+
+    }
+
+
+
+    public class 指示物组节
+	{
+		public string 名称 = "";
+		public int 数量 = 0;//0不限,正值大于,负值小于(注:目标值与此值对比, 例如此值设置1目标为1, 则过, 若目标0则不过, 若设置-1, 目标1不过,0过)
+        public string 重定义判断符号 = "";//凌驾于上面数量的正负号,支持>大于,<小于,!不等于,=等于
+        public string 指示物注入数量名 = "";//将引入指定指示物的数量注入此指示物,//支持特殊注入[序号]:怪物序号;[被击]:被击次数;[击杀]:击杀玩家次数;[X坐标][Y坐标]:怪物的XY坐标(非瓷砖坐标);[血量]:怪物的血量;[耗时]:怪物出没后的耗时;[被杀]:怪物被杀的次数;[AI0][AI1][AI2][AI3]:怪物的AI,但目前只有整数;
+        public float 指示物注入数量系数 = 1;//上面的数量将×此值,最终结果整数化,当注入处于怪物条件中时,注入为发起判断的怪物而非被判断的怪物
+		//指示物注入后将根据结果自动调整是否为负,此时初始数量的原始符号定义的大于小于不变
+
+    }
+	public class 指示物节
+	{
+      
+
+        public string 名称 = "";
+        public int 数量 = 0;
+        public bool 清除 = false;//若清除则使原来的内容清除再置入数量
+        public int 随机小 = 0;
+        public int 随机大 = 0;
+        public string 指示物注入数量名 = "";//将引入指定指示物的数量注入此指示物,//支持特殊注入[序号]:怪物序号;[被击]:被击次数;[击杀]:击杀玩家次数;[X坐标][Y坐标]:怪物的XY坐标(非瓷砖坐标);[血量]:怪物的血量;[耗时]:怪物出没后的耗时;[被杀]:怪物被杀的次数;[AI0][AI1][AI2][AI3]:怪物的AI,但目前只有整数;
+        public float 指示物注入数量系数 = 1;//上面的数量将×此值,最终结果整数化
+        public string 指示物注入数量运算符 = "";//支持+加,-减,*乘,/除,%余,留空默认为加
+
+
+
+
+ 
+    }
+
+	public class 弹幕节
+	{
+		public int 弹幕ID = 0;
+
+		public float X轴偏移 = 0;//用于定义弹幕的生成点
+		public float Y轴偏移 = 0;
+		public float X轴速度 = 0;
+		public float Y轴速度 = 0;
+        public float 角度偏移 = 0;
+        public int 弹幕伤害 = 0;
+		public int 弹幕击退 = 0;
+        
+
+        public string 指示物数量注入X轴偏移名 = "";
+        public float 指示物数量注入X轴偏移系数 = 1;
+        public string 指示物数量注入Y轴偏移名 = "";
+        public float 指示物数量注入Y轴偏移系数 = 1;
+        public string 指示物数量注入X轴速度名 = "";
+        public float 指示物数量注入X轴速度系数 = 1;
+        public string 指示物数量注入Y轴速度名 = "";
+        public float 指示物数量注入Y轴速度系数 = 1;
+        public string 指示物数量注入角度名 = "";//将引入指定指示物的数量注入角度偏移
+        public float 指示物数量注入角度系数 = 1;//指定指示物的数量将乘上次系数
+
+        public bool 初始坐标为零 = false;//使得弹幕的初始点为0而非怪物
+        
+
+        public float 弹幕Ai0 = 0;
+        public bool 速度注入AI0 = false;//光女的剑戟
+        public float 速度注入AI0后X轴速度 = 0;
+        public float 速度注入AI0后Y轴速度 = 0;
+        public float 弹幕Ai1 = 0;
+        public float 弹幕Ai2 = 0;
+        
+
+        public string 指示物数量注入Ai0名 = "";
+        public float 指示物数量注入Ai0系数 = 1;
+        public string 指示物数量注入Ai1名 = "";
+        public float 指示物数量注入Ai1系数 = 1;
+        public string 指示物数量注入Ai2名 = "";
+        public float 指示物数量注入Ai2系数 = 1;
+
+
+        public float 怪面向X偏移修正 = 0;//根据怪物的面朝方向修正弹幕的偏移(注意怪物的方向只有八个方向,此功能的实际用处非常有限)'可变成条件,或者让搜索变成扇形
+		public float 怪面向Y偏移修正 = 0;
+		public float 怪面向X速度修正 = 0;
+		public float 怪面向Y速度修正 = 0;
+
+        public bool 始弹点怪物传送 = false;//将怪物传送到初始弹点上
+        public int 始弹点怪物传送类型 = 0;//
+        public int 始弹点怪物传送信息 = 0;//
+
+        public bool 不射原始 = false;//只使用批量射击不发射原始
+        public string 射出始弹X轴注入指示物名 = "";//将射出的弹幕原始位置的数量注入指定的指示物中//当有多个锁定时仅第一个有效
+        public string 射出始弹Y轴注入指示物名 = "";//将射出的弹幕原始位置的数量注入指定的指示物中//当有多个锁定时仅第一个有效
+        public string 锁定玩家序号注入指示物名 = "";//将锁定的玩家序号的数量注入指定的指示物中//当有多个锁定时仅第一个有效
+
+        public int 差度位始角 = 0;//开始的角度补偿
+		public int 差度位射数 = 0;//按不同的角度布置弹幕位置
+		public int 差度位射角 = 0;//
+		public int 差度位半径 = 0;
+		public bool 不射差度位 = false;//只使用批量射击不发射原始
+
+        //public string 射出差度位X轴注入指示物名 = "";//不可使用,因为批量会覆盖指示物
+        //public string 射出差度位Y轴注入指示物名 = "";//不可使用,因为批量会覆盖指示物
+
+        public string 指示物数量注入差度位始角名 = "";
+        public float 指示物数量注入差度位始角系数 = 1;
+        public string 指示物数量注入差度位射数名 = "";
+        public float 指示物数量注入差度位射数系数 = 1;
+        public string 指示物数量注入差度位射角名 = "";
+        public float 指示物数量注入差度位射角系数 = 1;
+        public string 指示物数量注入差度位半径名 = "";
+        public float 指示物数量注入差度位半径系数 = 1;
+
+
+        public int 差度射数 = 0;//按不同的角度发射弹幕
+		public float 差度射角 = 0;
+
+        public string 指示物数量注入差度射数名 = "";
+        public float 指示物数量注入差度射数系数 = 1;
+        public string 指示物数量注入差度射角名 = "";
+        public float 指示物数量注入差度射角系数 = 1;
+
+
+        public int 差位射数 = 0;//
+		public float 差位偏移X = 0;
+		public float 差位偏移Y = 0;
+
+        public string 指示物数量注入差位射数名 = "";
+        public float 指示物数量注入差位射数系数 = 1;
+        public string 指示物数量注入差位偏移X名 = "";
+        public float 指示物数量注入差位偏移X系数 = 1;
+        public string 指示物数量注入差位偏移Y名 = "";
+        public float 指示物数量注入差位偏移Y系数 = 1;
+
+
+        public int 锁定范围 = 0;//若此值大于0,则锁定此范围内距离最近的玩家发射弹幕,最大不可超过350,其xy轴速度变为偏移//若为-1则为怪物本体
+		public float 锁定速度 = 0;//只有为锁定弹幕时才有效的参数
+
+        public string 指示物数量注入锁定速度名 = "";
+        public float 指示物数量注入锁定速度系数 = 1;
+
+        public bool 以弹为位 = false;//实现聚焦锁定点效果
+        public int 持续时间 = -1;//0为立即销毁,-1不改,其他为帧
+
+        public bool 计入仇恨 = false;//此值为真则计入仇恨优先所动仇恨最大的,第一优先
+		public bool 锁定血少 = false;//此值为真时将优先锁定血量最少的玩家发射弹幕(距离仍然优先),第二优先(最后是距离)
+		public bool 锁定低防 = false;//此值为真时优先锁定防御低的,第三优先(最后是距离)
+		public bool 仅攻击对象 = false;//此值为真,将仅仅锁定怪物的攻击(仇恨)对象
+		public bool 逆仇恨锁定 = false;//允许你逆转仇恨锁定,使得优先锁定仇恨最小的玩家
+		public bool 逆血量锁定 = false;//允许你逆转血量锁定,优先锁定血多的玩家
+		public bool 逆防御锁定 = false;//此值为真时逆转防御锁定,优先锁定防御高的玩家
+		public bool 仅扇形锁定 = false;//只有怪物面向扇形范围的玩家被锁定
+		//public bool 切换锁定为攻击对象 = false;//
+		public int 扇形半偏角 = 60;//扇形锁定时怪物面向的偏角,由于怪物只有8个方向,所以不建议低于60
+		public bool 以锁定为点 = false;//将弹幕的发射原点更换为锁定的玩家的点
+		public int 最大锁定数 = 1;//向最多几个目标发射弹幕
+		public int 弹点召唤怪物 = 0;//在弹幕的点位召唤怪物
+        public bool 弹点召唤怪物无弹 = false;
+
+
+ 
+	}
+
+ 
+
+
+}
