@@ -144,10 +144,8 @@ public class LNPC
 
     public int addMarkersIn(string inname, float infactor, NPC npc)
     {
-        //IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-        //IL_0120: Unknown result type (might be due to invalid IL or missing references)
         float num = 0f;
-        if (global::TestPlugin.TestPlugin.LNpcs[((Entity)npc).whoAmI] == null)
+        if (TestPlugin.LNpcs[npc.whoAmI] == null)
         {
             return (int)num;
         }
@@ -155,25 +153,25 @@ public class LNPC
         {
             if (inname == "[序号]" && npc != null)
             {
-                num = ((Entity)npc).whoAmI;
+                num = npc.whoAmI;
             }
-            else
+            else if(npc != null)
             {
                 switch (inname)
                 {
                     case "[被击]":
-                        num = global::TestPlugin.TestPlugin.LNpcs[((Entity)npc).whoAmI].Struck;
+                        num = TestPlugin.LNpcs[npc.whoAmI].Struck;
                         break;
                     case "[击杀]":
-                        num = global::TestPlugin.TestPlugin.LNpcs[((Entity)npc).whoAmI].KillPlay;
+                        num = TestPlugin.LNpcs[npc.whoAmI].KillPlay;
                         break;
                     case "[耗时]":
-                        num = (int)global::TestPlugin.TestPlugin.LNpcs[((Entity)npc).whoAmI].TiemN;
+                        num = (int)TestPlugin.LNpcs[npc.whoAmI].TiemN;
                         break;
                     case "[X坐标]":
                         if (npc != null)
                         {
-                            num = (int)((Entity)npc).Center.X;
+                            num = (int)npc.Center.X;
                             break;
                         }
                         goto default;
@@ -181,7 +179,7 @@ public class LNPC
                         {
                             if (inname == "[Y坐标]" && npc != null)
                             {
-                                num = (int)((Entity)npc).Center.Y;
+                                num = (int)npc.Center.Y;
                                 break;
                             }
                             if (inname == "[血量]" && npc != null)
@@ -191,10 +189,10 @@ public class LNPC
                             }
                             if (!(inname == "[被杀]") || npc == null)
                             {
-                                num = ((inname == "[AI0]" && npc != null) ? npc.ai[0] : ((inname == "[AI1]" && npc != null) ? npc.ai[1] : ((inname == "[AI2]" && npc != null) ? npc.ai[2] : ((!(inname == "[AI3]") || npc == null) ? ((float)global::TestPlugin.TestPlugin.LNpcs[((Entity)npc).whoAmI].getMarkers(inname)) : npc.ai[3]))));
+                                num = (inname == "[AI0]" && npc != null) ? npc.ai[0] : ((inname == "[AI1]" && npc != null) ? npc.ai[1] : ((inname == "[AI2]" && npc != null) ? npc.ai[2] : ((!(inname == "[AI3]") || npc == null) ? TestPlugin.LNpcs[npc.whoAmI].getMarkers(inname) : npc.ai[3])));
                                 break;
                             }
-                            long num2 = global::TestPlugin.TestPlugin.getLNKC(npc.netID);
+                            long num2 = TestPlugin.getLNKC(npc.netID);
                             if (num2 > int.MaxValue)
                             {
                                 num2 = 2147483647L;

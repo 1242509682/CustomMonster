@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Timers;
+﻿using System.Timers;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,7 +8,6 @@ using Terraria.Utilities;
 using TerrariaApi.Server;
 using TestPlugin.读配置文件;
 using TShockAPI;
-using TShockAPI.Configuration;
 using static TShockAPI.GetDataHandlers;
 using Main = Terraria.Main;
 using NPC = Terraria.NPC;
@@ -47,7 +45,7 @@ public class TestPlugin : TerrariaPlugin
     public TestPlugin(Main game)
     : base(game)
     {
-        ((TerrariaPlugin)this).Order = 1;
+        this.Order = 1;
         LNpcs = new LNPC[201];
         LPrjs = new LPrj[1001];
         LNkc = new List<LNKC>();
@@ -59,7 +57,7 @@ public class TestPlugin : TerrariaPlugin
     {
         RC();
         RD();
-        GetDataHandlers.KillMe += OnKillMe;
+        GetDataHandlers.KillMe += OnKillMe!;
         ServerApi.Hooks.GamePostInitialize.Register(this, PostInitialize);
         ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
         ServerApi.Hooks.NpcSpawn.Register(this, NpcSpawn);
@@ -68,12 +66,13 @@ public class TestPlugin : TerrariaPlugin
         ServerApi.Hooks.NetSendData.Register(this, SendData);
         On.Terraria.NPC.SetDefaults += OnSetDefaults;
         On.Terraria.Projectile.Kill += OnProjectileKill;
-        On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
+        On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += 
+            Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
     }
 
     private void OnInitialize(EventArgs args)
     {
-        Commands.ChatCommands.Add(new Command("重读自定义怪物血量权限", new CommandDelegate(CRC), new string[1] { "重读自定义怪物血量" })
+        Commands.ChatCommands.Add(new Command("重读自定义怪物血量权限", new CommandDelegate(CRC), new string[] { "重读自定义怪物血量","reload" })
         {
             HelpText = "输入 /重读自定义怪物血量 会重新读取重读自定义怪物血量表"
         });
@@ -92,9 +91,9 @@ public class TestPlugin : TerrariaPlugin
             {
                 SD(notime: true);
             }
-            Update.Elapsed -= OnUpdate;
+            Update.Elapsed -= OnUpdate!;
             Update.Stop();
-            GetDataHandlers.KillMe -= OnKillMe;
+            GetDataHandlers.KillMe -= OnKillMe!;
             ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
             ServerApi.Hooks.NpcSpawn.Deregister(this, NpcSpawn);
             ServerApi.Hooks.NpcKilled.Deregister(this, NpcKilled);
@@ -103,13 +102,14 @@ public class TestPlugin : TerrariaPlugin
             ServerApi.Hooks.NetSendData.Deregister(this, SendData);
             On.Terraria.NPC.SetDefaults -= OnSetDefaults;
             On.Terraria.Projectile.Kill -= OnProjectileKill;
-            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float -= Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
+            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float -= 
+                Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
         }
         base.Dispose(disposing);
     }
     public void PostInitialize(EventArgs e)
     {
-        Update.Elapsed += OnUpdate;
+        Update.Elapsed += OnUpdate!;
         Update.Start();
         if (_配置.控制台广告)
         {
@@ -152,9 +152,9 @@ public class TestPlugin : TerrariaPlugin
             }
             _配置 = 配置文件.Read(_配置路径);
             Version version = new Version(_配置.配置文件插件版本号);
-            if (version <= ((TerrariaPlugin)this).Version)
+            if (version <= this.Version)
             {
-                _配置.配置文件插件版本号 = ((TerrariaPlugin)this).Version.ToString();
+                _配置.配置文件插件版本号 = this.Version.ToString();
                 _配置.Write(_配置路径);
             }
             else
@@ -175,9 +175,9 @@ public class TestPlugin : TerrariaPlugin
                 {
                     配置文件 配置文件 = 配置文件.Read(fullName);
                     version = new Version(配置文件.配置文件插件版本号);
-                    if (version <= ((TerrariaPlugin)this).Version)
+                    if (version <= this.Version)
                     {
-                        配置文件.配置文件插件版本号 = ((TerrariaPlugin)this).Version.ToString();
+                        配置文件.配置文件插件版本号 = this.Version.ToString();
                         配置文件.Write(fullName);
                     }
                     else
@@ -290,7 +290,7 @@ public class TestPlugin : TerrariaPlugin
             }
             else if (nPCById.type == 113)
             {
-                if (Main.wofNPCIndex != -1 || args.Player.Y / 16f < (float)(Main.maxTilesY - 205))
+                if (Main.wofNPCIndex != -1 || args.Player.Y / 16f < Main.maxTilesY - 205)
                 {
                     args.Player.SendErrorMessage("无法根据肉墙的当前状态或您的当前位置生成肉墙。");
                     return;
@@ -318,7 +318,7 @@ public class TestPlugin : TerrariaPlugin
     {
         if (Owner == Main.myPlayer && _配置.统一怪物弹幕伤害修正 != 1f)
         {
-            Damage = (int)((float)Damage * _配置.统一怪物弹幕伤害修正);
+            Damage = (int)(Damage * _配置.统一怪物弹幕伤害修正);
         }
         return orig.Invoke(spawnSource, X, Y, SpeedX, SpeedY, Type, Damage, KnockBack, Owner, ai0, ai1, ai2);
     }
@@ -358,7 +358,7 @@ public class TestPlugin : TerrariaPlugin
     #region 怪物生成事件
     private void NpcSpawn(NpcSpawnEventArgs args)
     {
-        if (((HandledEventArgs)(object)args).Handled || Main.npc[args.NpcId] == null || Main.npc[args.NpcId].netID == 0 || !(Main.npc[args.NpcId]).active)
+        if (args.Handled || Main.npc[args.NpcId] == null || Main.npc[args.NpcId].netID == 0 || !Main.npc[args.NpcId].active)
         {
             return;
         }
@@ -406,7 +406,7 @@ public class TestPlugin : TerrariaPlugin
                 {
                     continue;
                 }
-                num2 = ((怪物节.开服时间型 == 1) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalDays) : ((怪物节.开服时间型 != 2) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalHours) : ((int)(DateTime.UtcNow.Date - OServerDataTime.Date).TotalDays)));
+                num2 = (怪物节.开服时间型 == 1) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalDays) : ((怪物节.开服时间型 != 2) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalHours) : ((int)(DateTime.UtcNow.Date - OServerDataTime.Date).TotalDays));
                 if ((怪物节.难度条件.Length != 0 && !怪物节.难度条件.Contains(Main.GameMode)) || Sundry.SeedRequirement(怪物节.种子条件))
                 {
                     continue;
@@ -480,7 +480,7 @@ public class TestPlugin : TerrariaPlugin
                 num4 += (int)lNKC * 怪物节.杀数系秒;
                 if (num4 < 1)
                 {
-                    ((HandledEventArgs)(object)args).Handled = true;
+                    args.Handled = true;
                     (Main.npc[args.NpcId]).active = false;
                     Console.WriteLine(Main.npc[args.NpcId].FullName + "定义时间过小被阻止生成");
                     return;
@@ -489,7 +489,7 @@ public class TestPlugin : TerrariaPlugin
             }
             if (怪物节.初始属性玩家系数 > 0 || 怪物节.初始属性强化系数 > 0f)
             {
-                NPCSpawnParams val2 = default(NPCSpawnParams);
+                NPCSpawnParams val2 = default;
                 if (怪物节.初始属性玩家系数 > 0)
                 {
                     val2.playerCountForMultiplayerDifficultyOverride = 怪物节.初始属性玩家系数;
@@ -608,10 +608,10 @@ public class TestPlugin : TerrariaPlugin
             }
             if (怪物节.玩家强化系数 != 0f || 怪物节.强化系数 != 0f || 怪物节.开服强化系数 != 0f || 怪物节.杀数强化系数 != 0f)
             {
-                float num6 = (float)activePlayerCount * 怪物节.玩家强化系数;
+                float num6 = activePlayerCount * 怪物节.玩家强化系数;
                 num6 += 怪物节.强化系数;
-                num6 += (float)num2 * 怪物节.开服强化系数;
-                num6 += (float)(int)lNKC * 怪物节.杀数强化系数;
+                num6 += num2 * 怪物节.开服强化系数;
+                num6 += (int)lNKC * 怪物节.杀数强化系数;
                 if (!怪物节.覆盖原强化)
                 {
                     num6 += Main.npc[args.NpcId].strengthMultiplier;
@@ -642,7 +642,7 @@ public class TestPlugin : TerrariaPlugin
         {
             if (_配置.统一怪物血量倍数 != 1.0 && _配置.统一怪物血量倍数 > 0.0)
             {
-                Main.npc[args.NpcId].lifeMax = (int)((double)Main.npc[args.NpcId].lifeMax * _配置.统一怪物血量倍数);
+                Main.npc[args.NpcId].lifeMax = (int)(Main.npc[args.NpcId].lifeMax * _配置.统一怪物血量倍数);
                 if (Main.npc[args.NpcId].lifeMax < 1)
                 {
                     Main.npc[args.NpcId].lifeMax = 1;
@@ -656,7 +656,7 @@ public class TestPlugin : TerrariaPlugin
             }
             if (_配置.统一怪物强化倍数 != 1.0 && _配置.统一怪物强化倍数 > 0.0)
             {
-                float num7 = (float)((double)Main.npc[args.NpcId].strengthMultiplier * _配置.统一怪物强化倍数);
+                float num7 = (float)(Main.npc[args.NpcId].strengthMultiplier * _配置.统一怪物强化倍数);
                 if (num7 > 1000f)
                 {
                     num7 = 1000f;
@@ -705,7 +705,7 @@ public class TestPlugin : TerrariaPlugin
         }
         lock (LNpcs)
         {
-            LNpcs[args.NpcId] = new LNPC(args.NpcId, activePlayerCount, lifeMax, config, maxtime, num2, lNKC);
+            LNpcs[args.NpcId] = new LNPC(args.NpcId, activePlayerCount, lifeMax, config!, maxtime, num2, lNKC);
         }
     }
     #endregion
@@ -744,7 +744,7 @@ public class TestPlugin : TerrariaPlugin
 
     private void NpcStrike(NpcStrikeEventArgs args)
     {
-        if (((HandledEventArgs)(object)args).Handled || args.Damage < 0 || args.Npc.netID == 0 || !args.Npc.active)
+        if (args.Handled || args.Damage < 0 || args.Npc.netID == 0 || !args.Npc.active)
         {
             return;
         }
@@ -777,12 +777,12 @@ public class TestPlugin : TerrariaPlugin
                     {
                         if (item.声音ID >= 0)
                         {
-                            NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(args.npc.Center, (ushort)1, item.声音ID, item.声音规模, item.高音补偿), -1, -1);
+                            NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(args.npc.Center, 1, item.声音ID, item.声音规模, item.高音补偿), -1, -1);
                         }
                     }
                     foreach (string item2 in LNpcs[args.npc.whoAmI].Config.死亡命令)
                     {
-                        Commands.HandleCommand((TSPlayer)(object)TSPlayer.Server, ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.CommandSilentSpecifier + LNpcs[args.npc.whoAmI].ReplaceMarkers(item2));
+                        Commands.HandleCommand(TSPlayer.Server, TShock.Config.Settings.CommandSilentSpecifier + LNpcs[args.npc.whoAmI].ReplaceMarkers(item2));
                     }
                     if (LNpcs[args.npc.whoAmI].Config.死亡喊话 != "")
                     {
@@ -824,7 +824,7 @@ public class TestPlugin : TerrariaPlugin
                                     continue;
                                 }
                             }
-                            else if (LNpcs[(args.npc).whoAmI].Struck >= Math.Abs(item3.被击条件))
+                            else if (LNpcs[args.npc.whoAmI].Struck >= Math.Abs(item3.被击条件))
                             {
                                 continue;
                             }
@@ -833,12 +833,12 @@ public class TestPlugin : TerrariaPlugin
                         {
                             if (item3.人数条件 > 0)
                             {
-                                if (LNpcs[(args.npc).whoAmI].PlayerCount < item3.人数条件)
+                                if (LNpcs[args.npc.whoAmI].PlayerCount < item3.人数条件)
                                 {
                                     continue;
                                 }
                             }
-                            else if (LNpcs[(args.npc).whoAmI].PlayerCount >= Math.Abs(item3.人数条件))
+                            else if (LNpcs[args.npc.whoAmI].PlayerCount >= Math.Abs(item3.人数条件))
                             {
                                 continue;
                             }
@@ -847,12 +847,12 @@ public class TestPlugin : TerrariaPlugin
                         {
                             if (item3.耗时条件 > 0)
                             {
-                                if (LNpcs[(args.npc).whoAmI].TiemN < (float)item3.耗时条件)
+                                if (LNpcs[args.npc.whoAmI].TiemN < item3.耗时条件)
                                 {
                                     continue;
                                 }
                             }
-                            else if (LNpcs[(args.npc).whoAmI].TiemN >= (float)Math.Abs(item3.耗时条件))
+                            else if (LNpcs[args.npc.whoAmI].TiemN >= Math.Abs(item3.耗时条件))
                             {
                                 continue;
                             }
@@ -861,12 +861,12 @@ public class TestPlugin : TerrariaPlugin
                         {
                             if (item3.杀死条件 > 0)
                             {
-                                if (LNpcs[(args.npc).whoAmI].KillPlay < item3.杀死条件)
+                                if (LNpcs[args.npc.whoAmI].KillPlay < item3.杀死条件)
                                 {
                                     continue;
                                 }
                             }
-                            else if (LNpcs[(args.npc).whoAmI].KillPlay >= Math.Abs(item3.杀死条件))
+                            else if (LNpcs[args.npc.whoAmI].KillPlay >= Math.Abs(item3.杀死条件))
                             {
                                 continue;
                             }
@@ -875,17 +875,17 @@ public class TestPlugin : TerrariaPlugin
                         {
                             if (item3.开服条件 > 0)
                             {
-                                if (LNpcs[(args.npc).whoAmI].OSTime < item3.开服条件)
+                                if (LNpcs[args.npc.whoAmI].OSTime < item3.开服条件)
                                 {
                                     continue;
                                 }
                             }
-                            else if (LNpcs[(args.npc).whoAmI].OSTime >= Math.Abs(item3.开服条件))
+                            else if (LNpcs[args.npc.whoAmI].OSTime >= Math.Abs(item3.开服条件))
                             {
                                 continue;
                             }
                         }
-                        if ((item3.昼夜条件 == -1 && Main.dayTime) || (item3.昼夜条件 == 1 && !Main.dayTime) || (item3.血月条件 == -1 && Main.bloodMoon) || (item3.血月条件 == 1 && !Main.bloodMoon) || (item3.日食条件 == -1 && Main.eclipse) || (item3.日食条件 == 1 && !Main.eclipse) || (item3.降雨条件 == -1 && Main.raining) || (item3.降雨条件 == 1 && !Main.raining) || (item3.肉山条件 == -1 && Main.hardMode) || (item3.肉山条件 == 1 && !Main.hardMode) || (item3.巨人条件 == -1 && NPC.downedGolemBoss) || (item3.巨人条件 == 1 && !NPC.downedGolemBoss) || (item3.月总条件 == -1 && NPC.downedMoonlord) || (item3.月总条件 == 1 && !NPC.downedMoonlord) || item3.掉落率子 <= 0 || item3.掉落率母 <= 0 || (item3.掉落率子 < item3.掉落率母 && rd.Next(1, item3.掉落率母 + 1) > item3.掉落率子) || Sundry.NPCKillRequirement(item3.杀怪条件) || !LNpcs[(args.npc).whoAmI].haveMarkers(item3.指示物条件, args.npc) || Sundry.AIRequirement(item3.AI条件, args.npc) || Sundry.MonsterRequirement(item3.怪物条件, args.npc))
+                        if ((item3.昼夜条件 == -1 && Main.dayTime) || (item3.昼夜条件 == 1 && !Main.dayTime) || (item3.血月条件 == -1 && Main.bloodMoon) || (item3.血月条件 == 1 && !Main.bloodMoon) || (item3.日食条件 == -1 && Main.eclipse) || (item3.日食条件 == 1 && !Main.eclipse) || (item3.降雨条件 == -1 && Main.raining) || (item3.降雨条件 == 1 && !Main.raining) || (item3.肉山条件 == -1 && Main.hardMode) || (item3.肉山条件 == 1 && !Main.hardMode) || (item3.巨人条件 == -1 && NPC.downedGolemBoss) || (item3.巨人条件 == 1 && !NPC.downedGolemBoss) || (item3.月总条件 == -1 && NPC.downedMoonlord) || (item3.月总条件 == 1 && !NPC.downedMoonlord) || item3.掉落率子 <= 0 || item3.掉落率母 <= 0 || (item3.掉落率子 < item3.掉落率母 && rd.Next(1, item3.掉落率母 + 1) > item3.掉落率子) || Sundry.NPCKillRequirement(item3.杀怪条件) || !LNpcs[args.npc.whoAmI].haveMarkers(item3.指示物条件, args.npc) || Sundry.AIRequirement(item3.AI条件, args.npc) || Sundry.MonsterRequirement(item3.怪物条件, args.npc))
                         {
                             continue;
                         }
@@ -899,19 +899,19 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 if (item4.独立掉落)
                                 {
-                                    args.npc.DropItemInstanced((args.npc).Center, (args.npc).Size, item4.物品ID, item4.物品数量, true);
+                                    args.npc.DropItemInstanced(args.npc.Center, args.npc.Size, item4.物品ID, item4.物品数量, true);
                                     continue;
                                 }
-                                int num2 = Item.NewItem((IEntitySource)new EntitySource_DebugCommand(), (args.npc).Center, (args.npc).Size, item4.物品ID, item4.物品数量, false, item4.物品前缀, false, false);
+                                int num2 = Item.NewItem(new EntitySource_DebugCommand(), args.npc.Center, args.npc.Size, item4.物品ID, item4.物品数量, false, item4.物品前缀, false, false);
                                 NetMessage.TrySendData(21, -1, -1, null, num2, 0f, 0f, 0f, 0, 0, 0);
                             }
                             else if (item4.独立掉落)
                             {
-                                args.npc.DropItemInstanced((args.npc).Center, (args.npc).Size, item4.物品ID, item4.物品数量, true);
+                                args.npc.DropItemInstanced(args.npc.Center, args.npc.Size, item4.物品ID, item4.物品数量, true);
                             }
                             else
                             {
-                                int num3 = Item.NewItem((IEntitySource)new EntitySource_DebugCommand(), (args.npc).Center, (args.npc).Size, item4.物品ID, item4.物品数量, false, 0, false, false);
+                                int num3 = Item.NewItem(new EntitySource_DebugCommand(), args.npc.Center, args.npc.Size, item4.物品ID, item4.物品数量, false, 0, false, false);
                                 NetMessage.TrySendData(21, -1, -1, null, num3, 0f, 0f, 0f, 0, 0, 0);
                             }
                         }
@@ -925,10 +925,10 @@ public class TestPlugin : TerrariaPlugin
                         }
                         num--;
                     }
-                    Sundry.SetMonsterMarkers(LNpcs[(args.npc).whoAmI].Config.死亡怪物指示物修改, args.npc, ref rd);
-                    Sundry.HurtMonster(LNpcs[(args.npc).whoAmI].Config.死亡伤怪, args.npc);
-                    Sundry.LaunchProjectile(LNpcs[(args.npc).whoAmI].Config.死亡弹幕, args.npc, LNpcs[(args.npc).whoAmI]);
-                    foreach (KeyValuePair<int, int> item5 in LNpcs[(args.npc).whoAmI].Config.遗言怪物)
+                    Sundry.SetMonsterMarkers(LNpcs[args.npc.whoAmI].Config.死亡怪物指示物修改, args.npc, ref rd);
+                    Sundry.HurtMonster(LNpcs[args.npc.whoAmI].Config.死亡伤怪, args.npc);
+                    Sundry.LaunchProjectile(LNpcs[args.npc.whoAmI].Config.死亡弹幕, args.npc, LNpcs[args.npc.whoAmI]);
+                    foreach (KeyValuePair<int, int> item5 in LNpcs[args.npc.whoAmI].Config.遗言怪物)
                     {
                         if (item5.Value >= 1 && item5.Key != 0)
                         {
@@ -936,16 +936,16 @@ public class TestPlugin : TerrariaPlugin
                             NPC nPCById = TShock.Utils.GetNPCById(item5.Key);
                             if (nPCById != null && nPCById.type != 113 && nPCById.type != 0 && nPCById.type < NPCID.Count)
                             {
-                                TSPlayer.Server.SpawnNPC(nPCById.type, nPCById.FullName, num4, Terraria.Utils.ToTileCoordinates((args.npc).Center).X, Terraria.Utils.ToTileCoordinates((args.npc).Center).Y, 3, 3);
+                                TSPlayer.Server.SpawnNPC(nPCById.type, nPCById.FullName, num4, Terraria.Utils.ToTileCoordinates(args.npc.Center).X, Terraria.Utils.ToTileCoordinates(args.npc.Center).Y, 3, 3);
                             }
                         }
                     }
-                    if (LNpcs[(args.npc).whoAmI].Config.死状范围 > 0)
+                    if (LNpcs[args.npc.whoAmI].Config.死状范围 > 0)
                     {
                         TSPlayer[] players = TShock.Players;
                         foreach (TSPlayer val in players)
                         {
-                            if (val == null || val.Dead || val.TPlayer.statLife < 1 || !Sundry.WithinRange((val.TPlayer).Center, (args.npc).Center, LNpcs[(args.npc).whoAmI].Config.死状范围 * 16))
+                            if (val == null || val.Dead || val.TPlayer.statLife < 1 || !Sundry.WithinRange((val.TPlayer).Center, args.npc.Center, LNpcs[args.npc.whoAmI].Config.死状范围 * 16))
                             {
                                 continue;
                             }
@@ -959,7 +959,7 @@ public class TestPlugin : TerrariaPlugin
                         }
                     }
                 }
-                LNpcs[args.npc.whoAmI] = null;
+                LNpcs[args.npc.whoAmI] = null!;
             }
         }
         addLNKC(args.npc.netID);
@@ -985,20 +985,18 @@ public class TestPlugin : TerrariaPlugin
             NPC[] npc = Main.npc;
             foreach (NPC val in npc)
             {
-                if (val != null && (val).active)
+                if (val != null && val.active)
                 {
                     num++;
                 }
             }
             bool flag = false;
-            int num2 = -1;
-            int num3 = -1;
             Dictionary<int, int> dictionary = new Dictionary<int, int>();
             Dictionary<int, int> dictionary2 = dictionary;
             NPC[] npc2 = Main.npc;
             foreach (NPC val2 in npc2)
             {
-                if (activePlayerCount <= 0 || val2 == null || !(val2).active)
+                if (activePlayerCount <= 0 || val2 == null || !val2.active)
                 {
                     continue;
                 }
@@ -1008,10 +1006,10 @@ public class TestPlugin : TerrariaPlugin
                 }
                 lock (LNpcs)
                 {
-                    LNPC lNPC = LNpcs[(val2).whoAmI];
+                    LNPC lNPC = LNpcs[val2.whoAmI];
                     if (lNPC != null && lNPC.Config != null)
                     {
-                        dictionary2.Add((val2).whoAmI, lNPC.Config.事件权重);
+                        dictionary2.Add(val2.whoAmI, lNPC.Config.事件权重);
                     }
                 }
             }
@@ -1027,7 +1025,7 @@ public class TestPlugin : TerrariaPlugin
                     continue;
                 }
                 NPC val3 = Main.npc[item.Key];
-                if (val3 == null || !(val3).active)
+                if (val3 == null || !val3.active)
                 {
                     continue;
                 }
@@ -1038,7 +1036,7 @@ public class TestPlugin : TerrariaPlugin
                 }
                 lock (LNpcs)
                 {
-                    LNPC lNPC2 = LNpcs[(val3).whoAmI];
+                    LNPC lNPC2 = LNpcs[val3.whoAmI];
                     if (lNPC2 == null || lNPC2.Config == null)
                     {
                         continue;
@@ -1048,85 +1046,85 @@ public class TestPlugin : TerrariaPlugin
                         lNPC2.PlayerCount = activePlayerCount;
                         if (_配置.启动动态时间限制 && (lNPC2.Config.人秒系数 != 0 || lNPC2.Config.出没秒数 != 0 || lNPC2.Config.开服系秒 != 0 || lNPC2.Config.杀数系秒 != 0))
                         {
-                            int num4 = lNPC2.PlayerCount * lNPC2.Config.人秒系数;
-                            num4 += lNPC2.Config.出没秒数;
-                            int num5 = lNPC2.PlayerCount * lNPC2.Config.人秒系数;
-                            num5 += lNPC2.Config.出没秒数;
-                            num5 += lNPC2.OSTime * lNPC2.Config.开服系秒;
-                            num5 += (int)lNPC2.LKC * lNPC2.Config.杀数系秒;
-                            if (num5 < 1)
+                            int num2 = lNPC2.PlayerCount * lNPC2.Config.人秒系数;
+                            num2 += lNPC2.Config.出没秒数;
+                            int num3 = lNPC2.PlayerCount * lNPC2.Config.人秒系数;
+                            num3 += lNPC2.Config.出没秒数;
+                            num3 += lNPC2.OSTime * lNPC2.Config.开服系秒;
+                            num3 += (int)lNPC2.LKC * lNPC2.Config.杀数系秒;
+                            if (num3 < 1)
                             {
-                                num5 = -1;
+                                num3 = -1;
                             }
-                            if (lNPC2.MaxTime != num5)
+                            if (lNPC2.MaxTime != num3)
                             {
-                                lNPC2.MaxTime = num5;
-                                int value = num4 - num5;
-                                if (num4 > num5)
+                                lNPC2.MaxTime = num3;
+                                int value = num2 - num3;
+                                if (num2 > num3)
                                 {
                                     if (!lNPC2.Config.不宣读信息)
                                     {
-                                        TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间减少 " + value + " 秒剩" + (int)((float)num5 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
+                                        TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间减少 " + value + " 秒剩" + (int)((float)num3 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
                                     }
                                 }
-                                else if (num4 < num5 && !lNPC2.Config.不宣读信息)
+                                else if (num2 < num3 && !lNPC2.Config.不宣读信息)
                                 {
-                                    TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间增加 " + Math.Abs(value) + "秒剩" + (int)((float)num5 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
+                                    TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间增加 " + Math.Abs(value) + "秒剩" + (int)((float)num3 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
                                 }
                             }
                         }
                         if (_配置.启动动态血量上限 && (lNPC2.Config.玩家系数 != 0 || lNPC2.Config.怪物血量 != 0 || lNPC2.Config.开服系数 != 0 || lNPC2.Config.杀数系数 != 0))
                         {
-                            int num6 = activePlayerCount * lNPC2.Config.玩家系数;
-                            num6 += lNPC2.Config.怪物血量;
-                            num6 += lNPC2.OSTime * lNPC2.Config.开服系数;
-                            num6 += (int)lNPC2.LKC * lNPC2.Config.杀数系数;
+                            int num4 = activePlayerCount * lNPC2.Config.玩家系数;
+                            num4 += lNPC2.Config.怪物血量;
+                            num4 += lNPC2.OSTime * lNPC2.Config.开服系数;
+                            num4 += (int)lNPC2.LKC * lNPC2.Config.杀数系数;
                             if (!lNPC2.Config.覆盖原血量)
                             {
-                                num6 += val3.lifeMax;
+                                num4 += val3.lifeMax;
                             }
-                            if (num6 < 1)
+                            if (num4 < 1)
                             {
-                                num6 = 1;
+                                num4 = 1;
                             }
-                            if (lNPC2.MaxLife < num6 || !lNPC2.Config.不低于正常)
+                            if (lNPC2.MaxLife < num4 || !lNPC2.Config.不低于正常)
                             {
                                 int lifeMax = val3.lifeMax;
-                                int num7 = num6;
+                                int num5 = num4;
                                 if (!_配置.统一设置例外怪物.Contains(val3.netID))
                                 {
                                     if (_配置.统一怪物血量倍数 != 1.0 && _配置.统一怪物血量倍数 > 0.0)
                                     {
-                                        num7 = (int)((double)num7 * _配置.统一怪物血量倍数);
-                                        if (num7 < 1)
+                                        num5 = (int)(num5 * _配置.统一怪物血量倍数);
+                                        if (num5 < 1)
                                         {
-                                            num7 = 1;
+                                            num5 = 1;
                                         }
                                     }
-                                    if (_配置.统一血量不低于正常 && num7 < lNPC2.MaxLife)
+                                    if (_配置.统一血量不低于正常 && num5 < lNPC2.MaxLife)
                                     {
-                                        num7 = lNPC2.MaxLife;
+                                        num5 = lNPC2.MaxLife;
                                     }
                                 }
-                                if (lifeMax != num7)
+                                if (lifeMax != num5)
                                 {
                                     int life = val3.life;
-                                    int num8 = (int)((double)life * ((double)num7 / (double)lifeMax));
-                                    if (num8 < 1)
+                                    int num6 = (int)(life * (num5 / (double)lifeMax));
+                                    if (num6 < 1)
                                     {
-                                        num8 = 1;
+                                        num6 = 1;
                                     }
-                                    val3.lifeMax = num7;
-                                    val3.life = num8;
-                                    int value2 = life - num8;
-                                    if (life > num8)
+                                    val3.lifeMax = num5;
+                                    val3.life = num6;
+                                    int value2 = life - num6;
+                                    if (life > num6)
                                     {
                                         if (!lNPC2.Config.不宣读信息)
                                         {
                                             TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响怪物血量减少 " + value2 + " 剩" + val3.life + ".", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
                                         }
                                     }
-                                    else if (life < num8 && !lNPC2.Config.不宣读信息)
+                                    else if (life < num6 && !lNPC2.Config.不宣读信息)
                                     {
                                         TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响怪物血量增加 " + Math.Abs(value2) + "剩" + val3.life + ".", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
                                     }
@@ -1155,12 +1153,12 @@ public class TestPlugin : TerrariaPlugin
                         {
                             if (item2.声音ID >= 0)
                             {
-                                NetMessage.PlayNetSound(new NetMessage.NetSoundInfo((val3).Center, (ushort)1, item2.声音ID, item2.声音规模, item2.高音补偿), -1, -1);
+                                NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(val3.Center, 1, item2.声音ID, item2.声音规模, item2.高音补偿), -1, -1);
                             }
                         }
                         foreach (string item3 in lNPC2.Config.出场命令)
                         {
-                            Commands.HandleCommand((TSPlayer)(object)TSPlayer.Server, ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.CommandSilentSpecifier + item3);
+                            Commands.HandleCommand(TSPlayer.Server, TShock.Config.Settings.CommandSilentSpecifier + item3);
                         }
                         if (lNPC2.Config.出场喊话 != "")
                         {
@@ -1173,11 +1171,11 @@ public class TestPlugin : TerrariaPlugin
                         {
                             if (item4.Value >= 1 && item4.Key != 0)
                             {
-                                int num9 = Math.Min(item4.Value, 200);
+                                int num7 = Math.Min(item4.Value, 200);
                                 NPC nPCById = TShock.Utils.GetNPCById(item4.Key);
                                 if (nPCById != null && nPCById.type != 113 && nPCById.type != 0 && nPCById.type < NPCID.Count)
                                 {
-                                    TSPlayer.Server.SpawnNPC(nPCById.type, nPCById.FullName, num9, Terraria.Utils.ToTileCoordinates((val3).Center).X, Terraria.Utils.ToTileCoordinates((val3).Center).Y, 30, 15);
+                                    TSPlayer.Server.SpawnNPC(nPCById.type, nPCById.FullName, num7, Terraria.Utils.ToTileCoordinates(val3.Center).X, Terraria.Utils.ToTileCoordinates(val3.Center).Y, 30, 15);
                                 }
                             }
                         }
@@ -1191,7 +1189,7 @@ public class TestPlugin : TerrariaPlugin
                         goto IL_0e35;
                     }
                     int maxTime = lNPC2.MaxTime;
-                    if ((double)lNPC2.TiemN == Math.Round((double)maxTime * 0.5) || (double)lNPC2.TiemN == Math.Round((double)maxTime * 0.7) || (double)lNPC2.TiemN == Math.Round((double)maxTime * 0.9))
+                    if ((double)lNPC2.TiemN == Math.Round(maxTime * 0.5) || (double)lNPC2.TiemN == Math.Round(maxTime * 0.7) || (double)lNPC2.TiemN == Math.Round(maxTime * 0.9))
                     {
                         maxTime -= (int)lNPC2.TiemN;
                         if (!lNPC2.Config.不宣读信息)
@@ -1208,30 +1206,30 @@ public class TestPlugin : TerrariaPlugin
                     {
                         TShock.Utils.Broadcast("攻略失败: " + val3.FullName + " 已撤离.", Convert.ToByte(190), Convert.ToByte(150), Convert.ToByte(150));
                     }
-                    int whoAmI = (val3).whoAmI;
+                    int whoAmI = val3.whoAmI;
                     Main.npc[whoAmI] = new NPC();
                     NetMessage.SendData(23, -1, -1, NetworkText.Empty, whoAmI, 0f, 0f, 0f, 0, 0, 0);
                     goto end_IL_022f;
                 IL_0e35:
+                    int num8 = 0;
+                    int num9 = 0;
                     int num10 = 0;
                     int num11 = 0;
                     int num12 = 0;
                     int num13 = 0;
                     int num14 = 0;
-                    int num15 = 0;
-                    int num16 = 0;
-                    float num17 = 0f;
-                    float num18 = 0f;
+                    float num15 = 0f;
+                    float num16 = 0f;
                     bool flag2 = false;
+                    int num17 = 0;
+                    int num18 = 0;
                     int num19 = 0;
-                    int num20 = 0;
-                    int num21 = 0;
                     long lNKC = getLNKC(val3.netID);
                     bool flag3 = false;
-                    int num22 = 0;
+                    int num20 = 0;
                     if (val3.lifeMax > 0)
                     {
-                        num22 = val3.life * 100 / val3.lifeMax;
+                        num20 = val3.life * 100 / val3.lifeMax;
                     }
                     if (lNPC2.TiemN != lNPC2.LTime)
                     {
@@ -1246,20 +1244,20 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 continue;
                             }
-                            int num23 = (int)(item5.延迟秒数 * 100f);
-                            int num24 = (int)(item5.消耗时间 * 100f);
-                            if (num24 <= 0)
+                            int num21 = (int)(item5.延迟秒数 * 100f);
+                            int num22 = (int)(item5.消耗时间 * 100f);
+                            if (num22 <= 0)
                             {
                                 continue;
                             }
                             if (item5.循环执行)
                             {
-                                if ((lNPC2.Time - num23) % num24 != 0)
+                                if ((lNPC2.Time - num21) % num22 != 0)
                                 {
                                     continue;
                                 }
                             }
-                            else if (num24 != lNPC2.Time - num23)
+                            else if (num22 != lNPC2.Time - num21)
                             {
                                 continue;
                             }
@@ -1299,12 +1297,12 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 if (item5.血比条件 > 0)
                                 {
-                                    if (num22 < item5.血比条件)
+                                    if (num20 < item5.血比条件)
                                     {
                                         continue;
                                     }
                                 }
-                                else if (num22 >= Math.Abs(item5.血比条件))
+                                else if (num20 >= Math.Abs(item5.血比条件))
                                 {
                                     continue;
                                 }
@@ -1405,12 +1403,12 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 if (item5.X轴条件 > 0)
                                 {
-                                    if ((val3).Center.X < (float)(item5.X轴条件 << 4))
+                                    if (val3.Center.X < (item5.X轴条件 << 4))
                                     {
                                         continue;
                                     }
                                 }
-                                else if ((val3).Center.X >= (float)Math.Abs(item5.X轴条件 << 4))
+                                else if (val3.Center.X >= Math.Abs(item5.X轴条件 << 4))
                                 {
                                     continue;
                                 }
@@ -1419,17 +1417,17 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 if (item5.Y轴条件 > 0)
                                 {
-                                    if ((val3).Center.Y < (float)(item5.Y轴条件 << 4))
+                                    if (val3.Center.Y < item5.Y轴条件 << 4)
                                     {
                                         continue;
                                     }
                                 }
-                                else if ((val3).Center.Y >= (float)Math.Abs(item5.Y轴条件 << 4))
+                                else if (val3.Center.Y >= Math.Abs(item5.Y轴条件 << 4))
                                 {
                                     continue;
                                 }
                             }
-                            if ((item5.面向条件 == 1 && ((val3).direction != 1 || val3.directionY != 0)) || (item5.面向条件 == 2 && ((val3).direction != 1 || val3.directionY != 1)) || (item5.面向条件 == 3 && ((val3).direction != 0 || val3.directionY != 1)) || (item5.面向条件 == 4 && ((val3).direction != -1 || val3.directionY != 1)) || (item5.面向条件 == 5 && ((val3).direction != -1 || val3.directionY != 0)) || (item5.面向条件 == 6 && ((val3).direction != -1 || val3.directionY != -1)) || (item5.面向条件 == 7 && ((val3).direction != 0 || val3.directionY != -1)) || (item5.面向条件 == 8 && ((val3).direction != 1 || val3.directionY != -1)) || (item5.面向条件 == 9 && (val3).direction != 1) || (item5.面向条件 == 10 && val3.directionY != 1) || (item5.面向条件 == 11 && (val3).direction != -1) || (item5.面向条件 == 12 && val3.directionY != -1) || item5.触发率子 <= 0 || item5.触发率母 <= 0 || (item5.触发率子 < item5.触发率母 && rd.Next(1, item5.触发率母 + 1) > item5.触发率子) || Sundry.NPCKillRequirement(item5.杀怪条件) || !lNPC2.haveMarkers(item5.指示物条件, val3) || Sundry.AIRequirement(item5.AI条件, val3) || Sundry.MonsterRequirement(item5.怪物条件, val3) || Sundry.PlayerRequirement(item5.玩家条件, val3))
+                            if ((item5.面向条件 == 1 && (val3.direction != 1 || val3.directionY != 0)) || (item5.面向条件 == 2 && (val3.direction != 1 || val3.directionY != 1)) || (item5.面向条件 == 3 && (val3.direction != 0 || val3.directionY != 1)) || (item5.面向条件 == 4 && (val3.direction != -1 || val3.directionY != 1)) || (item5.面向条件 == 5 && (val3.direction != -1 || val3.directionY != 0)) || (item5.面向条件 == 6 && (val3.direction != -1 || val3.directionY != -1)) || (item5.面向条件 == 7 && (val3.direction != 0 || val3.directionY != -1)) || (item5.面向条件 == 8 && (val3.direction != 1 || val3.directionY != -1)) || (item5.面向条件 == 9 && val3.direction != 1) || (item5.面向条件 == 10 && val3.directionY != 1) || (item5.面向条件 == 11 && val3.direction != -1) || (item5.面向条件 == 12 && val3.directionY != -1) || item5.触发率子 <= 0 || item5.触发率母 <= 0 || (item5.触发率子 < item5.触发率母 && rd.Next(1, item5.触发率母 + 1) > item5.触发率子) || Sundry.NPCKillRequirement(item5.杀怪条件) || !lNPC2.haveMarkers(item5.指示物条件, val3) || Sundry.AIRequirement(item5.AI条件, val3) || Sundry.MonsterRequirement(item5.怪物条件, val3) || Sundry.PlayerRequirement(item5.玩家条件, val3))
                             {
                                 continue;
                             }
@@ -1494,7 +1492,7 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 for (int l = 0; l < val3.ai.Count(); l++)
                                 {
-                                    if (item5.指示物注入AI赋值.ContainsKey(l) && item5.指示物注入AI赋值.TryGetValue(l, out string value4))
+                                    if (item5.指示物注入AI赋值.ContainsKey(l) && item5.指示物注入AI赋值.TryGetValue(l, out var value4))
                                     {
                                         string[] array = value4.Split('*');
                                         float result = 1f;
@@ -1502,7 +1500,7 @@ public class TestPlugin : TerrariaPlugin
                                         {
                                             float.TryParse(array[1], out result);
                                         }
-                                        val3.ai[l] = (float)lNPC2.getMarkers(value4) * result;
+                                        val3.ai[l] = lNPC2.getMarkers(value4) * result;
                                         val3.netUpdate = true;
                                     }
                                 }
@@ -1511,12 +1509,12 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 if (item7.声音ID >= 0)
                                 {
-                                    NetMessage.PlayNetSound(new NetMessage.NetSoundInfo((val3).Center, (ushort)1, item7.声音ID, item7.声音规模, item7.高音补偿), -1, -1);
+                                    NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(val3.Center, 1, item7.声音ID, item7.声音规模, item7.高音补偿), -1, -1);
                                 }
                             }
                             foreach (string item8 in item5.释放命令)
                             {
-                                Commands.HandleCommand((TSPlayer)(object)TSPlayer.Server, ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.CommandSilentSpecifier + lNPC2.ReplaceMarkers(item8));
+                                Commands.HandleCommand(TSPlayer.Server, TShock.Config.Settings.CommandSilentSpecifier + lNPC2.ReplaceMarkers(item8));
                             }
                             if (item5.喊话 != "")
                             {
@@ -1545,11 +1543,11 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 if (item9.Value >= 1 && item9.Key != 0)
                                 {
-                                    int num25 = Math.Min(item9.Value, 200);
+                                    int num23 = Math.Min(item9.Value, 200);
                                     NPC nPCById2 = TShock.Utils.GetNPCById(item9.Key);
                                     if (nPCById2 != null && nPCById2.type != 113 && nPCById2.type != 0 && nPCById2.type < NPCID.Count)
                                     {
-                                        TSPlayer.Server.SpawnNPC(nPCById2.type, nPCById2.FullName, num25, Terraria.Utils.ToTileCoordinates((val3).Center).X, Terraria.Utils.ToTileCoordinates((val3).Center).Y, 5, 5);
+                                        TSPlayer.Server.SpawnNPC(nPCById2.type, nPCById2.FullName, num23, Terraria.Utils.ToTileCoordinates(val3.Center).X, Terraria.Utils.ToTileCoordinates(val3.Center).Y, 5, 5);
                                     }
                                 }
                             }
@@ -1579,9 +1577,9 @@ public class TestPlugin : TerrariaPlugin
                                 {
                                     item5.比例回血 = 100;
                                 }
-                                int num26 = val3.lifeMax * item5.比例回血 / 100;
+                                int num24 = val3.lifeMax * item5.比例回血 / 100;
                                 NPC val4 = val3;
-                                val4.life += num26;
+                                val4.life += num24;
                                 if (val3.life > val3.lifeMax)
                                 {
                                     val3.life = val3.lifeMax;
@@ -1590,7 +1588,7 @@ public class TestPlugin : TerrariaPlugin
                                 {
                                     val3.life = 1;
                                 }
-                                val3.HealEffect(num26, true);
+                                val3.HealEffect(num24, true);
                                 val3.netUpdate = true;
                             }
                             if (item5.怪物变形 >= 0 && (item5.怪物变形 != 113 || item5.怪物变形 != 114))
@@ -1605,31 +1603,31 @@ public class TestPlugin : TerrariaPlugin
                             }
                             if (item5.击退范围 > 0 && item5.击退力度 != 0)
                             {
-                                num10 = item5.击退范围;
-                                num11 = item5.击退力度;
+                                num8 = item5.击退范围;
+                                num9 = item5.击退力度;
                             }
                             if (item5.杀伤范围 > 0 && item5.杀伤伤害 != 0)
                             {
-                                num12 = item5.杀伤范围;
-                                num13 = item5.杀伤伤害;
+                                num10 = item5.杀伤范围;
+                                num11 = item5.杀伤伤害;
                             }
                             if (item5.拉取范围 > 0)
                             {
-                                num14 = item5.拉取起始;
-                                num15 = item5.拉取范围;
-                                num16 = item5.拉取止点;
-                                num17 = item5.拉取点X轴偏移 + (float)lNPC2.getMarkers(item5.指示物数量注入拉取点X轴偏移名) * item5.指示物数量注入拉取点X轴偏移系数;
-                                num18 = item5.拉取点Y轴偏移 + (float)lNPC2.getMarkers(item5.指示物数量注入拉取点Y轴偏移名) * item5.指示物数量注入拉取点Y轴偏移系数;
+                                num12 = item5.拉取起始;
+                                num13 = item5.拉取范围;
+                                num14 = item5.拉取止点;
+                                num15 = item5.拉取点X轴偏移 + lNPC2.getMarkers(item5.指示物数量注入拉取点X轴偏移名) * item5.指示物数量注入拉取点X轴偏移系数;
+                                num16 = item5.拉取点Y轴偏移 + lNPC2.getMarkers(item5.指示物数量注入拉取点Y轴偏移名) * item5.指示物数量注入拉取点Y轴偏移系数;
                                 flag2 = item5.初始拉取点坐标为零;
                             }
                             if (item5.清弹结束范围 > 0)
                             {
-                                num19 = item5.清弹起始范围;
-                                num20 = item5.清弹结束范围;
+                                num17 = item5.清弹起始范围;
+                                num18 = item5.清弹结束范围;
                             }
                             if (item5.反射范围 > 0)
                             {
-                                num21 = item5.反射范围;
+                                num19 = item5.反射范围;
                             }
                             if (item5.直接撤退)
                             {
@@ -1643,9 +1641,9 @@ public class TestPlugin : TerrariaPlugin
                         }
                         lNPC2.LTime = lNPC2.TiemN;
                     }
-                    if (lNPC2.LifeP != num22)
+                    if (lNPC2.LifeP != num20)
                     {
-                        lNPC2.LifeP = num22;
+                        lNPC2.LifeP = num20;
                         if (lNPC2.LifeP != lNPC2.LLifeP)
                         {
                             int 血事件限 = lNPC2.Config.血事件限;
@@ -1691,12 +1689,12 @@ public class TestPlugin : TerrariaPlugin
                                 {
                                     if (item10.耗时条件 > 0)
                                     {
-                                        if (lNPC2.TiemN < (float)item10.耗时条件)
+                                        if (lNPC2.TiemN < item10.耗时条件)
                                         {
                                             continue;
                                         }
                                     }
-                                    else if (lNPC2.TiemN >= (float)Math.Abs(item10.耗时条件))
+                                    else if (lNPC2.TiemN >= Math.Abs(item10.耗时条件))
                                     {
                                         continue;
                                     }
@@ -1741,17 +1739,17 @@ public class TestPlugin : TerrariaPlugin
                                 {
                                     if (item10.Y轴条件 > 0)
                                     {
-                                        if ((val3).Center.Y < (float)(item10.Y轴条件 << 4))
+                                        if (val3.Center.Y < item10.Y轴条件 << 4)
                                         {
                                             continue;
                                         }
                                     }
-                                    else if ((val3).Center.Y >= (float)Math.Abs(item10.Y轴条件 << 4))
+                                    else if (val3.Center.Y >= Math.Abs(item10.Y轴条件 << 4))
                                     {
                                         continue;
                                     }
                                 }
-                                if ((item10.面向条件 == 1 && ((val3).direction != 1 || val3.directionY != 0)) || (item10.面向条件 == 2 && ((val3).direction != 1 || val3.directionY != 1)) || (item10.面向条件 == 3 && ((val3).direction != 0 || val3.directionY != 1)) || (item10.面向条件 == 4 && ((val3).direction != -1 || val3.directionY != 1)) || (item10.面向条件 == 5 && ((val3).direction != -1 || val3.directionY != 0)) || (item10.面向条件 == 6 && ((val3).direction != -1 || val3.directionY != -1)) || (item10.面向条件 == 7 && ((val3).direction != 0 || val3.directionY != -1)) || (item10.面向条件 == 8 && ((val3).direction != 1 || val3.directionY != -1)) || (item10.面向条件 == 9 && (val3).direction != 1) || (item10.面向条件 == 10 && val3.directionY != 1) || (item10.面向条件 == 11 && (val3).direction != -1) || (item10.面向条件 == 12 && val3.directionY != -1) || item10.触发率子 <= 0 || item10.触发率母 <= 0 || (item10.触发率子 < item10.触发率母 && rd.Next(1, item10.触发率母 + 1) > item10.触发率子) || Sundry.MonsterRequirement(item10.怪物条件, val3) || Sundry.PlayerRequirement(item10.玩家条件, val3))
+                                if ((item10.面向条件 == 1 && (val3.direction != 1 || val3.directionY != 0)) || (item10.面向条件 == 2 && (val3.direction != 1 || val3.directionY != 1)) || (item10.面向条件 == 3 && (val3.direction != 0 || val3.directionY != 1)) || (item10.面向条件 == 4 && (val3.direction != -1 || val3.directionY != 1)) || (item10.面向条件 == 5 && (val3.direction != -1 || val3.directionY != 0)) || (item10.面向条件 == 6 && (val3.direction != -1 || val3.directionY != -1)) || (item10.面向条件 == 7 && (val3.direction != 0 || val3.directionY != -1)) || (item10.面向条件 == 8 && (val3.direction != 1 || val3.directionY != -1)) || (item10.面向条件 == 9 && val3.direction != 1) || (item10.面向条件 == 10 && val3.directionY != 1) || (item10.面向条件 == 11 && val3.direction != -1) || (item10.面向条件 == 12 && val3.directionY != -1) || item10.触发率子 <= 0 || item10.触发率母 <= 0 || (item10.触发率子 < item10.触发率母 && rd.Next(1, item10.触发率母 + 1) > item10.触发率子) || Sundry.MonsterRequirement(item10.怪物条件, val3) || Sundry.PlayerRequirement(item10.玩家条件, val3))
                                 {
                                     continue;
                                 }
@@ -1810,11 +1808,11 @@ public class TestPlugin : TerrariaPlugin
                                 {
                                     if (item11.Value >= 1 && item11.Key != 0)
                                     {
-                                        int num27 = Math.Min(item11.Value, 200);
+                                        int num25 = Math.Min(item11.Value, 200);
                                         NPC nPCById3 = TShock.Utils.GetNPCById(item11.Key);
                                         if (nPCById3 != null && nPCById3.type != 113 && nPCById3.type != 0 && nPCById3.type < NPCID.Count)
                                         {
-                                            TSPlayer.Server.SpawnNPC(nPCById3.type, nPCById3.FullName, num27, Terraria.Utils.ToTileCoordinates((val3).Center).X, Terraria.Utils.ToTileCoordinates((val3).Center).Y, 15, 15);
+                                            TSPlayer.Server.SpawnNPC(nPCById3.type, nPCById3.FullName, num25, Terraria.Utils.ToTileCoordinates(val3.Center).X, Terraria.Utils.ToTileCoordinates(val3.Center).Y, 15, 15);
                                         }
                                     }
                                 }
@@ -1845,7 +1843,7 @@ public class TestPlugin : TerrariaPlugin
                                         item10.比例回血 = 100;
                                     }
                                     NPC val4 = val3;
-                                    val4.life += (int)((double)val3.lifeMax * ((double)item10.比例回血 / 100.0));
+                                    val4.life += (int)(val3.lifeMax * (item10.比例回血 / 100.0));
                                     if (val3.life > val3.lifeMax)
                                     {
                                         val3.life = val3.lifeMax;
@@ -1864,21 +1862,21 @@ public class TestPlugin : TerrariaPlugin
                                 }
                                 if (item10.击退范围 > 0 && item10.击退力度 != 0)
                                 {
-                                    num10 = item10.击退范围;
-                                    num11 = item10.击退力度;
+                                    num8 = item10.击退范围;
+                                    num9 = item10.击退力度;
                                 }
                                 if (item10.杀伤范围 > 0 && item10.杀伤伤害 != 0)
                                 {
-                                    num12 = item10.杀伤范围;
-                                    num13 = item10.杀伤伤害;
+                                    num10 = item10.杀伤范围;
+                                    num11 = item10.杀伤伤害;
                                 }
                                 if (item10.拉取范围 > 0)
                                 {
-                                    num14 = item10.拉取起始;
-                                    num15 = item10.拉取范围;
-                                    num16 = item10.拉取止点;
-                                    num17 = item10.拉取点X轴偏移;
-                                    num18 = item10.拉取点Y轴偏移;
+                                    num12 = item10.拉取起始;
+                                    num13 = item10.拉取范围;
+                                    num14 = item10.拉取止点;
+                                    num15 = item10.拉取点X轴偏移;
+                                    num16 = item10.拉取点Y轴偏移;
                                     flag2 = false;
                                 }
                                 if (item10.直接撤退)
@@ -1894,42 +1892,42 @@ public class TestPlugin : TerrariaPlugin
                             lNPC2.LLifeP = lNPC2.LifeP;
                         }
                     }
-                    if (num21 > 0)
+                    if (num19 > 0)
                     {
                         for (int m = 0; m < 1000; m++)
                         {
-                            if ((Main.projectile[m]).active && Main.projectile[m].CanBeReflected() && (val3).WithinRange((Main.projectile[m]).Center, (float)(num21 << 4)))
+                            if (Main.projectile[m].active && Main.projectile[m].CanBeReflected() && val3.WithinRange(Main.projectile[m].Center, num19 << 4))
                             {
                                 val3.ReflectProjectile(Main.projectile[m]);
-                                NetMessage.SendData(27, -1, -1, (NetworkText)null, m, 0f, 0f, 0f, 0, 0, 0);
+                                NetMessage.SendData(27, -1, -1, null, m, 0f, 0f, 0f, 0, 0, 0);
                             }
                         }
                     }
-                    if (num20 > 0)
+                    if (num18 > 0)
                     {
                         for (int n = 0; n < 1000; n++)
                         {
-                            if ((Main.projectile[n]).active && (val3).WithinRange((Main.projectile[n]).Center, (float)(num20 << 4)) && (num19 <= 0 || (val3).WithinRange((Main.projectile[n]).Center, (float)(num19 << 4))))
+                            if (Main.projectile[n].active && val3.WithinRange(Main.projectile[n].Center, num18 << 4) && (num17 <= 0 || val3.WithinRange(Main.projectile[n].Center, num17 << 4)))
                             {
-                                (Main.projectile[n]).active = false;
+                                Main.projectile[n].active = false;
                                 Main.projectile[n].type = 0;
                                 TSPlayer.All.SendData((PacketTypes)27, "", n, 0f, 0f, 0f, 0);
                             }
                         }
                     }
-                    if (num16 > num14)
+                    if (num14 > num12)
                     {
-                        num16 = num14;
+                        num14 = num12;
                     }
-                    num16 *= 16;
-                    float num28 = num17;
-                    float num29 = num18;
+                    num14 *= 16;
+                    float num26 = num15;
+                    float num27 = num16;
                     if (!flag2)
                     {
-                        num28 += (val3).Center.X;
-                        num29 += (val3).Center.Y;
+                        num26 += val3.Center.X;
+                        num27 += val3.Center.Y;
                     }
-                    if (lNPC2.BuffR > 0 || (num10 > 0 && num11 != 0) || (num12 > 0 && num13 != 0) || num15 > 0)
+                    if (lNPC2.BuffR > 0 || (num8 > 0 && num9 != 0) || (num10 > 0 && num11 != 0) || num13 > 0)
                     {
                         TSPlayer[] players = TShock.Players;
                         foreach (TSPlayer val5 in players)
@@ -1947,50 +1945,50 @@ public class TestPlugin : TerrariaPlugin
                             {
                                 continue;
                             }
-                            if (num15 > 0 && Sundry.WithinRange((val5.TPlayer).Center, (int)num28, (int)num29, num15 * 16))
+                            if (num13 > 0 && Sundry.WithinRange(val5.TPlayer.Center, (int)num26, (int)num27, num13 * 16))
                             {
-                                if (num14 > 0)
+                                if (num12 > 0)
                                 {
-                                    if (!Sundry.WithinRange((val5.TPlayer).Center, (int)num28, (int)num29, num14 * 16))
+                                    if (!Sundry.WithinRange(val5.TPlayer.Center, (int)num26, (int)num27, num12 * 16))
                                     {
-                                        Sundry.PullTP(val5, num28, num29, num16);
+                                        Sundry.PullTP(val5, num26, num27, num14);
                                     }
                                 }
                                 else
                                 {
-                                    Sundry.PullTP(val5, num28, num29, num16);
+                                    Sundry.PullTP(val5, num26, num27, num14);
                                 }
                             }
-                            if (num12 > 0 && num13 != 0 && Sundry.WithinRange((val5.TPlayer).Center, (val3).Center, num12 * 16))
+                            if (num10 > 0 && num11 != 0 && Sundry.WithinRange(val5.TPlayer.Center, val3.Center, num10 * 16))
                             {
-                                if (num13 < 0)
+                                if (num11 < 0)
                                 {
-                                    if (num13 > val5.TPlayer.statLifeMax2)
+                                    if (num11 > val5.TPlayer.statLifeMax2)
                                     {
-                                        num13 = val5.TPlayer.statLifeMax2;
+                                        num11 = val5.TPlayer.statLifeMax2;
                                     }
-                                    val5.Heal(Math.Abs(num13));
+                                    val5.Heal(Math.Abs(num11));
                                 }
-                                else if (num13 > val5.TPlayer.statLifeMax2 + val5.TPlayer.statDefense)
+                                else if (num11 > val5.TPlayer.statLifeMax2 + val5.TPlayer.statDefense)
                                 {
                                     val5.KillPlayer();
                                 }
                                 else
                                 {
-                                    val5.DamagePlayer(num13);
+                                    val5.DamagePlayer(num11);
                                 }
                             }
-                            if (num10 > 0 && num11 != 0 && Sundry.WithinRange((val5.TPlayer).Center, (val3).Center, num10 * 16))
+                            if (num8 > 0 && num9 != 0 && Sundry.WithinRange(val5.TPlayer.Center, val3.Center, num8 * 16))
                             {
-                                Sundry.UserRepel(val5, (val3).Center.X, (val3).Center.Y, num11);
+                                Sundry.UserRepel(val5, val3.Center.X, val3.Center.Y, num9);
                             }
-                            if (lNPC2.BuffR <= 0 || lNPC2.Time % 100 != 0 || !Sundry.WithinRange((val5.TPlayer).Center, (val3).Center, lNPC2.BuffR * 16))
+                            if (lNPC2.BuffR <= 0 || lNPC2.Time % 100 != 0 || !Sundry.WithinRange(val5.TPlayer.Center, val3.Center, lNPC2.BuffR * 16))
                             {
                                 continue;
                             }
                             foreach (状态节 item12 in lNPC2.RBuff)
                             {
-                                if ((item12.状态起始范围 <= 0 || !Sundry.WithinRange((val5.TPlayer).Center, (val3).Center, item12.状态起始范围 * 16)) && (item12.状态结束范围 <= 0 || Sundry.WithinRange((val5.TPlayer).Center, (val3).Center, item12.状态结束范围 * 16)))
+                                if ((item12.状态起始范围 <= 0 || !Sundry.WithinRange(val5.TPlayer.Center, val3.Center, item12.状态起始范围 * 16)) && (item12.状态结束范围 <= 0 || Sundry.WithinRange(val5.TPlayer.Center, val3.Center, item12.状态结束范围 * 16)))
                                 {
                                     val5.SetBuff(item12.状态ID, 100, false);
                                     if (item12.头顶提示 != "")
@@ -2005,7 +2003,7 @@ public class TestPlugin : TerrariaPlugin
                     }
                     if (flag3)
                     {
-                        int whoAmI2 = (val3).whoAmI;
+                        int whoAmI2 = val3.whoAmI;
                         Main.npc[whoAmI2] = new NPC();
                         NetMessage.SendData(23, -1, -1, NetworkText.Empty, whoAmI2, 0f, 0f, 0f, 0, 0, 0);
                         if (!lNPC2.Config.不宣读信息)
@@ -2016,46 +2014,46 @@ public class TestPlugin : TerrariaPlugin
                 end_IL_022f:;
                 }
             }
-            int num31 = -1;
-            int num32 = -1;
+            int num28 = -1;
+            int num29 = -1;
             NPC[] npc3 = Main.npc;
             foreach (NPC val7 in npc3)
             {
-                if (val7 == null || !(val7).active)
+                if (val7 == null || !val7.active)
                 {
                     continue;
                 }
                 lock (LNpcs)
                 {
-                    LNPC lNPC3 = LNpcs[(val7).whoAmI];
+                    LNPC lNPC3 = LNpcs[val7.whoAmI];
                     if (lNPC3 != null && lNPC3.Config != null)
                     {
-                        if (lNPC3.DefaultMaxSpawns > num31)
+                        if (lNPC3.DefaultMaxSpawns > num28)
                         {
-                            num31 = lNPC3.DefaultMaxSpawns;
+                            num28 = lNPC3.DefaultMaxSpawns;
                         }
-                        if (lNPC3.DefaultSpawnRate > num32)
+                        if (lNPC3.DefaultSpawnRate > num29)
                         {
-                            num32 = lNPC3.DefaultSpawnRate;
+                            num29 = lNPC3.DefaultSpawnRate;
                         }
                     }
                 }
             }
-            if (num31 >= 0 && NPC.defaultMaxSpawns != num31)
+            if (num28 >= 0 && NPC.defaultMaxSpawns != num28)
             {
-                NPC.defaultMaxSpawns = num31;
+                NPC.defaultMaxSpawns = num28;
             }
-            else if (num31 < 0)
+            else if (num28 < 0)
             {
-                NPC.defaultMaxSpawns = ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.DefaultMaximumSpawns;
+                NPC.defaultMaxSpawns = TShock.Config.Settings.DefaultMaximumSpawns;
             }
-            if (num32 >= 0 && NPC.defaultSpawnRate != num32)
+            if (num29 >= 0 && NPC.defaultSpawnRate != num29)
             {
-                NPC.defaultSpawnRate = num32;
+                NPC.defaultSpawnRate = num29;
             }
-            else if (num32 < 0)
+            else if (num29 < 0)
             {
-                NPC.defaultSpawnRate = ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.DefaultSpawnRate;
+                NPC.defaultSpawnRate = TShock.Config.Settings.DefaultSpawnRate;
             }
             if (_配置.启动死亡队友视角 && (!_配置.队友视角仅BOSS时 || flag))
             {
@@ -2082,23 +2080,23 @@ public class TestPlugin : TerrariaPlugin
                         {
                             continue;
                         }
-                        int num35 = -1;
-                        float num36 = -1f;
-                        for (int num37 = 0; num37 < 255; num37++)
+                        int num30 = -1;
+                        float num31 = -1f;
+                        for (int num32 = 0; num32 < 255; num32++)
                         {
-                            if (Main.player[num37] != null && val8.Team == Main.player[num37].team && (Main.player[num37]).active && !Main.player[num37].dead)
+                            if (Main.player[num32] != null && val8.Team == Main.player[num32].team && Main.player[num32].active && !Main.player[num32].dead)
                             {
-                                float num38 = Math.Abs((Main.player[num37]).position.X + (float)((Main.player[num37]).width / 2) - ((val8.TPlayer).position.X + (float)((val8.TPlayer).width / 2))) + Math.Abs((Main.player[num37]).position.Y + (float)((Main.player[num37]).height / 2) - ((val8.TPlayer).position.Y + (float)((val8.TPlayer).height / 2)));
-                                if (num36 == -1f || num38 < num36)
+                                float num33 = Math.Abs(Main.player[num32].position.X + (Main.player[num32].width / 2) - (val8.TPlayer.position.X + (val8.TPlayer.width / 2))) + Math.Abs(Main.player[num32].position.Y + (Main.player[num32].height / 2) - (val8.TPlayer.position.Y + (val8.TPlayer.height / 2)));
+                                if (num31 == -1f || num33 < num31)
                                 {
-                                    num36 = num38;
-                                    num35 = num37;
+                                    num31 = num33;
+                                    num30 = num32;
                                 }
                             }
                         }
-                        if (num35 != -1 && !Sundry.WithinRange((val8.TPlayer).Center, (Main.player[num35]).Center, _配置.队友视角等待范围 * 16))
+                        if (num30 != -1 && !Sundry.WithinRange(val8.TPlayer.Center, Main.player[num30].Center, _配置.队友视角等待范围 * 16))
                         {
-                            (val8.TPlayer).position = (Main.player[num35]).position;
+                            val8.TPlayer.position = Main.player[num30].position;
                             NetMessage.SendData(13, -1, -1, NetworkText.Empty, val8.Index, 0f, 0f, 0f, 0, 0, 0);
                         }
                     }
@@ -2117,7 +2115,7 @@ public class TestPlugin : TerrariaPlugin
 
     public static bool Timeout(DateTime Start, bool warn = true, int ms = 500)
     {
-        bool flag = (DateTime.Now - Start).TotalMilliseconds >= (double)ms;
+        bool flag = (DateTime.Now - Start).TotalMilliseconds >= ms;
         if (flag)
         {
             ULock = false;
@@ -2131,7 +2129,7 @@ public class TestPlugin : TerrariaPlugin
 
     private void OnKillMe(object sender, KillMeEventArgs args)
     {
-        if (((HandledEventArgs)(object)args).Handled || ((GetDataHandledEventArgs)args).Player == null || args.Pvp)
+        if (args.Handled || args.Player == null || args.Pvp)
         {
             return;
         }
@@ -2139,13 +2137,13 @@ public class TestPlugin : TerrariaPlugin
         NPC[] npc = Main.npc;
         foreach (NPC val in npc)
         {
-            if (val == null || !(val).active)
+            if (val == null || !val.active)
             {
                 continue;
             }
             lock (LNpcs)
             {
-                LNPC lNPC = LNpcs[(val).whoAmI];
+                LNPC lNPC = LNpcs[val.whoAmI];
                 if (lNPC != null && lNPC.Config != null)
                 {
                     lNPC.KillPlay++;
@@ -2156,7 +2154,7 @@ public class TestPlugin : TerrariaPlugin
                 }
             }
         }
-        if (((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnSeconds < 0 || ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnBossSeconds < 0)
+        if (TShock.Config.Settings.RespawnSeconds < 0 || TShock.Config.Settings.RespawnBossSeconds < 0)
         {
             return;
         }
@@ -2164,16 +2162,16 @@ public class TestPlugin : TerrariaPlugin
         {
             if (LRespawnSeconds == -1 && LRespawnBossSeconds == -1)
             {
-                LRespawnSeconds = ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnSeconds;
-                LRespawnBossSeconds = ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnBossSeconds;
+                LRespawnSeconds = TShock.Config.Settings.RespawnSeconds;
+                LRespawnBossSeconds = TShock.Config.Settings.RespawnBossSeconds;
             }
-            ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnSeconds = num;
-            ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnBossSeconds = num;
+            TShock.Config.Settings.RespawnSeconds = num;
+            TShock.Config.Settings.RespawnBossSeconds = num;
         }
         else if (LRespawnSeconds >= 0 && LRespawnBossSeconds >= 0)
         {
-            ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnSeconds = LRespawnSeconds;
-            ((ConfigFile<TShockSettings>)(object)TShock.Config).Settings.RespawnBossSeconds = LRespawnBossSeconds;
+            TShock.Config.Settings.RespawnSeconds = LRespawnSeconds;
+            TShock.Config.Settings.RespawnBossSeconds = LRespawnBossSeconds;
             LRespawnSeconds = -1;
             LRespawnBossSeconds = -1;
         }
@@ -2266,7 +2264,7 @@ public class TestPlugin : TerrariaPlugin
         {
             if (LPrjs[self.identity] != null)
             {
-                LPrjs[self.identity] = null;
+                LPrjs[self.identity] = null!;
             }
         }
         orig.Invoke(self);

@@ -13,10 +13,10 @@
       <IsPublishable>False</IsPublishable>
     </PropertyGroup>
     <ItemGroup>
-      <None Remove="自定义怪物血量\自定义怪物血量.json" />
+      <None Remove="内嵌文件\自定义怪物血量.json" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Include="自定义怪物血量\自定义怪物血量.json" />
+      <EmbeddedResource Include="内嵌文件\自定义怪物血量.json" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="TShock" Version="5.*" />

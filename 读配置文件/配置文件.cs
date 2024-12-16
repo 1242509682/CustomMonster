@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Configuration;
+using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -73,6 +74,7 @@ public class 配置文件
     }
     #endregion
 
+    #region 读取与写入
     public 配置文件 Write(string 路径)
     {
         var settings = new JsonSerializerSettings
@@ -99,27 +101,23 @@ public class 配置文件
         {
             WriteExample(路径);
         }
-        return JsonConvert.DeserializeObject<配置文件>(File.ReadAllText(路径));
+        return JsonConvert.DeserializeObject<配置文件>(File.ReadAllText(路径))!;
     }
+    #endregion
 
+    #region 内嵌文件方法
     public static void WriteExample(string 路径)
     {
-        Assembly executingAssembly = Assembly.GetExecutingAssembly();
-        string projectNamespace = executingAssembly.GetName().Name.Trim();
-        string resourceFolderName = "自定义怪物血量".Trim();
-        string resourceFullName = $"{projectNamespace}.{resourceFolderName}.自定义怪物血量.json";
+        var assembly = Assembly.GetExecutingAssembly();
+        var FullName = $"{assembly.GetName().Name}.内嵌文件.自定义怪物血量.json";
 
-        Stream manifestResourceStream = executingAssembly.GetManifestResourceStream(resourceFullName);
-
-        if (manifestResourceStream == null)
+        using (var stream = assembly.GetManifestResourceStream(FullName))
+        using (var reader = new StreamReader(stream!))
         {
-            throw new InvalidOperationException($"无法找到嵌入资源：{resourceFullName}");
+            var text = reader.ReadToEnd();
+            var 配置文件2 = JsonConvert.DeserializeObject<配置文件>(text);
+            配置文件2!.Write(路径);
         }
-        using (StreamReader streamReader = new StreamReader(manifestResourceStream))
-        {
-            string text = streamReader.ReadToEnd();
-            配置文件 配置文件2 = JsonConvert.DeserializeObject<配置文件>(text);
-            配置文件2.Write(路径);
-        }
-    }
+    } 
+    #endregion
 }

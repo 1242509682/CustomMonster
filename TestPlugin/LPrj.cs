@@ -26,7 +26,7 @@ public class LPrj
         {
             int index = Index;
             Index = -1;
-            if (Main.projectile[index] != null && ((Entity)Main.projectile[index]).active && Main.projectile[index].type == Type && Main.projectile[index].owner == Main.myPlayer)
+            if (Main.projectile[index] != null && Main.projectile[index].active && Main.projectile[index].type == Type && Main.projectile[index].owner == Main.myPlayer)
             {
                 Main.projectile[index].Kill();
             }
