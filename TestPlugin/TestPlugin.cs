@@ -945,7 +945,7 @@ public class TestPlugin : TerrariaPlugin
                         TSPlayer[] players = TShock.Players;
                         foreach (TSPlayer val in players)
                         {
-                            if (val == null || val.Dead || val.TPlayer.statLife < 1 || !Sundry.WithinRange((val.TPlayer).Center, args.npc.Center, LNpcs[args.npc.whoAmI].Config.死状范围 * 16))
+                            if (val == null || val.Dead || val.TPlayer.statLife < 1 || !Sundry.WithinRange(val.TPlayer.Center, args.npc.Center, LNpcs[args.npc.whoAmI].Config.死状范围 * 16))
                             {
                                 continue;
                             }
@@ -991,8 +991,8 @@ public class TestPlugin : TerrariaPlugin
                 }
             }
             bool flag = false;
-            Dictionary<int, int> dictionary = new Dictionary<int, int>();
-            Dictionary<int, int> dictionary2 = dictionary;
+            Dictionary<int, int> dict = new Dictionary<int, int>();
+            Dictionary<int, int> dict2 = dict;
             NPC[] npc2 = Main.npc;
             foreach (NPC val2 in npc2)
             {
@@ -1009,11 +1009,11 @@ public class TestPlugin : TerrariaPlugin
                     LNPC lNPC = LNpcs[val2.whoAmI];
                     if (lNPC != null && lNPC.Config != null)
                     {
-                        dictionary2.Add(val2.whoAmI, lNPC.Config.事件权重);
+                        dict2.Add(val2.whoAmI, lNPC.Config.事件权重);
                     }
                 }
             }
-            IOrderedEnumerable<KeyValuePair<int, int>> orderedEnumerable = dictionary2.OrderByDescending(delegate (KeyValuePair<int, int> objDic)
+            IOrderedEnumerable<KeyValuePair<int, int>> orderedEnumerable = dict2.OrderByDescending(delegate (KeyValuePair<int, int> objDic)
             {
                 KeyValuePair<int, int> keyValuePair = objDic;
                 return keyValuePair.Value;
@@ -1064,12 +1064,12 @@ public class TestPlugin : TerrariaPlugin
                                 {
                                     if (!lNPC2.Config.不宣读信息)
                                     {
-                                        TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间减少 " + value + " 秒剩" + (int)((float)num3 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
+                                        TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间减少 " + value + " 秒剩" + (int)(num3 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
                                     }
                                 }
                                 else if (num2 < num3 && !lNPC2.Config.不宣读信息)
                                 {
-                                    TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间增加 " + Math.Abs(value) + "秒剩" + (int)((float)num3 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
+                                    TShock.Utils.Broadcast("注意: " + val3.FullName + " 受服务器人数增多影响攻略时间增加 " + Math.Abs(value) + "秒剩" + (int)(num3 - lNPC2.TiemN) + "秒.", Convert.ToByte(255), Convert.ToByte(255), Convert.ToByte(100));
                                 }
                             }
                         }
@@ -1198,7 +1198,7 @@ public class TestPlugin : TerrariaPlugin
                         }
                         goto IL_0e35;
                     }
-                    if (!(lNPC2.TiemN >= (float)maxTime))
+                    if (!(lNPC2.TiemN >= maxTime))
                     {
                         goto IL_0e35;
                     }
@@ -2224,14 +2224,14 @@ public class TestPlugin : TerrariaPlugin
             }
             NPCKillDataTime = DateTime.UtcNow;
         }
-        using StreamWriter streamWriter = new StreamWriter(NPCKillPath);
+        using StreamWriter swriter = new StreamWriter(NPCKillPath);
         string text = OServerDataTime.ToString();
         for (int i = 0; i < LNkc.Count; i++)
         {
             text += Environment.NewLine;
             text = text + LNkc[i].ID + "|" + LNkc[i].KC;
         }
-        streamWriter.Write(text);
+        swriter.Write(text);
     }
 
     public void RD()
@@ -2240,8 +2240,8 @@ public class TestPlugin : TerrariaPlugin
         {
             File.Create(NPCKillPath).Close();
         }
-        using StreamReader streamReader = new StreamReader(NPCKillPath);
-        string text = streamReader.ReadToEnd();
+        using StreamReader reader = new StreamReader(NPCKillPath);
+        string text = reader.ReadToEnd();
         string[] array = text.Split(Environment.NewLine.ToCharArray());
         if (array.Count() < 1 || !DateTime.TryParse(array[0], out var result))
         {

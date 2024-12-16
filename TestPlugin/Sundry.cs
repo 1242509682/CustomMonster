@@ -11,29 +11,29 @@ public class Sundry
 {
     public static void LaunchProjectile(List<弹幕节> Projectiles, NPC npc, LNPC lnpc)
     {
-        foreach (弹幕节 Projectile in Projectiles)
+        foreach (弹幕节 proj in Projectiles)
         {
-            if (Projectile.弹幕ID <= 0)
+            if (proj.弹幕ID <= 0)
             {
                 continue;
             }
             float num = 0f;
             float num2 = 0f;
-            if (!Projectile.初始坐标为零)
+            if (!proj.初始坐标为零)
             {
                 num = npc.Center.X;
                 num2 = npc.Center.Y;
             }
-            if (Projectile.锁定范围 > 0 || Projectile.锁定范围 == -1)
+            if (proj.锁定范围 > 0 || proj.锁定范围 == -1)
             {
                 List<int> list = new List<int>();
-                if (Projectile.锁定范围 == -1)
+                if (proj.锁定范围 == -1)
                 {
                     list.Add(-1);
                 }
                 else
                 {
-                    for (int i = 0; i < Projectile.最大锁定数 && i <= TShock.Utils.GetActivePlayerCount(); i++)
+                    for (int i = 0; i < proj.最大锁定数 && i <= TShock.Utils.GetActivePlayerCount(); i++)
                     {
                         int num3 = -1;
                         float num4 = -1f;
@@ -42,19 +42,19 @@ public class Sundry
                         int? num7 = null;
                         for (int j = 0; j < 255; j++)
                         {
-                            if (list.Contains(j) || Main.player[j] == null || !(Main.player[j]).active || Main.player[j].dead || (Projectile.仅攻击对象 && j != npc.target))
+                            if (list.Contains(j) || Main.player[j] == null || !(Main.player[j]).active || Main.player[j].dead || (proj.仅攻击对象 && j != npc.target))
                             {
                                 continue;
                             }
-                            if (Projectile.仅扇形锁定)
+                            if (proj.仅扇形锁定)
                             {
-                                if (Projectile.扇形半偏角 > 180)
+                                if (proj.扇形半偏角 > 180)
                                 {
-                                    Projectile.扇形半偏角 = 180;
+                                    proj.扇形半偏角 = 180;
                                 }
-                                if (Projectile.扇形半偏角 < 1)
+                                if (proj.扇形半偏角 < 1)
                                 {
-                                    Projectile.扇形半偏角 = 1;
+                                    proj.扇形半偏角 = 1;
                                 }
                                 float num8 = (Main.player[j]).Center.X - num;
                                 float num9 = (Main.player[j]).Center.Y - num2;
@@ -62,8 +62,8 @@ public class Sundry
                                 {
                                     double num10 = Math.Atan2(num9, num8) * 180.0 / Math.PI;
                                     double num11 = Math.Atan2(npc.directionY, npc.direction) * 180.0 / Math.PI;
-                                    double num12 = num11 + (double)Projectile.扇形半偏角;
-                                    double num13 = num11 - (double)Projectile.扇形半偏角;
+                                    double num12 = num11 + proj.扇形半偏角;
+                                    double num13 = num11 - proj.扇形半偏角;
                                     if (num12 > 360.0)
                                     {
                                         num12 -= 360.0;
@@ -79,17 +79,17 @@ public class Sundry
                                 }
                             }
                             float num14 = Math.Abs((Main.player[j]).Center.X - num + Math.Abs((Main.player[j]).Center.Y - num2));
-                            if ((num4 == -1f || num14 < num4) && (!Projectile.计入仇恨 || !num6.HasValue || (Projectile.逆仇恨锁定 ? (Main.player[j].aggro < num6) : (Main.player[j].aggro > num6))) && (!Projectile.锁定血少 || !num5.HasValue || (Projectile.逆血量锁定 ? (Main.player[j].statLife > num5) : (Main.player[j].statLife < num5))) && (!Projectile.锁定低防 || !num7.HasValue || (Projectile.逆防御锁定 ? (Main.player[j].statDefense > num7) : (Main.player[j].statDefense < num7))))
+                            if ((num4 == -1f || num14 < num4) && (!proj.计入仇恨 || !num6.HasValue || (proj.逆仇恨锁定 ? (Main.player[j].aggro < num6) : (Main.player[j].aggro > num6))) && (!proj.锁定血少 || !num5.HasValue || (proj.逆血量锁定 ? (Main.player[j].statLife > num5) : (Main.player[j].statLife < num5))) && (!proj.锁定低防 || !num7.HasValue || (proj.逆防御锁定 ? (Main.player[j].statDefense > num7) : (Main.player[j].statDefense < num7))))
                             {
-                                if (Projectile.计入仇恨)
+                                if (proj.计入仇恨)
                                 {
                                     num6 = Main.player[j].aggro;
                                 }
-                                if (Projectile.锁定血少)
+                                if (proj.锁定血少)
                                 {
                                     num5 = Main.player[j].statLife;
                                 }
-                                if (Projectile.锁定低防)
+                                if (proj.锁定低防)
                                 {
                                     num7 = Main.player[j].statDefense;
                                 }
@@ -119,37 +119,37 @@ public class Sundry
                         {
                             continue;
                         }
-                        if (Projectile.锁定范围 > 350)
+                        if (proj.锁定范围 > 350)
                         {
-                            Projectile.锁定范围 = 350;
+                            proj.锁定范围 = 350;
                         }
-                        if (!WithinRange(num, num2, (val).Center, Projectile.锁定范围 << 4))
+                        if (!WithinRange(num, num2, (val).Center, proj.锁定范围 << 4))
                         {
                             continue;
                         }
                         num15 = (val).Center.X;
                         num16 = (val).Center.Y;
                     }
-                    float num17 = Projectile.怪面向X偏移修正 * npc.direction;
-                    float num18 = Projectile.怪面向Y偏移修正 * npc.directionY;
-                    float ai = Projectile.弹幕Ai0 + lnpc.getMarkers(Projectile.指示物数量注入Ai0名) * Projectile.指示物数量注入Ai0系数;
-                    float ai2 = Projectile.弹幕Ai1 + lnpc.getMarkers(Projectile.指示物数量注入Ai1名) * Projectile.指示物数量注入Ai1系数;
-                    float ai3 = Projectile.弹幕Ai2 + lnpc.getMarkers(Projectile.指示物数量注入Ai2名) * Projectile.指示物数量注入Ai2系数;
-                    float num19 = Projectile.锁定速度 + lnpc.getMarkers(Projectile.指示物数量注入锁定速度名) * Projectile.指示物数量注入锁定速度系数;
+                    float num17 = proj.怪面向X偏移修正 * npc.direction;
+                    float num18 = proj.怪面向Y偏移修正 * npc.directionY;
+                    float ai = proj.弹幕Ai0 + lnpc.getMarkers(proj.指示物数量注入Ai0名) * proj.指示物数量注入Ai0系数;
+                    float ai2 = proj.弹幕Ai1 + lnpc.getMarkers(proj.指示物数量注入Ai1名) * proj.指示物数量注入Ai1系数;
+                    float ai3 = proj.弹幕Ai2 + lnpc.getMarkers(proj.指示物数量注入Ai2名) * proj.指示物数量注入Ai2系数;
+                    float num19 = proj.锁定速度 + lnpc.getMarkers(proj.指示物数量注入锁定速度名) * proj.指示物数量注入锁定速度系数;
                     float num20;
                     float num21;
                     double num25;
                     float num22;
                     float num23;
-                    if (Projectile.以锁定为点)
+                    if (proj.以锁定为点)
                     {
                         num20 = num15;
                         num21 = num16;
-                        num22 = Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
-                        num23 = Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
+                        num22 = proj.X轴速度 + lnpc.getMarkers(proj.指示物数量注入X轴速度名) * proj.指示物数量注入X轴速度系数 + proj.怪面向X速度修正 * npc.direction;
+                        num23 = proj.Y轴速度 + lnpc.getMarkers(proj.指示物数量注入Y轴速度名) * proj.指示物数量注入Y轴速度系数 + proj.怪面向Y速度修正 * npc.directionY;
                         float num24 = (float)Math.Sqrt(Math.Pow(num22, 2.0) + Math.Pow(num23, 2.0));
                         num25 = Math.Atan2(num23, num22) * 180.0 / Math.PI;
-                        float num26 = Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
+                        float num26 = proj.角度偏移 + lnpc.getMarkers(proj.指示物数量注入角度名) * proj.指示物数量注入角度系数;
                         if (num26 != 0f)
                         {
                             num25 += (double)num26;
@@ -161,507 +161,507 @@ public class Sundry
                     {
                         num20 = num;
                         num21 = num2;
-                        num22 = num15 - (num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                        num23 = num16 - (num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                        num22 = num15 - (num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数);
+                        num23 = num16 - (num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数);
                         if (num22 == 0f && num23 == 0f)
                         {
                             num22 = 1f;
                         }
                         num25 = Math.Atan2(num23, num22) * 180.0 / Math.PI;
-                        num25 += (double)(Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                        num25 += (double)(proj.角度偏移 + lnpc.getMarkers(proj.指示物数量注入角度名) * proj.指示物数量注入角度系数);
                         num22 = (float)((double)num19 * Math.Cos(num25 * Math.PI / 180.0));
                         num23 = (float)((double)num19 * Math.Sin(num25 * Math.PI / 180.0));
-                        num22 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
-                        num23 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
+                        num22 += proj.X轴速度 + lnpc.getMarkers(proj.指示物数量注入X轴速度名) * proj.指示物数量注入X轴速度系数 + proj.怪面向X速度修正 * npc.direction;
+                        num23 += proj.Y轴速度 + lnpc.getMarkers(proj.指示物数量注入Y轴速度名) * proj.指示物数量注入Y轴速度系数 + proj.怪面向Y速度修正 * npc.directionY;
                     }
-                    if (Projectile.以弹为位)
+                    if (proj.以弹为位)
                     {
-                        float num27 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                        float num28 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                        num22 = num15 - (num27 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                        num23 = num16 - (num28 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                        float num27 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                        float num28 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                        num22 = num15 - (num27 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数);
+                        num23 = num16 - (num28 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数);
                         if (num22 == 0f && num23 == 0f)
                         {
                             num22 = 1f;
                         }
                         num25 = Math.Atan2(num23, num22) * 180.0 / Math.PI;
-                        num25 += (double)(Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                        num25 += (double)(proj.角度偏移 + lnpc.getMarkers(proj.指示物数量注入角度名) * proj.指示物数量注入角度系数);
                         num22 = (float)((double)num19 * Math.Cos(num25 * Math.PI / 180.0));
                         num23 = (float)((double)num19 * Math.Sin(num25 * Math.PI / 180.0));
-                        num22 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
-                        num23 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
+                        num22 += proj.X轴速度 + lnpc.getMarkers(proj.指示物数量注入X轴速度名) * proj.指示物数量注入X轴速度系数 + proj.怪面向X速度修正 * npc.direction;
+                        num23 += proj.Y轴速度 + lnpc.getMarkers(proj.指示物数量注入Y轴速度名) * proj.指示物数量注入Y轴速度系数 + proj.怪面向Y速度修正 * npc.directionY;
                     }
-                    if (Projectile.速度注入AI0)
+                    if (proj.速度注入AI0)
                     {
                         ai = (float)Math.Atan2(num23, num22);
-                        num22 = Projectile.速度注入AI0后X轴速度;
-                        num23 = Projectile.速度注入AI0后Y轴速度;
+                        num22 = proj.速度注入AI0后X轴速度;
+                        num23 = proj.速度注入AI0后Y轴速度;
                     }
-                    float num29 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                    float num30 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
+                    float num29 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                    float num30 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
                     if (list.IndexOf(item) == 0)
                     {
-                        if (Projectile.射出始弹X轴注入指示物名 != "")
+                        if (proj.射出始弹X轴注入指示物名 != "")
                         {
-                            lnpc.setMarkers(Projectile.射出始弹X轴注入指示物名, (int)num29, reset: false);
+                            lnpc.setMarkers(proj.射出始弹X轴注入指示物名, (int)num29, reset: false);
                         }
-                        if (Projectile.射出始弹Y轴注入指示物名 != "")
+                        if (proj.射出始弹Y轴注入指示物名 != "")
                         {
-                            lnpc.setMarkers(Projectile.射出始弹Y轴注入指示物名, (int)num30, reset: false);
+                            lnpc.setMarkers(proj.射出始弹Y轴注入指示物名, (int)num30, reset: false);
                         }
-                        if (Projectile.锁定玩家序号注入指示物名 != "")
+                        if (proj.锁定玩家序号注入指示物名 != "")
                         {
-                            lnpc.setMarkers(Projectile.锁定玩家序号注入指示物名, item, reset: false);
-                        }
-                    }
-                    if (!Projectile.不射原始)
-                    {
-                        if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
-                        {
-                            NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
-                        }
-                        else if (Projectile.弹点召唤怪物 != 0)
-                        {
-                            LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                            lnpc.setMarkers(proj.锁定玩家序号注入指示物名, item, reset: false);
                         }
                     }
-                    if (Projectile.始弹点怪物传送)
+                    if (!proj.不射原始)
                     {
-                        npc.Teleport(new Vector2(num29, num30), Projectile.始弹点怪物传送类型, Projectile.始弹点怪物传送信息);
-                    }
-                    int num31 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射数名) * Projectile.指示物数量注入差度位射数系数);
-                    int num32 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射角名) * Projectile.指示物数量注入差度位射角系数);
-                    int num33 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位半径名) * Projectile.指示物数量注入差度位半径系数);
-                    int num34 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射数名) * Projectile.指示物数量注入差度射数系数);
-                    int num35 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射角名) * Projectile.指示物数量注入差度射角系数);
-                    int num36 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位射数名) * Projectile.指示物数量注入差位射数系数);
-                    int num37 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移X名) * Projectile.指示物数量注入差位偏移X系数);
-                    int num38 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移Y名) * Projectile.指示物数量注入差位偏移Y系数);
-                    if (Projectile.差度位射数 + num31 > 0 && Projectile.差度位射角 + num32 != 0 && Projectile.差度位半径 + num33 > 0)
-                    {
-                        double num39 = Projectile.差度位始角 + (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位始角名) * Projectile.指示物数量注入差度位始角系数);
-                        for (int k = 0; k < Projectile.差度位射数 + num31; k++)
+                        if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                         {
-                            num39 += (double)(Projectile.差度位射角 + num32);
-                            float num40 = (float)((double)(Projectile.差度位半径 + num33) * Math.Cos(num39 * Math.PI / 180.0));
-                            float num41 = (float)((double)(Projectile.差度位半径 + num33) * Math.Sin(num39 * Math.PI / 180.0));
-                            if (Projectile.以弹为位)
+                            NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
+                        }
+                        else if (proj.弹点召唤怪物 != 0)
+                        {
+                            LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
+                        }
+                    }
+                    if (proj.始弹点怪物传送)
+                    {
+                        npc.Teleport(new Vector2(num29, num30), proj.始弹点怪物传送类型, proj.始弹点怪物传送信息);
+                    }
+                    int num31 = (int)(lnpc.getMarkers(proj.指示物数量注入差度位射数名) * proj.指示物数量注入差度位射数系数);
+                    int num32 = (int)(lnpc.getMarkers(proj.指示物数量注入差度位射角名) * proj.指示物数量注入差度位射角系数);
+                    int num33 = (int)(lnpc.getMarkers(proj.指示物数量注入差度位半径名) * proj.指示物数量注入差度位半径系数);
+                    int num34 = (int)(lnpc.getMarkers(proj.指示物数量注入差度射数名) * proj.指示物数量注入差度射数系数);
+                    int num35 = (int)(lnpc.getMarkers(proj.指示物数量注入差度射角名) * proj.指示物数量注入差度射角系数);
+                    int num36 = (int)(lnpc.getMarkers(proj.指示物数量注入差位射数名) * proj.指示物数量注入差位射数系数);
+                    int num37 = (int)(lnpc.getMarkers(proj.指示物数量注入差位偏移X名) * proj.指示物数量注入差位偏移X系数);
+                    int num38 = (int)(lnpc.getMarkers(proj.指示物数量注入差位偏移Y名) * proj.指示物数量注入差位偏移Y系数);
+                    if (proj.差度位射数 + num31 > 0 && proj.差度位射角 + num32 != 0 && proj.差度位半径 + num33 > 0)
+                    {
+                        double num39 = proj.差度位始角 + (int)(lnpc.getMarkers(proj.指示物数量注入差度位始角名) * proj.指示物数量注入差度位始角系数);
+                        for (int k = 0; k < proj.差度位射数 + num31; k++)
+                        {
+                            num39 += (double)(proj.差度位射角 + num32);
+                            float num40 = (float)((double)(proj.差度位半径 + num33) * Math.Cos(num39 * Math.PI / 180.0));
+                            float num41 = (float)((double)(proj.差度位半径 + num33) * Math.Sin(num39 * Math.PI / 180.0));
+                            if (proj.以弹为位)
                             {
-                                float num42 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num40 + num17;
-                                float num43 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num41 + num18;
-                                num22 = num15 - (num42 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                                num23 = num16 - (num43 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                                float num42 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num40 + num17;
+                                float num43 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num41 + num18;
+                                num22 = num15 - (num42 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数);
+                                num23 = num16 - (num43 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数);
                                 if (num22 == 0f && num23 == 0f)
                                 {
                                     num22 = 1f;
                                 }
                                 num25 = Math.Atan2(num23, num22) * 180.0 / Math.PI;
-                                num25 += (double)(Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                                num25 += (double)(proj.角度偏移 + lnpc.getMarkers(proj.指示物数量注入角度名) * proj.指示物数量注入角度系数);
                                 num22 = (float)((double)num19 * Math.Cos(num25 * Math.PI / 180.0));
                                 num23 = (float)((double)num19 * Math.Sin(num25 * Math.PI / 180.0));
-                                num22 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
-                                num23 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
+                                num22 += proj.X轴速度 + lnpc.getMarkers(proj.指示物数量注入X轴速度名) * proj.指示物数量注入X轴速度系数 + proj.怪面向X速度修正 * npc.direction;
+                                num23 += proj.Y轴速度 + lnpc.getMarkers(proj.指示物数量注入Y轴速度名) * proj.指示物数量注入Y轴速度系数 + proj.怪面向Y速度修正 * npc.directionY;
                             }
-                            if (Projectile.速度注入AI0)
+                            if (proj.速度注入AI0)
                             {
                                 ai = (float)Math.Atan2(num23, num22);
-                                num22 = Projectile.速度注入AI0后X轴速度;
-                                num23 = Projectile.速度注入AI0后Y轴速度;
+                                num22 = proj.速度注入AI0后X轴速度;
+                                num23 = proj.速度注入AI0后Y轴速度;
                             }
-                            num29 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num40 + num17;
-                            num30 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num41 + num18;
-                            if (!Projectile.不射差度位)
+                            num29 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num40 + num17;
+                            num30 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num41 + num18;
+                            if (!proj.不射差度位)
                             {
-                                if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                                if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                                 {
-                                    NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                    NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                                 }
-                                else if (Projectile.弹点召唤怪物 != 0)
+                                else if (proj.弹点召唤怪物 != 0)
                                 {
-                                    LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                    LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                                 }
                             }
-                            if (Projectile.差度射数 + num34 > 0 && Projectile.差度射角 + num35 != 0f)
+                            if (proj.差度射数 + num34 > 0 && proj.差度射角 + num35 != 0f)
                             {
-                                for (int l = 0; l < Projectile.差度射数 + num34; l++)
+                                for (int l = 0; l < proj.差度射数 + num34; l++)
                                 {
-                                    num25 += (double)(Projectile.差度射角 + num35);
+                                    num25 += (double)(proj.差度射角 + num35);
                                     num22 = (float)((double)num19 * Math.Cos(num25 * Math.PI / 180.0));
                                     num23 = (float)((double)num19 * Math.Sin(num25 * Math.PI / 180.0));
-                                    if (Projectile.速度注入AI0)
+                                    if (proj.速度注入AI0)
                                     {
                                         ai = (float)Math.Atan2(num23, num22);
-                                        num22 = Projectile.速度注入AI0后X轴速度;
-                                        num23 = Projectile.速度注入AI0后Y轴速度;
+                                        num22 = proj.速度注入AI0后X轴速度;
+                                        num23 = proj.速度注入AI0后Y轴速度;
                                     }
-                                    num29 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                                    num30 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                                    if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                                    num29 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                                    num30 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                                    if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                                     {
-                                        NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                        NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                                     }
-                                    else if (Projectile.弹点召唤怪物 != 0)
+                                    else if (proj.弹点召唤怪物 != 0)
                                     {
-                                        LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                        LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                                     }
-                                    if (Projectile.差位射数 + num36 <= 0 || (Projectile.差位偏移X + num37 == 0f && Projectile.差位偏移Y + num38 == 0f))
+                                    if (proj.差位射数 + num36 <= 0 || (proj.差位偏移X + num37 == 0f && proj.差位偏移Y + num38 == 0f))
                                     {
                                         continue;
                                     }
-                                    float num44 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                                    float num45 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                                    for (int m = 0; m < Projectile.差位射数 + num36; m++)
+                                    float num44 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                                    float num45 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                                    for (int m = 0; m < proj.差位射数 + num36; m++)
                                     {
-                                        num44 += Projectile.差位偏移X + num37;
-                                        num45 += Projectile.差位偏移Y + num38;
+                                        num44 += proj.差位偏移X + num37;
+                                        num45 += proj.差位偏移Y + num38;
                                         num29 = num44;
                                         num30 = num45;
-                                        if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                                        if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                                         {
-                                            NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                            NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                                         }
-                                        else if (Projectile.弹点召唤怪物 != 0)
+                                        else if (proj.弹点召唤怪物 != 0)
                                         {
-                                            LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                            LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                                         }
                                     }
                                 }
                             }
                             else
                             {
-                                if (Projectile.差位射数 + num36 <= 0 || (Projectile.差位偏移X + num37 == 0f && Projectile.差位偏移Y + num38 == 0f))
+                                if (proj.差位射数 + num36 <= 0 || (proj.差位偏移X + num37 == 0f && proj.差位偏移Y + num38 == 0f))
                                 {
                                     continue;
                                 }
-                                float num46 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                                float num47 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                                for (int n = 0; n < Projectile.差位射数; n++)
+                                float num46 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                                float num47 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                                for (int n = 0; n < proj.差位射数; n++)
                                 {
-                                    num46 += Projectile.差位偏移X + num37;
-                                    num47 += Projectile.差位偏移Y + num38;
-                                    if (Projectile.以弹为位)
+                                    num46 += proj.差位偏移X + num37;
+                                    num47 += proj.差位偏移Y + num38;
+                                    if (proj.以弹为位)
                                     {
-                                        num22 = num15 - (num46 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                                        num23 = num16 - (num47 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                                        num22 = num15 - (num46 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数);
+                                        num23 = num16 - (num47 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数);
                                         if (num22 == 0f && num23 == 0f)
                                         {
                                             num22 = 1f;
                                         }
                                         num25 = Math.Atan2(num23, num22) * 180.0 / Math.PI;
-                                        num25 += (double)(Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                                        num25 += (double)(proj.角度偏移 + lnpc.getMarkers(proj.指示物数量注入角度名) * proj.指示物数量注入角度系数);
                                         num22 = (float)((double)num19 * Math.Cos(num25 * Math.PI / 180.0));
                                         num23 = (float)((double)num19 * Math.Sin(num25 * Math.PI / 180.0));
-                                        num22 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
-                                        num23 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
-                                        if (Projectile.速度注入AI0)
+                                        num22 += proj.X轴速度 + lnpc.getMarkers(proj.指示物数量注入X轴速度名) * proj.指示物数量注入X轴速度系数 + proj.怪面向X速度修正 * npc.direction;
+                                        num23 += proj.Y轴速度 + lnpc.getMarkers(proj.指示物数量注入Y轴速度名) * proj.指示物数量注入Y轴速度系数 + proj.怪面向Y速度修正 * npc.directionY;
+                                        if (proj.速度注入AI0)
                                         {
                                             ai = (float)Math.Atan2(num23, num22);
-                                            num22 = Projectile.速度注入AI0后X轴速度;
-                                            num23 = Projectile.速度注入AI0后Y轴速度;
+                                            num22 = proj.速度注入AI0后X轴速度;
+                                            num23 = proj.速度注入AI0后Y轴速度;
                                         }
                                     }
                                     num29 = num46;
                                     num30 = num47;
-                                    if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                                    if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                                     {
-                                        NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                        NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                                     }
-                                    else if (Projectile.弹点召唤怪物 != 0)
+                                    else if (proj.弹点召唤怪物 != 0)
                                     {
-                                        LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                        LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                                     }
                                 }
                             }
                         }
                     }
-                    else if (Projectile.差度射数 + num34 > 0 && Projectile.差度射角 + num35 != 0f)
+                    else if (proj.差度射数 + num34 > 0 && proj.差度射角 + num35 != 0f)
                     {
-                        for (int num48 = 0; num48 < Projectile.差度射数 + num34; num48++)
+                        for (int num48 = 0; num48 < proj.差度射数 + num34; num48++)
                         {
-                            num25 += (double)(Projectile.差度射角 + num35);
+                            num25 += (double)(proj.差度射角 + num35);
                             num22 = (float)((double)num19 * Math.Cos(num25 * Math.PI / 180.0));
                             num23 = (float)((double)num19 * Math.Sin(num25 * Math.PI / 180.0));
-                            if (Projectile.速度注入AI0)
+                            if (proj.速度注入AI0)
                             {
                                 ai = (float)Math.Atan2(num23, num22);
-                                num22 = Projectile.速度注入AI0后X轴速度;
-                                num23 = Projectile.速度注入AI0后Y轴速度;
+                                num22 = proj.速度注入AI0后X轴速度;
+                                num23 = proj.速度注入AI0后Y轴速度;
                             }
-                            num29 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                            num30 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                            if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                            num29 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                            num30 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                            if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                             {
-                                NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                             }
-                            else if (Projectile.弹点召唤怪物 != 0)
+                            else if (proj.弹点召唤怪物 != 0)
                             {
-                                LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                             }
-                            if (Projectile.差位射数 + num36 <= 0 || (Projectile.差位偏移X + num37 == 0f && Projectile.差位偏移Y + num38 == 0f))
+                            if (proj.差位射数 + num36 <= 0 || (proj.差位偏移X + num37 == 0f && proj.差位偏移Y + num38 == 0f))
                             {
                                 continue;
                             }
-                            float num49 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                            float num50 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                            for (int num51 = 0; num51 < Projectile.差位射数 + num36; num51++)
+                            float num49 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                            float num50 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                            for (int num51 = 0; num51 < proj.差位射数 + num36; num51++)
                             {
-                                num49 += Projectile.差位偏移X + num37;
-                                num50 += Projectile.差位偏移Y + num38;
+                                num49 += proj.差位偏移X + num37;
+                                num50 += proj.差位偏移Y + num38;
                                 num29 = num49;
                                 num30 = num50;
-                                if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                                if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                                 {
-                                    NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                    NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                                 }
-                                else if (Projectile.弹点召唤怪物 != 0)
+                                else if (proj.弹点召唤怪物 != 0)
                                 {
-                                    LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                    LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (Projectile.差位射数 + num36 <= 0 || (Projectile.差位偏移X + num37 == 0f && Projectile.差位偏移Y + num38 == 0f))
+                        if (proj.差位射数 + num36 <= 0 || (proj.差位偏移X + num37 == 0f && proj.差位偏移Y + num38 == 0f))
                         {
                             continue;
                         }
-                        float num52 = num20 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num17;
-                        float num53 = num21 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num18;
-                        for (int num54 = 0; num54 < Projectile.差位射数 + num36; num54++)
+                        float num52 = num20 + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num17;
+                        float num53 = num21 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num18;
+                        for (int num54 = 0; num54 < proj.差位射数 + num36; num54++)
                         {
-                            num52 += Projectile.差位偏移X + num37;
-                            num53 += Projectile.差位偏移Y + num38;
+                            num52 += proj.差位偏移X + num37;
+                            num53 += proj.差位偏移Y + num38;
                             num29 = num52;
                             num30 = num53;
-                            if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                            if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                             {
-                                NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间);
+                                NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num29, num30, num22, num23, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai, ai2, ai3, proj.持续时间);
                             }
-                            else if (Projectile.弹点召唤怪物 != 0)
+                            else if (proj.弹点召唤怪物 != 0)
                             {
-                                LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num29, num30);
+                                LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num29, num30);
                             }
                         }
                     }
                 }
                 continue;
             }
-            float num55 = Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
-            float num56 = Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
+            float num55 = proj.X轴速度 + lnpc.getMarkers(proj.指示物数量注入X轴速度名) * proj.指示物数量注入X轴速度系数 + proj.怪面向X速度修正 * npc.direction;
+            float num56 = proj.Y轴速度 + lnpc.getMarkers(proj.指示物数量注入Y轴速度名) * proj.指示物数量注入Y轴速度系数 + proj.怪面向Y速度修正 * npc.directionY;
             float num57 = (float)Math.Sqrt(Math.Pow(num55, 2.0) + Math.Pow(num56, 2.0));
             double num58 = Math.Atan2(num56, num55) * 180.0 / Math.PI;
-            float num59 = Projectile.怪面向X偏移修正 * npc.direction;
-            float num60 = Projectile.怪面向Y偏移修正 * npc.directionY;
-            float ai4 = Projectile.弹幕Ai0 + lnpc.getMarkers(Projectile.指示物数量注入Ai0名) * Projectile.指示物数量注入Ai0系数;
-            float ai5 = Projectile.弹幕Ai1 + lnpc.getMarkers(Projectile.指示物数量注入Ai1名) * Projectile.指示物数量注入Ai1系数;
-            float ai6 = Projectile.弹幕Ai2 + lnpc.getMarkers(Projectile.指示物数量注入Ai2名) * Projectile.指示物数量注入Ai2系数;
-            float num61 = Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
+            float num59 = proj.怪面向X偏移修正 * npc.direction;
+            float num60 = proj.怪面向Y偏移修正 * npc.directionY;
+            float ai4 = proj.弹幕Ai0 + lnpc.getMarkers(proj.指示物数量注入Ai0名) * proj.指示物数量注入Ai0系数;
+            float ai5 = proj.弹幕Ai1 + lnpc.getMarkers(proj.指示物数量注入Ai1名) * proj.指示物数量注入Ai1系数;
+            float ai6 = proj.弹幕Ai2 + lnpc.getMarkers(proj.指示物数量注入Ai2名) * proj.指示物数量注入Ai2系数;
+            float num61 = proj.角度偏移 + lnpc.getMarkers(proj.指示物数量注入角度名) * proj.指示物数量注入角度系数;
             if (num61 != 0f)
             {
                 num58 += (double)num61;
                 num55 = (float)((double)num57 * Math.Cos(num58 * Math.PI / 180.0));
                 num56 = (float)((double)num57 * Math.Sin(num58 * Math.PI / 180.0));
             }
-            if (Projectile.速度注入AI0)
+            if (proj.速度注入AI0)
             {
                 ai4 = (float)Math.Atan2(num56, num55);
-                num55 = Projectile.速度注入AI0后X轴速度;
-                num56 = Projectile.速度注入AI0后Y轴速度;
+                num55 = proj.速度注入AI0后X轴速度;
+                num56 = proj.速度注入AI0后Y轴速度;
             }
-            float num62 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-            float num63 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-            if (Projectile.射出始弹X轴注入指示物名 != "")
+            float num62 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+            float num63 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+            if (proj.射出始弹X轴注入指示物名 != "")
             {
-                lnpc.setMarkers(Projectile.射出始弹X轴注入指示物名, (int)num62, reset: false);
+                lnpc.setMarkers(proj.射出始弹X轴注入指示物名, (int)num62, reset: false);
             }
-            if (Projectile.射出始弹Y轴注入指示物名 != "")
+            if (proj.射出始弹Y轴注入指示物名 != "")
             {
-                lnpc.setMarkers(Projectile.射出始弹Y轴注入指示物名, (int)num63, reset: false);
+                lnpc.setMarkers(proj.射出始弹Y轴注入指示物名, (int)num63, reset: false);
             }
-            if (!Projectile.不射原始)
+            if (!proj.不射原始)
             {
-                if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                 {
-                    NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                    NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                 }
-                else if (Projectile.弹点召唤怪物 != 0)
+                else if (proj.弹点召唤怪物 != 0)
                 {
-                    LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                    LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                 }
             }
-            if (Projectile.始弹点怪物传送)
+            if (proj.始弹点怪物传送)
             {
-                npc.Teleport(new Vector2(num62, num63), Projectile.始弹点怪物传送类型, Projectile.始弹点怪物传送信息);
+                npc.Teleport(new Vector2(num62, num63), proj.始弹点怪物传送类型, proj.始弹点怪物传送信息);
             }
-            int num64 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射数名) * Projectile.指示物数量注入差度位射数系数);
-            int num65 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射角名) * Projectile.指示物数量注入差度位射角系数);
-            int num66 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位半径名) * Projectile.指示物数量注入差度位半径系数);
-            int num67 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射数名) * Projectile.指示物数量注入差度射数系数);
-            int num68 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射角名) * Projectile.指示物数量注入差度射角系数);
-            int num69 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位射数名) * Projectile.指示物数量注入差位射数系数);
-            int num70 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移X名) * Projectile.指示物数量注入差位偏移X系数);
-            int num71 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移Y名) * Projectile.指示物数量注入差位偏移Y系数);
-            if (Projectile.差度位射数 + num64 > 0 && Projectile.差度位射角 + num65 != 0 && Projectile.差度位半径 + num66 > 0)
+            int num64 = (int)(lnpc.getMarkers(proj.指示物数量注入差度位射数名) * proj.指示物数量注入差度位射数系数);
+            int num65 = (int)(lnpc.getMarkers(proj.指示物数量注入差度位射角名) * proj.指示物数量注入差度位射角系数);
+            int num66 = (int)(lnpc.getMarkers(proj.指示物数量注入差度位半径名) * proj.指示物数量注入差度位半径系数);
+            int num67 = (int)(lnpc.getMarkers(proj.指示物数量注入差度射数名) * proj.指示物数量注入差度射数系数);
+            int num68 = (int)(lnpc.getMarkers(proj.指示物数量注入差度射角名) * proj.指示物数量注入差度射角系数);
+            int num69 = (int)(lnpc.getMarkers(proj.指示物数量注入差位射数名) * proj.指示物数量注入差位射数系数);
+            int num70 = (int)(lnpc.getMarkers(proj.指示物数量注入差位偏移X名) * proj.指示物数量注入差位偏移X系数);
+            int num71 = (int)(lnpc.getMarkers(proj.指示物数量注入差位偏移Y名) * proj.指示物数量注入差位偏移Y系数);
+            if (proj.差度位射数 + num64 > 0 && proj.差度位射角 + num65 != 0 && proj.差度位半径 + num66 > 0)
             {
-                double num72 = Projectile.差度位始角 + (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位始角名) * Projectile.指示物数量注入差度位始角系数);
-                for (int num73 = 0; num73 < Projectile.差度位射数 + num64; num73++)
+                double num72 = proj.差度位始角 + (int)(lnpc.getMarkers(proj.指示物数量注入差度位始角名) * proj.指示物数量注入差度位始角系数);
+                for (int num73 = 0; num73 < proj.差度位射数 + num64; num73++)
                 {
-                    num72 += Projectile.差度位射角 + num65;
-                    float num74 = (float)((Projectile.差度位半径 + num66) * Math.Cos(num72 * Math.PI / 180.0));
-                    float num75 = (float)((Projectile.差度位半径 + num66) * Math.Sin(num72 * Math.PI / 180.0));
-                    num62 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num74 + num59;
-                    num63 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num75 + num60;
-                    if (!Projectile.不射差度位)
+                    num72 += proj.差度位射角 + num65;
+                    float num74 = (float)((proj.差度位半径 + num66) * Math.Cos(num72 * Math.PI / 180.0));
+                    float num75 = (float)((proj.差度位半径 + num66) * Math.Sin(num72 * Math.PI / 180.0));
+                    num62 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num74 + num59;
+                    num63 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num75 + num60;
+                    if (!proj.不射差度位)
                     {
-                        if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                        if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                         {
-                            NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                            NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                         }
-                        else if (Projectile.弹点召唤怪物 != 0)
+                        else if (proj.弹点召唤怪物 != 0)
                         {
-                            LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                            LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                         }
                     }
-                    if (Projectile.差度射数 + num67 > 0 && Projectile.差度射角 + num68 != 0f)
+                    if (proj.差度射数 + num67 > 0 && proj.差度射角 + num68 != 0f)
                     {
-                        for (int num76 = 0; num76 < Projectile.差度射数 + num67; num76++)
+                        for (int num76 = 0; num76 < proj.差度射数 + num67; num76++)
                         {
-                            num58 += (double)(Projectile.差度射角 + num68);
+                            num58 += (double)(proj.差度射角 + num68);
                             num55 = (float)((double)num57 * Math.Cos(num58 * Math.PI / 180.0));
                             num56 = (float)((double)num57 * Math.Sin(num58 * Math.PI / 180.0));
-                            if (Projectile.速度注入AI0)
+                            if (proj.速度注入AI0)
                             {
                                 ai4 = (float)Math.Atan2(num56, num55);
-                                num55 = Projectile.速度注入AI0后X轴速度;
-                                num56 = Projectile.速度注入AI0后Y轴速度;
+                                num55 = proj.速度注入AI0后X轴速度;
+                                num56 = proj.速度注入AI0后Y轴速度;
                             }
-                            num62 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-                            num63 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-                            if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                            num62 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+                            num63 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+                            if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                             {
-                                NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                                NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                             }
-                            else if (Projectile.弹点召唤怪物 != 0)
+                            else if (proj.弹点召唤怪物 != 0)
                             {
-                                LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                                LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                             }
-                            if (Projectile.差位射数 + num69 <= 0 || (Projectile.差位偏移X + num70 == 0f && Projectile.差位偏移Y + num71 == 0f))
+                            if (proj.差位射数 + num69 <= 0 || (proj.差位偏移X + num70 == 0f && proj.差位偏移Y + num71 == 0f))
                             {
                                 continue;
                             }
-                            float num77 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-                            float num78 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-                            for (int num79 = 0; num79 < Projectile.差位射数 + num69; num79++)
+                            float num77 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+                            float num78 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+                            for (int num79 = 0; num79 < proj.差位射数 + num69; num79++)
                             {
-                                num77 += Projectile.差位偏移X + num70;
-                                num78 += Projectile.差位偏移Y + num71;
+                                num77 += proj.差位偏移X + num70;
+                                num78 += proj.差位偏移Y + num71;
                                 num62 = num77;
                                 num63 = num78;
-                                if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                                if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                                 {
-                                    NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                                    NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                                 }
-                                else if (Projectile.弹点召唤怪物 != 0)
+                                else if (proj.弹点召唤怪物 != 0)
                                 {
-                                    LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                                    LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (Projectile.差位射数 + num69 <= 0 || (Projectile.差位偏移X + num70 == 0f && Projectile.差位偏移Y + num71 == 0f))
+                        if (proj.差位射数 + num69 <= 0 || (proj.差位偏移X + num70 == 0f && proj.差位偏移Y + num71 == 0f))
                         {
                             continue;
                         }
-                        float num80 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-                        float num81 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-                        for (int num82 = 0; num82 < Projectile.差位射数 + num69; num82++)
+                        float num80 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+                        float num81 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+                        for (int num82 = 0; num82 < proj.差位射数 + num69; num82++)
                         {
-                            num80 += Projectile.差位偏移X + num70;
-                            num81 += Projectile.差位偏移Y + num71;
+                            num80 += proj.差位偏移X + num70;
+                            num81 += proj.差位偏移Y + num71;
                             num62 = num80;
                             num63 = num81;
-                            if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                            if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                             {
-                                NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                                NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                             }
-                            else if (Projectile.弹点召唤怪物 != 0)
+                            else if (proj.弹点召唤怪物 != 0)
                             {
-                                LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                                LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                             }
                         }
                     }
                 }
             }
-            else if (Projectile.差度射数 + num67 > 0 && Projectile.差度射角 + num68 != 0f)
+            else if (proj.差度射数 + num67 > 0 && proj.差度射角 + num68 != 0f)
             {
-                for (int num83 = 0; num83 < Projectile.差度射数 + num67; num83++)
+                for (int num83 = 0; num83 < proj.差度射数 + num67; num83++)
                 {
-                    num58 += (double)(Projectile.差度射角 + num68);
+                    num58 += (double)(proj.差度射角 + num68);
                     num55 = (float)((double)num57 * Math.Cos(num58 * Math.PI / 180.0));
                     num56 = (float)((double)num57 * Math.Sin(num58 * Math.PI / 180.0));
-                    if (Projectile.速度注入AI0)
+                    if (proj.速度注入AI0)
                     {
                         ai4 = (float)Math.Atan2(num56, num55);
-                        num55 = Projectile.速度注入AI0后X轴速度;
-                        num56 = Projectile.速度注入AI0后Y轴速度;
+                        num55 = proj.速度注入AI0后X轴速度;
+                        num56 = proj.速度注入AI0后Y轴速度;
                     }
-                    num62 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-                    num63 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-                    if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                    num62 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+                    num63 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+                    if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                     {
-                        NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                        NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                     }
-                    else if (Projectile.弹点召唤怪物 != 0)
+                    else if (proj.弹点召唤怪物 != 0)
                     {
-                        LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                        LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                     }
-                    if (Projectile.差位射数 + num69 <= 0 || (Projectile.差位偏移X + num70 == 0f && Projectile.差位偏移Y + num71 == 0f))
+                    if (proj.差位射数 + num69 <= 0 || (proj.差位偏移X + num70 == 0f && proj.差位偏移Y + num71 == 0f))
                     {
                         continue;
                     }
-                    float num84 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-                    float num85 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-                    for (int num86 = 0; num86 < Projectile.差位射数 + num69; num86++)
+                    float num84 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+                    float num85 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+                    for (int num86 = 0; num86 < proj.差位射数 + num69; num86++)
                     {
-                        num84 += Projectile.差位偏移X + num70;
-                        num85 += Projectile.差位偏移Y + num71;
+                        num84 += proj.差位偏移X + num70;
+                        num85 += proj.差位偏移Y + num71;
                         num62 = num84;
                         num63 = num85;
-                        if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                        if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                         {
-                            NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                            NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                         }
-                        else if (Projectile.弹点召唤怪物 != 0)
+                        else if (proj.弹点召唤怪物 != 0)
                         {
-                            LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                            LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                         }
                     }
                 }
             }
             else
             {
-                if (Projectile.差位射数 + num69 <= 0 || (Projectile.差位偏移X + num70 == 0f && Projectile.差位偏移Y + num71 == 0f))
+                if (proj.差位射数 + num69 <= 0 || (proj.差位偏移X + num70 == 0f && proj.差位偏移Y + num71 == 0f))
                 {
                     continue;
                 }
-                float num87 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num59;
-                float num88 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num60;
-                for (int num89 = 0; num89 < Projectile.差位射数 + num69; num89++)
+                float num87 = num + proj.X轴偏移 + lnpc.getMarkers(proj.指示物数量注入X轴偏移名) * proj.指示物数量注入X轴偏移系数 + num59;
+                float num88 = num2 + proj.Y轴偏移 + lnpc.getMarkers(proj.指示物数量注入Y轴偏移名) * proj.指示物数量注入Y轴偏移系数 + num60;
+                for (int num89 = 0; num89 < proj.差位射数 + num69; num89++)
                 {
-                    num87 += Projectile.差位偏移X + num70;
-                    num88 += Projectile.差位偏移Y + num71;
+                    num87 += proj.差位偏移X + num70;
+                    num88 += proj.差位偏移Y + num71;
                     num62 = num87;
                     num63 = num88;
-                    if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
+                    if (proj.弹点召唤怪物 == 0 || !proj.弹点召唤怪物无弹)
                     {
-                        NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai4, ai5, ai6, Projectile.持续时间);
+                        NewProjectile(npc.whoAmI, proj.标志, Terraria.Projectile.GetNoneSource(), num62, num63, num55, num56, proj.弹幕ID, proj.弹幕伤害, proj.弹幕击退, Main.myPlayer, ai4, ai5, ai6, proj.持续时间);
                     }
-                    else if (Projectile.弹点召唤怪物 != 0)
+                    else if (proj.弹点召唤怪物 != 0)
                     {
-                        LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num62, num63);
+                        LaunchProjectileSpawnNPC(proj.弹点召唤怪物, num62, num63);
                     }
                 }
             }
