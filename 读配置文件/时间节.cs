@@ -68,6 +68,8 @@ public class 时间节 : ICloneable
 
     public List<玩家条件节> 玩家条件 = new List<玩家条件节>();
 
+    public List<弹幕条件节> 弹幕条件 = new List<弹幕条件节>();
+
     public List<指示物组节> 指示物条件 = new List<指示物组节>();
 
     public List<指示物节> 指示物修改 = new List<指示物节>();

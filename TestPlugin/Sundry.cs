@@ -1133,7 +1133,7 @@ public class Sundry
                 continue;
             }
             int num = 0;
-            num = ((monster.范围起 <= 0) ? TShock.Players.Count((TSPlayer p) => p != null && p.Active && !p.Dead && p.TPlayer.statLife > 0 && npc.WithinRange((p.TPlayer).Center, monster.范围内 << 4)) : TShock.Players.Count((TSPlayer p) => p != null && p.Active && !p.Dead && p.TPlayer.statLife > 0 && !npc.WithinRange((p.TPlayer).Center, (float)(monster.范围起 << 4)) && npc.WithinRange((p.TPlayer).Center, (float)(monster.范围内 << 4))));
+            num = (monster.范围起 <= 0) ? TShock.Players.Count(p => p != null && p.Active && !p.Dead && p.TPlayer.statLife > 0 && (monster.生命值 == 0 || ((monster.生命值 > 0) ? (p.TPlayer.statLife >= monster.生命值) : (p.TPlayer.statLife < Math.Abs(monster.生命值)))) && Npc.WithinRange(p.TPlayer.Center, monster.范围内 << 4)) : TShock.Players.Count(p => p != null && p.Active && !p.Dead && p.TPlayer.statLife > 0 && (monster.生命值 == 0 || ((monster.生命值 > 0) ? (p.TPlayer.statLife >= monster.生命值) : (p.TPlayer.statLife < Math.Abs(monster.生命值)))) && !Npc.WithinRange(p.TPlayer.Center, monster.范围起 << 4) && Npc.WithinRange(p.TPlayer.Center, monster.范围内 << 4));
             if (monster.符合数 == 0)
             {
                 continue;
@@ -1162,7 +1162,7 @@ public class Sundry
         foreach (怪物条件节 monster in Rmonster)
         {
             int num = 0;
-            num = ((monster.范围内 <= 0) ? Main.npc.Count((NPC p) => p != null && p.active && (monster.怪物ID == 0 || p.netID == monster.怪物ID) && p.whoAmI != npc.whoAmI && (monster.血量比 == 0 || p.lifeMax < 1 || ((monster.血量比 > 0) ? (p.life * 100 / p.lifeMax >= monster.血量比) : (p.life * 100 / p.lifeMax < Math.Abs(monster.血量比)))) && (monster.指示物 == null || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].haveMarkers(monster.指示物, npc))) && (monster.查标志 == "" || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].Config != null && TestPlugin.LNpcs[p.whoAmI].Config.标志 == monster.查标志))) : Main.npc.Count((NPC p) => p != null && p.active && (monster.怪物ID == 0 || p.netID == monster.怪物ID) && p.whoAmI != npc.whoAmI && npc.WithinRange(p.Center, monster.范围内 << 4) && (monster.血量比 == 0 || p.lifeMax < 1 || ((monster.血量比 > 0) ? (p.life * 100 / p.lifeMax >= monster.血量比) : (p.life * 100 / p.lifeMax < Math.Abs(monster.血量比)))) && (monster.指示物 == null || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].haveMarkers(monster.指示物, npc))) && (monster.查标志 == "" || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].Config != null && TestPlugin.LNpcs[p.whoAmI].Config.标志 == monster.查标志))));
+            num = ((monster.范围内 <= 0) ? Main.npc.Count(p => p != null && p.active && (monster.怪物ID == 0 || p.netID == monster.怪物ID) && p.whoAmI != Npc.whoAmI && (monster.血量比 == 0 || p.lifeMax < 1 || ((monster.血量比 > 0) ? (p.life * 100 / p.lifeMax >= monster.血量比) : (p.life * 100 / p.lifeMax < Math.Abs(monster.血量比)))) && (monster.指示物 == null || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].haveMarkers(monster.指示物, Npc))) && (monster.查标志 == "" || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].Config != null && TestPlugin.LNpcs[p.whoAmI].Config.标志 == monster.查标志))) : Main.npc.Count(p => p != null && p.active && (monster.怪物ID == 0 || p.netID == monster.怪物ID) && p.whoAmI != Npc.whoAmI && Npc.WithinRange(p.Center, monster.范围内 << 4) && (monster.血量比 == 0 || p.lifeMax < 1 || ((monster.血量比 > 0) ? (p.life * 100 / p.lifeMax >= monster.血量比) : (p.life * 100 / p.lifeMax < Math.Abs(monster.血量比)))) && (monster.指示物 == null || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].haveMarkers(monster.指示物, Npc))) && (monster.查标志 == "" || (TestPlugin.LNpcs[p.whoAmI] != null && TestPlugin.LNpcs[p.whoAmI].Config != null && TestPlugin.LNpcs[p.whoAmI].Config.标志 == monster.查标志))));
             if (monster.符合数 == 0)
             {
                 continue;
@@ -1184,31 +1184,38 @@ public class Sundry
         return result;
     }
 
-    public static float StrToFloat(string FloatString, float DefaultFloat = 0f)
+    public static bool ProjectileRequirement(List<弹幕条件节> Rmonster, NPC npc)
     {
-        if (FloatString != null && FloatString != "")
+        NPC Npc = npc;
+        bool result = false;
+        foreach (弹幕条件节 rmonster in Rmonster)
         {
-            if (float.TryParse(FloatString, out var result))
+            int num = 0;
+            num = (rmonster.范围内 <= 0) ? Main.projectile.Count(p => p != null && p.active && p.owner == Main.myPlayer && (rmonster.弹幕ID == 0 || p.type == rmonster.弹幕ID) && (!rmonster.全局弹幕 || (TestPlugin.LPrjs[p.whoAmI] != null && TestPlugin.LPrjs[p.whoAmI].UseI == Npc.whoAmI)) && (rmonster.查标志 == "" || (TestPlugin.LPrjs[p.whoAmI] != null && TestPlugin.LPrjs[p.whoAmI].Notes == rmonster.查标志))) : Main.projectile.Count(p => p != null && p.active && p.owner == Main.myPlayer && (rmonster.弹幕ID == 0 || p.type == rmonster.弹幕ID) && Npc.WithinRange(p.Center, rmonster.范围内 << 4) && (!rmonster.全局弹幕 || (TestPlugin.LPrjs[p.whoAmI] != null && TestPlugin.LPrjs[p.whoAmI].UseI == Npc.whoAmI)) && (rmonster.查标志 == "" || (TestPlugin.LPrjs[p.whoAmI] != null && TestPlugin.LPrjs[p.whoAmI].Notes == rmonster.查标志)));
+            if (rmonster.符合数 == 0)
             {
-                return result;
+                continue;
             }
-            return DefaultFloat;
-        }
-        return DefaultFloat;
-    }
-
-    public static void clearPrjsOfUse(int useIndex, string notes)
-    {
-        lock (TestPlugin.LPrjs)
-        {
-            for (int i = 0; i < TestPlugin.LPrjs.Count(); i++)
+            if (rmonster.符合数 > 0)
             {
-                if (TestPlugin.LPrjs[i] != null && TestPlugin.LPrjs[i].Index >= 0 && TestPlugin.LPrjs[i].UseI == useIndex)
+                if (num < rmonster.符合数)
                 {
-                    TestPlugin.LPrjs[i].clear(notes);
+                    result = true;
+                    break;
                 }
             }
+            else if (num >= Math.Abs(rmonster.符合数))
+            {
+                result = true;
+                break;
+            }
         }
+        return result;
+    }
+
+    public static float StrToFloat(string FloatString, float DefaultFloat = 0f)
+    {
+        return FloatString != null && FloatString != "" ? float.TryParse(FloatString, out var result) ? result : DefaultFloat : DefaultFloat;
     }
 
     public static void updataProjectile(List<弹幕更新节> Projectiles, NPC npc, LNPC lnpc)
@@ -1223,19 +1230,19 @@ public class Sundry
             bool flag = false;
             lock (TestPlugin.LPrjs)
             {
-                for (int i = 0; i < TestPlugin.LPrjs.Count(); i++)
+                for (int i = 0; i < TestPlugin.LPrjs.Length; i++)
                 {
                     if (TestPlugin.LPrjs[i] == null || TestPlugin.LPrjs[i].Index < 0 || TestPlugin.LPrjs[i].Type != Projectile.弹幕ID || !(TestPlugin.LPrjs[i].Notes == Projectile.标志) || TestPlugin.LPrjs[i].UseI != npc.whoAmI)
                     {
                         continue;
                     }
                     int index = TestPlugin.LPrjs[i].Index;
-                    if (Main.projectile[index] == null || !(Main.projectile[index]).active || Main.projectile[index].type != Projectile.弹幕ID || Main.projectile[index].owner != Main.myPlayer || AIRequirementP(Projectile.AI条件, Main.projectile[index]))
+                    if (Main.projectile[index] == null || !Main.projectile[index].active || Main.projectile[index].type != Projectile.弹幕ID || Main.projectile[index].owner != Main.myPlayer || AIRequirementP(Projectile.AI条件, Main.projectile[index]))
                     {
                         continue;
                     }
-                    float x = (Main.projectile[index]).position.X;
-                    float y = (Main.projectile[index]).position.Y;
+                    float x = Main.projectile[index].position.X;
+                    float y = Main.projectile[index].position.Y;
                     if (!flag)
                     {
                         flag = true;
@@ -1252,8 +1259,8 @@ public class Sundry
                     {
                         LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, x, y);
                     }
-                    float x2 = (Main.projectile[index]).velocity.X;
-                    float y2 = (Main.projectile[index]).velocity.Y;
+                    float x2 = Main.projectile[index].velocity.X;
+                    float y2 = Main.projectile[index].velocity.Y;
                     int damage = Main.projectile[index].damage;
                     float knockBack = Main.projectile[index].knockBack;
                     float num = x2;
@@ -1278,11 +1285,11 @@ public class Sundry
                             int? num10 = null;
                             for (int j = 0; j < 255; j++)
                             {
-                                if (num5 == j || Main.player[j] == null || !(Main.player[j]).active || Main.player[j].dead || (Projectile.仅攻击对象 && j != npc.target))
+                                if (num5 == j || Main.player[j] == null || !Main.player[j].active || Main.player[j].dead || (Projectile.仅攻击对象 && j != npc.target))
                                 {
                                     continue;
                                 }
-                                float num11 = Math.Abs((Main.player[j]).Center.X - x + Math.Abs((Main.player[j]).Center.Y - y));
+                                float num11 = Math.Abs(Main.player[j].Center.X - x + Math.Abs(Main.player[j].Center.Y - y));
                                 if ((num7 == -1f || num11 < num7) && (!Projectile.计入仇恨 || !num9.HasValue || (Projectile.逆仇恨锁定 ? (Main.player[j].aggro < num9) : (Main.player[j].aggro > num9))) && (!Projectile.锁定血少 || !num8.HasValue || (Projectile.逆血量锁定 ? (Main.player[j].statLife > num8) : (Main.player[j].statLife < num8))) && (!Projectile.锁定低防 || !num10.HasValue || (Projectile.逆防御锁定 ? (Main.player[j].statDefense > num10) : (Main.player[j].statDefense < num10))))
                                 {
                                     if (Projectile.计入仇恨)
@@ -1333,12 +1340,12 @@ public class Sundry
                                 {
                                     Projectile.锁定范围 = 350;
                                 }
-                                if (!WithinRange(x3, y3, (val).Center, Projectile.锁定范围 << 4))
+                                if (!WithinRange(x3, y3, val.Center, Projectile.锁定范围 << 4))
                                 {
                                     flag2 = true;
                                 }
-                                num12 = (val).Center.X;
-                                num13 = (val).Center.Y;
+                                num12 = val.Center.X;
+                                num13 = val.Center.Y;
                             }
                             if (!flag2)
                             {
@@ -1390,7 +1397,7 @@ public class Sundry
                     }
                     if (num != x2)
                     {
-                        (Main.projectile[index]).velocity.X = num;
+                        Main.projectile[index].velocity.X = num;
                         if (!list.Contains(index))
                         {
                             list.Add(index);
@@ -1398,7 +1405,7 @@ public class Sundry
                     }
                     if (num != x2)
                     {
-                        (Main.projectile[index]).velocity.X = num;
+                        Main.projectile[index].velocity.X = num;
                         if (!list.Contains(index))
                         {
                             list.Add(index);
@@ -1406,7 +1413,7 @@ public class Sundry
                     }
                     if (num2 != y2)
                     {
-                        (Main.projectile[index]).velocity.Y = num2;
+                        Main.projectile[index].velocity.Y = num2;
                         if (!list.Contains(index))
                         {
                             list.Add(index);
@@ -1457,9 +1464,22 @@ public class Sundry
                             }
                         }
                     }
-                    if (Projectile.销毁弹幕)
+                    if (Projectile.持续时间 == 0)
                     {
                         Main.projectile[index].Kill();
+                    }
+                    else if (Projectile.持续时间 > 0)
+                    {
+                        Main.projectile[index].timeLeft = Projectile.持续时间;
+                    }
+                    if (Projectile.清除弹幕)
+                    {
+                        Main.projectile[index].active = false;
+                        Main.projectile[index].type = 0;
+                        if (!list.Contains(index))
+                        {
+                            list.Add(index);
+                        }
                     }
                 }
             }

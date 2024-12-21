@@ -68,7 +68,9 @@ public class 弹幕更新节
 
     public string 弹幕Y轴注入指示物名 = "";
 
-    public bool 销毁弹幕 = false;
+    public int 持续时间 = -1;
+
+    public bool 清除弹幕 = false;
 
     public 弹幕更新节(int id, string note)
     {

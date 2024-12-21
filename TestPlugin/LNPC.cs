@@ -91,13 +91,13 @@ public class LNPC
     public void setMarkers(string name, int num, bool reset)
     {
         string name2 = name;
-        if (!Markers.Exists((指示物组节 t) => t.名称 == name))
+        if (!Markers.Exists((指示物组节 t) => t.名称 == name2))
         {
-            Markers.Add(new 指示物组节(name, 0));
+            Markers.Add(new 指示物组节(name2, 0));
         }
         foreach (指示物组节 marker in Markers)
         {
-            if (marker.名称 == name)
+            if (marker.名称 == name2)
             {
                 if (reset)
                 {
@@ -115,9 +115,9 @@ public class LNPC
     public void setMarkers(string name, int num, bool reset, string inname, float infactor, string inop, int rmin, int rmax, ref Random rd, NPC npc)
     {
         string name2 = name;
-        if (!Markers.Exists((指示物组节 t) => t.名称 == name))
+        if (!Markers.Exists((指示物组节 t) => t.名称 == name2))
         {
-            Markers.Add(new 指示物组节(name, 0));
+            Markers.Add(new 指示物组节(name2, 0));
         }
         int num2 = 0;
         if (rmax > rmin)
@@ -127,7 +127,7 @@ public class LNPC
         int num3 = addMarkersIn(inname, infactor, npc);
         foreach (指示物组节 marker in Markers)
         {
-            if (marker.名称 == name)
+            if (marker.名称 == name2)
             {
                 if (reset)
                 {
@@ -155,7 +155,7 @@ public class LNPC
             {
                 num = npc.whoAmI;
             }
-            else if(npc != null)
+            else
             {
                 switch (inname)
                 {

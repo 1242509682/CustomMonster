@@ -19,18 +19,5 @@ public class LPrj
         Type = type;
         Notes = notes;
     }
-
-    public void clear(string notes)
-    {
-        if ((!(notes != "") || !(Notes != notes)) && Index >= 0)
-        {
-            int index = Index;
-            Index = -1;
-            if (Main.projectile[index] != null && Main.projectile[index].active && Main.projectile[index].type == Type && Main.projectile[index].owner == Main.myPlayer)
-            {
-                Main.projectile[index].Kill();
-            }
-        }
-    }
 }
 

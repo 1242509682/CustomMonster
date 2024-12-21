@@ -22,7 +22,7 @@ public class TestPlugin : TerrariaPlugin
     public override string Author => "GK 阁下 羽学";
     public override string Description => "自定义怪物出没时的血量,当然不止这些！";
     public override string Name => "自定义怪物血量";
-    public override Version Version => new Version(1, 0, 4, 38);
+    public override Version Version => new Version(1, 0, 4, 39);
     #endregion
 
     #region 全局变量
@@ -76,7 +76,7 @@ public class TestPlugin : TerrariaPlugin
         {
             HelpText = "输入 /重读自定义怪物血量 会重新读取重读自定义怪物血量表"
         });
-        Commands.ChatCommands.Add(new Command("召唤自定义怪物血量怪物", new CommandDelegate(CMD), new string[1] { "召唤自定义怪物血量怪物" })
+        Commands.ChatCommands.Add(new Command("召唤自定义怪物血量怪物", new CommandDelegate(CMD), new string[] { "召唤自定义怪物血量怪物","smc" })
         {
             HelpText = "输入 /召唤自定义怪物血量怪物 怪物标志 会召唤指定标记的怪物(无视召唤条件)"
         });
@@ -1427,7 +1427,7 @@ public class TestPlugin : TerrariaPlugin
                                     continue;
                                 }
                             }
-                            if ((item5.面向条件 == 1 && (val3.direction != 1 || val3.directionY != 0)) || (item5.面向条件 == 2 && (val3.direction != 1 || val3.directionY != 1)) || (item5.面向条件 == 3 && (val3.direction != 0 || val3.directionY != 1)) || (item5.面向条件 == 4 && (val3.direction != -1 || val3.directionY != 1)) || (item5.面向条件 == 5 && (val3.direction != -1 || val3.directionY != 0)) || (item5.面向条件 == 6 && (val3.direction != -1 || val3.directionY != -1)) || (item5.面向条件 == 7 && (val3.direction != 0 || val3.directionY != -1)) || (item5.面向条件 == 8 && (val3.direction != 1 || val3.directionY != -1)) || (item5.面向条件 == 9 && val3.direction != 1) || (item5.面向条件 == 10 && val3.directionY != 1) || (item5.面向条件 == 11 && val3.direction != -1) || (item5.面向条件 == 12 && val3.directionY != -1) || item5.触发率子 <= 0 || item5.触发率母 <= 0 || (item5.触发率子 < item5.触发率母 && rd.Next(1, item5.触发率母 + 1) > item5.触发率子) || Sundry.NPCKillRequirement(item5.杀怪条件) || !lNPC2.haveMarkers(item5.指示物条件, val3) || Sundry.AIRequirement(item5.AI条件, val3) || Sundry.MonsterRequirement(item5.怪物条件, val3) || Sundry.PlayerRequirement(item5.玩家条件, val3))
+                            if ((item5.面向条件 == 1 && (val3.direction != 1 || val3.directionY != 0)) || (item5.面向条件 == 2 && (val3.direction != 1 || val3.directionY != 1)) || (item5.面向条件 == 3 && (val3.direction != 0 || val3.directionY != 1)) || (item5.面向条件 == 4 && (val3.direction != -1 || val3.directionY != 1)) || (item5.面向条件 == 5 && (val3.direction != -1 || val3.directionY != 0)) || (item5.面向条件 == 6 && (val3.direction != -1 || val3.directionY != -1)) || (item5.面向条件 == 7 && (val3.direction != 0 || val3.directionY != -1)) || (item5.面向条件 == 8 && (val3.direction != 1 || val3.directionY != -1)) || (item5.面向条件 == 9 && val3.direction != 1) || (item5.面向条件 == 10 && val3.directionY != 1) || (item5.面向条件 == 11 && val3.direction != -1) || (item5.面向条件 == 12 && val3.directionY != -1) || item5.触发率子 <= 0 || item5.触发率母 <= 0 || (item5.触发率子 < item5.触发率母 && rd.Next(1, item5.触发率母 + 1) > item5.触发率子) || Sundry.NPCKillRequirement(item5.杀怪条件) || !lNPC2.haveMarkers(item5.指示物条件, val3) || Sundry.AIRequirement(item5.AI条件, val3) || Sundry.MonsterRequirement(item5.怪物条件, val3) || Sundry.PlayerRequirement(item5.玩家条件, val3) || Sundry.ProjectileRequirement(item5.弹幕条件, val3))
                             {
                                 continue;
                             }

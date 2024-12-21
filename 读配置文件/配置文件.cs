@@ -13,7 +13,7 @@ public class 配置文件
     public bool 控制台广告 = false;
     public string 配置说明 = "版本①;难度直线提升,怪物最低3个人血量,几乎全Boss加强!";
     public bool 启动错误报告 = false;
-    public string 配置文件插件版本号 = "1.0.4.36";
+    public string 配置文件插件版本号 = "1.0.4.39";
     public bool 启动死亡队友视角 = false;
     public bool 队友视角仅BOSS时 = true;
     public int 队友视角流畅度 = -1;
