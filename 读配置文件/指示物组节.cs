@@ -1,4 +1,4 @@
-﻿namespace TestPlugin.读配置文件;
+﻿namespace TestPlugin;
 
 public class 指示物组节
 {
@@ -12,9 +12,14 @@ public class 指示物组节
 
     public float 指示物注入数量系数 = 1f;
 
+    public 指示物组节()
+    {
+    }
+
     public 指示物组节(string name, int num)
     {
         名称 = name;
         数量 = num;
     }
 }
+    

@@ -1,4 +1,4 @@
-﻿namespace TestPlugin.读配置文件;
+﻿namespace TestPlugin;
 
 public class 怪物条件节
 {
@@ -13,13 +13,5 @@ public class 怪物条件节
     public int 血量比 = 0;
 
     public int 符合数 = 0;
-
-    public 怪物条件节(int id, int range, int num)
-    {
-        怪物ID = id;
-        范围内 = range;
-        符合数 = num;
-        指示物 = new List<指示物组节>();
-        查标志 = "";
-    }
 }
+

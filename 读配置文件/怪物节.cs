@@ -1,9 +1,9 @@
-﻿using TestPlugin.读配置文件;
-
-namespace TestPlugin;
+﻿namespace TestPlugin;
 
 public class 怪物节
 {
+    public string 备注 = "";
+
     public string 标志 = "";
 
     public int 怪物ID = 0;
@@ -128,6 +128,10 @@ public class 怪物节
 
     public List<状态节> 周围状态 = new List<状态节>();
 
+    public int 反状态范围 = 0;
+
+    public List<状态节> 反周围状态 = new List<状态节>();
+
     public int 死状范围 = 0;
 
     public Dictionary<int, int> 死亡状态 = new Dictionary<int, int>();
@@ -152,6 +156,8 @@ public class 怪物节
 
     public List<怪物指示物修改节> 死亡怪物指示物修改 = new List<怪物指示物修改节>();
 
+    public List<弹幕更新节> 死亡更新弹幕 = new List<弹幕更新节>();
+
     public int 血事件限 = 1;
 
     public List<比例节> 血量事件 = new List<比例节>();
@@ -169,6 +175,5 @@ public class 怪物节
     public int 掉落组限 = 1;
 
     public List<掉落节> 额外掉落 = new List<掉落节>();
-
-    public string 备注 = "";
 }
+

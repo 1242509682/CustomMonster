@@ -54,6 +54,8 @@ public class 弹幕节
 
     public float 弹幕Ai2 = 0f;
 
+    public int AI风格 = -1;
+
     public string 指示物数量注入Ai0名 = "";
 
     public float 指示物数量注入Ai0系数 = 1f;
@@ -65,6 +67,10 @@ public class 弹幕节
     public string 指示物数量注入Ai2名 = "";
 
     public float 指示物数量注入Ai2系数 = 1f;
+
+    public string 指示物数量注入AI风格名 = "";
+
+    public float 指示物数量注入AI风格系数 = 1f;
 
     public float 怪面向X偏移修正 = 0f;
 
@@ -84,9 +90,31 @@ public class 弹幕节
 
     public string 射出始弹X轴注入指示物名 = "";
 
+    public float 射出始弹X轴注入指示物系数 = 1f;
+
     public string 射出始弹Y轴注入指示物名 = "";
 
+    public float 射出始弹Y轴注入指示物系数 = 1f;
+
     public string 锁定玩家序号注入指示物名 = "";
+
+    public string 锁定玩家血量注入指示物名 = "";
+
+    public string 锁定玩家X轴速度注入指示物名 = "";
+
+    public float 锁定玩家X轴速度注入指示物系数 = 1f;
+
+    public string 锁定玩家Y轴速度注入指示物名 = "";
+
+    public float 锁定玩家Y轴速度注入指示物系数 = 1f;
+
+    public string 指示物数量注入锁定玩家序号 = "";
+
+    public string 指示物数量注入锁定怪物序号 = "";
+
+    public bool 弹速注入怪物速度 = false;
+
+    public bool 弹速注入怪物速度累加 = false;
 
     public int 差度位始角 = 0;
 
@@ -148,6 +176,18 @@ public class 弹幕节
 
     public float 锁定速度 = 0f;
 
+    public float 锁定点X轴偏移 = 0f;
+
+    public float 锁定点Y轴偏移 = 0f;
+
+    public string 指示物数量注入锁定点X轴偏移名 = "";
+
+    public float 指示物数量注入锁定点X轴偏移系数 = 1f;
+
+    public string 指示物数量注入锁定点Y轴偏移名 = "";
+
+    public float 指示物数量注入锁定点Y轴偏移系数 = 1f;
+
     public string 指示物数量注入锁定速度名 = "";
 
     public float 指示物数量注入锁定速度系数 = 1f;
@@ -155,6 +195,8 @@ public class 弹幕节
     public bool 以弹为位 = false;
 
     public int 持续时间 = -1;
+
+    public int[] 锁定状态条件 = new int[0];
 
     public bool 计入仇恨 = false;
 
@@ -181,12 +223,4 @@ public class 弹幕节
     public int 弹点召唤怪物 = 0;
 
     public bool 弹点召唤怪物无弹 = false;
-
-    public 弹幕节(int id, int sx, int sy, int dm)
-    {
-        弹幕ID = id;
-        X轴速度 = sx;
-        Y轴速度 = sy;
-        弹幕伤害 = dm;
-    }
 }

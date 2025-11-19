@@ -1,7 +1,9 @@
-﻿namespace TestPlugin.读配置文件;
+﻿namespace TestPlugin;
 
 public class 时间节 : ICloneable
 {
+    public string 备注 = "";
+
     public float 消耗时间 = 1f;
 
     public bool 循环执行 = true;
@@ -62,6 +64,8 @@ public class 时间节 : ICloneable
 
     public bool 跳出事件 = false;
 
+    public int 跳过事件 = 0;
+
     public List<怪物条件节> 怪物条件 = new List<怪物条件节>();
 
     public Dictionary<int, long> 杀怪条件 = new Dictionary<int, long>();
@@ -98,6 +102,8 @@ public class 时间节 : ICloneable
 
     public int 怪物防御 = 0;
 
+    public float 速度乘数 = 1f;
+
     public Dictionary<int, float> AI赋值 = new Dictionary<int, float>();
 
     public Dictionary<int, string> 指示物注入AI赋值 = new Dictionary<int, string>();
@@ -128,13 +134,21 @@ public class 时间节 : ICloneable
 
     public bool 初始拉取点坐标为零 = false;
 
+    public bool 拉取范围为矩形 = false;
+
+    public int 时间修改 = -1;
+
     public int 击退范围 = 0;
 
-    public int 击退力度 = 0;
+    public float 击退力度 = 0f;
+
+    public bool 柔和击退 = false;
 
     public int 杀伤范围 = 0;
 
     public int 杀伤伤害 = 0;
+
+    public bool 直接杀伤 = false;
 
     public int 清弹起始范围 = 0;
 
@@ -150,6 +164,10 @@ public class 时间节 : ICloneable
 
     public List<状态节> 周围状态 = new List<状态节>();
 
+    public int 反状态范围 = 0;
+
+    public List<状态节> 反周围状态 = new List<状态节>();
+
     public List<怪物杀伤节> 杀伤怪物 = new List<怪物杀伤节>();
 
     public Dictionary<int, int> 召唤怪物 = new Dictionary<int, int>();
@@ -161,19 +179,6 @@ public class 时间节 : ICloneable
     public string 喊话 = "";
 
     public bool 喊话无头 = false;
-
-    public 时间节(int p, Dictionary<int, int> summon, string shout, int heal, int num, List<玩家条件节> playR, bool R, int killp, List<弹幕节> proj)
-    {
-        消耗时间 = p;
-        循环执行 = R;
-        召唤怪物 = summon;
-        恢复血量 = heal;
-        喊话 = shout;
-        可触发次 = num;
-        玩家条件 = playR;
-        杀死条件 = killp;
-        释放弹幕 = proj;
-    }
 
     public object Clone()
     {

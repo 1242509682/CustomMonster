@@ -1,9 +1,9 @@
-﻿using TestPlugin.读配置文件;
-
-namespace TestPlugin;
+﻿namespace TestPlugin;
 
 public class 比例节 : ICloneable
 {
+    public string 备注 = "";
+
     public int 血量剩余比例 = 0;
 
     public int 可触发次 = 1;
@@ -82,7 +82,7 @@ public class 比例节 : ICloneable
 
     public int 击退范围 = 0;
 
-    public int 击退力度 = 0;
+    public float 击退力度 = 0f;
 
     public List<弹幕节> 释放弹幕 = new List<弹幕节>();
 
@@ -97,15 +97,6 @@ public class 比例节 : ICloneable
     public string 喊话 = "";
 
     public bool 喊话无头 = false;
-
-    public 比例节(int p, Dictionary<int, int> summon, string shout, int heal, int num)
-    {
-        血量剩余比例 = p;
-        召唤怪物 = summon;
-        恢复血量 = heal;
-        喊话 = shout;
-        可触发次 = num;
-    }
 
     public object Clone()
     {

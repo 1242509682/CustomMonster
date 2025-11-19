@@ -1,6 +1,4 @@
-﻿using Terraria;
-
-namespace TestPlugin;
+﻿namespace TestPlugin;
 
 public class LPrj
 {

@@ -1,4 +1,4 @@
-﻿namespace TestPlugin.读配置文件;
+﻿namespace TestPlugin;
 
 public class 声音节
 {

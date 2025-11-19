@@ -1,6 +1,4 @@
-﻿using TestPlugin.读配置文件;
-
-namespace TestPlugin;
+﻿namespace TestPlugin;
 
 public class 怪物杀伤节
 {
@@ -21,14 +19,4 @@ public class 怪物杀伤节
     public bool 直接伤害 = false;
 
     public bool 直接清除 = false;
-
-    public 怪物杀伤节(int id, int range, int num)
-    {
-        怪物ID = id;
-        范围内 = range;
-        造成伤害 = num;
-        指示物 = new List<指示物组节>();
-        查标志 = "";
-    }
 }
-

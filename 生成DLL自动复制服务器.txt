@@ -1,0 +1,3 @@
+copy bin\Release\net6.0\自定义怪物血量.dll C:\Users\羽学\Desktop\TShock5\ServerPlugins
+del C:\Users\羽学\Desktop\TShock5\tshock\自定义怪物血量.json
+taskkill /F /IM TShock.Server.exe

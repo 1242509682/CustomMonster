@@ -1,9 +1,9 @@
-﻿using TestPlugin.读配置文件;
-
-namespace TestPlugin;
+﻿namespace TestPlugin;
 
 public class 掉落节
 {
+    public string 备注 = "";
+
     public int 掉落率子 = 1;
 
     public int 掉落率母 = 1;
@@ -53,11 +53,5 @@ public class 掉落节
     public string 喊话 = "";
 
     public bool 喊话无头 = false;
-
-    public string 备注 = "";
-
-    public 掉落节(int id, int stack)
-    {
-        掉落物品.Add(new 物品节(id, stack));
-    }
 }
+
