@@ -18,31 +18,31 @@ public class TestPlugin : TerrariaPlugin
     public override string Name => "自定义怪物血量";
     public override string Author => "GK 阁下 羽学";
     public override Version Version => new Version(1, 0, 4, 45);
-    public override string Description => "自定义怪物出没时的血量,当然不止这些！";
+    public override string Description => "自定义怪物,羽学重构版";
     #endregion
 
     #region 全局变量
     /// <summary>
     /// 插件主配置文件实例 - 存储所有自定义怪物配置和插件设置
     /// </summary>
-    public 配置文件 _配置 = new 配置文件();
+    public 配置文件 Config = new 配置文件();
 
     /// <summary>
     /// 主配置文件名 - 用于存储插件的主要配置
     /// </summary>
-    public string _配置文件名 => "自定义怪物血量.json";
+    public string ConfigPath => "自定义怪物血量.json";
 
     /// <summary>
     /// 额外配置路径 - 用于存储额外的配置文件（带点前缀）
     /// </summary>
 
-    // public string _额外配置路径 => Path.Combine(TShock.SavePath, "." + _配置文件名);
+    // public string _额外配置路径 => Path.Combine(TShock.SavePath, "." + ConfigPath);
     public string _额外配置路径 => Path.Combine(TShock.SavePath, "自定义怪物血量_额外配置");
 
     /// <summary>
     /// 主配置路径 - 插件配置文件在服务器中的完整路径
     /// </summary>
-    public string _配置路径 => Path.Combine(TShock.SavePath, _配置文件名);
+    public string _配置路径 => Path.Combine(TShock.SavePath, ConfigPath);
 
     /// <summary>
     /// NPC击杀数据文件路径 - 存储NPC击杀统计数据的文件
@@ -95,7 +95,6 @@ public class TestPlugin : TerrariaPlugin
     /// 队友视角计数器 - 用于控制队友视角功能的更新频率
     /// </summary>
     public int TeamP = 0;
-
     #endregion
 
     #region 注册与卸载事件，并初始化静态实例
@@ -123,7 +122,7 @@ public class TestPlugin : TerrariaPlugin
         ServerApi.Hooks.NetSendData.Register(this, SendData);
         On.Terraria.NPC.SetDefaults += NPC_SetDefaults;
         On.Terraria.Projectile.Kill += Projectile_Kill;
-        On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
+        On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier += Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier;
     }
 
     protected override void Dispose(bool disposing)
@@ -145,7 +144,7 @@ public class TestPlugin : TerrariaPlugin
             ServerApi.Hooks.NetSendData.Deregister(this, SendData);
             On.Terraria.NPC.SetDefaults -= NPC_SetDefaults;
             On.Terraria.Projectile.Kill -= Projectile_Kill;
-            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float -= Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float;
+            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier -= Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier;
         }
         base.Dispose(disposing);
     }
@@ -175,7 +174,7 @@ public class TestPlugin : TerrariaPlugin
     {
         Update.Elapsed += OnUpdate!;
         Update.Start();
-        if (_配置.控制台广告)
+        if (Config.控制台广告)
         {
             Console.WriteLine(" ------------ " + (this.Name + " 版本:" + (this.Version?.ToString() + ((Beta > 0) ? (" Beta" + Beta + " 已启动! --------") : " 已启动! --------------"))));
             Console.WriteLine(" >>> 如果使用过程中出现什么问题可前往QQ群232109072交流反馈.");
@@ -193,13 +192,13 @@ public class TestPlugin : TerrariaPlugin
     private void CRS(CommandArgs args)
     {
         CRC(args);
-        _配置 = 配置文件.Read(_配置路径);
+        Config = 配置文件.Read(_配置路径);
 
-        _配置.是否隐藏没用到的配置项 = !_配置.是否隐藏没用到的配置项;
-        _配置.Write(_配置路径);
+        Config.是否隐藏没用到的配置项 = !Config.是否隐藏没用到的配置项;
+        Config.Write(_配置路径);
 
         args.Player.SendSuccessMessage("[自定义怪物血量] 隐藏配置项:" +
-            (_配置.是否隐藏没用到的配置项 ? "已隐藏" : "已显示"));
+            (Config.是否隐藏没用到的配置项 ? "已隐藏" : "已显示"));
     }
     #endregion
 
@@ -225,32 +224,18 @@ public class TestPlugin : TerrariaPlugin
     /// 此钩子方法在弹幕创建时拦截并统一修正怪物弹幕的伤害值
     /// 只对怪物发射的弹幕生效（Owner == Main.myPlayer）
     /// </remarks>
-    private int Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float(
-        On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig,
-        IEntitySource spawnSource,
-        float X,
-        float Y,
-        float SpeedX,
-        float SpeedY,
-        int Type,
-        int Damage,
-        float KnockBack,
-        int Owner,
-        float ai0,
-        float ai1,
-        float ai2)
+    private int Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier orig, IEntitySource spawnSource, float X, float Y, float SpeedX, float SpeedY, int Type, int Damage, float KnockBack, int Owner, float ai0, float ai1, float ai2, NewProjectileModifier modifer)
     {
         // 检查是否为怪物弹幕且需要伤害修正
-        if (Owner == Terraria.Main.myPlayer && _配置.统一怪物弹幕伤害修正 != 1f)
+        if (Owner == Terraria.Main.myPlayer && Config.统一怪物弹幕伤害修正 != 1f)
         {
             // 应用统一的伤害修正系数
-            Damage = (int)((float)Damage * _配置.统一怪物弹幕伤害修正);
+            Damage = (int)((float)Damage * Config.统一怪物弹幕伤害修正);
         }
 
         // 调用原始方法创建弹幕
-        return orig.Invoke(spawnSource, X, Y, SpeedX, SpeedY, Type, Damage, KnockBack, Owner, ai0, ai1, ai2);
+        return orig.Invoke(spawnSource, X, Y, SpeedX, SpeedY, Type, Damage, KnockBack, Owner, ai0, ai1, ai2, modifer);
     }
-
     #endregion
 
     #region 弹幕销毁时的清理钩子方法
@@ -295,24 +280,24 @@ public class TestPlugin : TerrariaPlugin
     private void NPC_SetDefaults(On.Terraria.NPC.orig_SetDefaults orig, Terraria.NPC self, int Type, Terraria.NPCSpawnParams spawnparams)
     {
         // 检查是否需要应用统一难度调整
-        if (_配置.统一初始怪物玩家系数 > 0 || _配置.统一初始怪物玩家单体系数 > 0 || _配置.统一初始怪物强化系数 > 0f)
+        if (Config.统一初始怪物玩家系数 > 0 || Config.统一初始怪物玩家单体系数 > 0 || Config.统一初始怪物强化系数 > 0f)
         {
             // 玩家数量系数调整
-            if (_配置.统一初始怪物玩家系数 > 0 || _配置.统一初始怪物玩家单体系数 > 0)
+            if (Config.统一初始怪物玩家系数 > 0 || Config.统一初始怪物玩家单体系数 > 0)
             {
                 // 获取当前活跃玩家数量
                 int activePlayerCount = TShock.Utils.GetActivePlayerCount();
 
                 // 计算玩家数量难度系数
-                if (_配置.统一初始玩家系数额外增加)
+                if (Config.统一初始玩家系数额外增加)
                 {
                     // 模式1：基础系数 + 玩家数量 + (玩家数量 × 单体系数)
-                    spawnparams.playerCountForMultiplayerDifficultyOverride = activePlayerCount + _配置.统一初始怪物玩家系数 + activePlayerCount * _配置.统一初始怪物玩家单体系数;
+                    spawnparams.playerCountForMultiplayerDifficultyOverride = activePlayerCount + Config.统一初始怪物玩家系数 + activePlayerCount * Config.统一初始怪物玩家单体系数;
                 }
                 else
                 {
                     // 模式2：基础系数 + (玩家数量 × 单体系数)
-                    spawnparams.playerCountForMultiplayerDifficultyOverride = _配置.统一初始怪物玩家系数 + activePlayerCount * _配置.统一初始怪物玩家单体系数;
+                    spawnparams.playerCountForMultiplayerDifficultyOverride = Config.统一初始怪物玩家系数 + activePlayerCount * Config.统一初始怪物玩家单体系数;
                 }
 
                 // 限制最大难度系数（防止数值过大）
@@ -322,22 +307,22 @@ public class TestPlugin : TerrariaPlugin
                 }
 
                 // 确保难度系数不低于实际玩家数量
-                if (_配置.统一初始玩家系数不低于人数 && spawnparams.playerCountForMultiplayerDifficultyOverride < activePlayerCount)
+                if (Config.统一初始玩家系数不低于人数 && spawnparams.playerCountForMultiplayerDifficultyOverride < activePlayerCount)
                 {
                     spawnparams.playerCountForMultiplayerDifficultyOverride = activePlayerCount;
                 }
             }
 
             // 统一强化系数调整
-            if (_配置.统一初始怪物强化系数 > 0f)
+            if (Config.统一初始怪物强化系数 > 0f)
             {
                 // 设置统一的怪物强度乘数
-                spawnparams.strengthMultiplierOverride = _配置.统一初始怪物强化系数;
+                spawnparams.difficultyOverride = Config.统一初始怪物强化系数;
 
                 // 限制最大强化系数
-                if (spawnparams.strengthMultiplierOverride > 1000f)
+                if (spawnparams.difficultyOverride > 1000f)
                 {
-                    spawnparams.strengthMultiplierOverride = 1000f;
+                    spawnparams.difficultyOverride = 1000f;
                 }
             }
         }
@@ -345,7 +330,6 @@ public class TestPlugin : TerrariaPlugin
         // 调用原始方法完成NPC的默认设置
         orig.Invoke(self, Type, spawnparams);
     }
-
     #endregion
 
     #region 配置文件读取与合并
@@ -371,15 +355,15 @@ public class TestPlugin : TerrariaPlugin
             }
 
             // 读取主配置文件
-            _配置 = 配置文件.Read(_配置路径);
+            Config = 配置文件.Read(_配置路径);
 
             // 检查配置文件版本兼容性
-            Version version = new Version(_配置.配置文件插件版本号);
+            Version version = new Version(Config.配置文件插件版本号);
             if (version <= this.Version)
             {
                 // 版本兼容，更新配置文件版本号
-                _配置.配置文件插件版本号 = this.Version.ToString();
-                _配置.Write(_配置路径);
+                Config.配置文件插件版本号 = this.Version.ToString();
+                Config.Write(_配置路径);
             }
             else
             {
@@ -396,7 +380,7 @@ public class TestPlugin : TerrariaPlugin
 
             // 获取额外配置文件列表
             DirectoryInfo directoryInfo = new DirectoryInfo(_额外配置路径);
-            FileInfo[] files = directoryInfo.GetFiles("*." + _配置文件名);
+            FileInfo[] files = directoryInfo.GetFiles("*." + ConfigPath);
             int num = 0; // 统计额外配置添加的怪物配置数量
 
             // 遍历所有额外配置文件
@@ -424,21 +408,21 @@ public class TestPlugin : TerrariaPlugin
 
                     // ===== 配置合并逻辑 =====
                     int num2 = 配置文件.怪物节集.Length;     // 额外配置中的怪物配置数量
-                    int num3 = _配置.怪物节集.Length;         // 主配置中的怪物配置数量
+                    int num3 = Config.怪物节集.Length;         // 主配置中的怪物配置数量
 
                     // 合并怪物配置数组
                     if (num2 > 0)
                     {
                         怪物节[] array = new 怪物节[num3 + num2];
-                        Array.Copy(_配置.怪物节集, 0, array, 0, num3);        // 复制主配置
+                        Array.Copy(Config.怪物节集, 0, array, 0, num3);        // 复制主配置
                         Array.Copy(配置文件.怪物节集, 0, array, num3, num2);  // 复制额外配置
-                        _配置.怪物节集 = array;                              // 更新合并后的配置
+                        Config.怪物节集 = array;                              // 更新合并后的配置
                     }
 
                     // 合并统一设置例外怪物列表
                     if (配置文件.统一设置例外怪物.Count > 0)
                     {
-                        _配置.统一设置例外怪物 = _配置.统一设置例外怪物.Union(配置文件.统一设置例外怪物).ToList();
+                        Config.统一设置例外怪物 = Config.统一设置例外怪物.Union(配置文件.统一设置例外怪物).ToList();
                     }
 
                     // 统计添加的配置数量
@@ -564,7 +548,7 @@ public class TestPlugin : TerrariaPlugin
         result = Math.Min(result, 200);
 
         // 遍历配置查找匹配的怪物
-        怪物节[] 怪物节集 = _配置.怪物节集;
+        怪物节[] 怪物节集 = Config.怪物节集;
         foreach (怪物节 怪物节 in 怪物节集)
         {
             // 检查标志匹配和怪物ID有效性
@@ -675,7 +659,7 @@ public class TestPlugin : TerrariaPlugin
         long lNKC = getLNKC(Main.npc[args.NpcId].netID);  // 该类型NPC的击杀数
         int num = 0;                                 // 同类型NPC数量
         int num2 = 0;                                // 开服时间（按类型计算）
-        float strengthMultiplier = Main.npc[args.NpcId].strengthMultiplier;  // 原始强化系数
+        float strengthMultiplier = Main.npc[args.NpcId].difficulty;  // 原始强化系数
 
         // 统计同类型NPC数量
         NPC[] npc = Main.npc;
@@ -689,7 +673,7 @@ public class TestPlugin : TerrariaPlugin
 
         // 配置匹配和条件检查
         Random random = new Random();
-        怪物节[] 怪物节集 = _配置.怪物节集;
+        怪物节[] 怪物节集 = Config.怪物节集;
 
         // 遍历所有怪物配置，寻找匹配的配置
         foreach (怪物节 怪物节 in 怪物节集)
@@ -733,7 +717,7 @@ public class TestPlugin : TerrariaPlugin
                 }
 
                 // 计算开服时间
-                num2 = ((怪物节.开服时间型 == 1) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalDays) : ((怪物节.开服时间型 != 2) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalHours) : ((int)(DateTime.UtcNow.Date - OServerDataTime.Date).TotalDays)));
+                num2 = (怪物节.开服时间型 == 1) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalDays) : ((怪物节.开服时间型 != 2) ? ((int)(DateTime.UtcNow - OServerDataTime).TotalHours) : ((int)(DateTime.UtcNow.Date - OServerDataTime.Date).TotalDays));
 
                 // 检查各种生成条件
                 if ((怪物节.难度条件.Length != 0 && !怪物节.难度条件.Contains(Main.GameMode)) || Sundry.SeedRequirement(怪物节.种子条件))
@@ -799,52 +783,76 @@ public class TestPlugin : TerrariaPlugin
                 }
 
                 // 游戏状态条件检查（昼夜、降雨、血月、日食、肉山后等）
-                if ((怪物节.昼夜条件 == -1 && Main.dayTime) || (怪物节.昼夜条件 == 1 && !Main.dayTime) || (怪物节.降雨条件 == -1 && Main.raining) || (怪物节.降雨条件 == 1 && !Main.raining) || (怪物节.血月条件 == -1 && Main.bloodMoon) || (怪物节.血月条件 == 1 && !Main.bloodMoon) || (怪物节.日食条件 == -1 && Main.eclipse) || (怪物节.日食条件 == 1 && !Main.eclipse) || (怪物节.肉山条件 == -1 && Main.hardMode) || (怪物节.肉山条件 == 1 && !Main.hardMode) || (怪物节.巨人条件 == -1 && NPC.downedGolemBoss) || (怪物节.巨人条件 == 1 && !NPC.downedGolemBoss) || (怪物节.月总条件 == -1 && NPC.downedMoonlord) || (怪物节.月总条件 == 1 && !NPC.downedMoonlord) || 怪物节.出没率子 <= 0 || 怪物节.出没率母 <= 0 || (怪物节.出没率子 < 怪物节.出没率母 && random.Next(1, 怪物节.出没率母 + 1) > 怪物节.出没率子) || Sundry.NPCKillRequirement(怪物节.杀怪条件) || Sundry.MonsterRequirement(怪物节.怪物条件, Main.npc[args.NpcId]))
+                if ((怪物节.昼夜条件 == -1 && Main.dayTime) ||
+                    (怪物节.昼夜条件 == 1 && !Main.dayTime) ||
+                    (怪物节.降雨条件 == -1 && Main.raining) ||
+                    (怪物节.降雨条件 == 1 && !Main.raining) ||
+                    (怪物节.血月条件 == -1 && Main.bloodMoon) ||
+                    (怪物节.血月条件 == 1 && !Main.bloodMoon) ||
+                    (怪物节.日食条件 == -1 && Main.eclipse) ||
+                    (怪物节.日食条件 == 1 && !Main.eclipse) ||
+                    (怪物节.肉山条件 == -1 && Main.hardMode) ||
+                    (怪物节.肉山条件 == 1 && !Main.hardMode) ||
+                    (怪物节.巨人条件 == -1 && NPC.downedGolemBoss) ||
+                    (怪物节.巨人条件 == 1 && !NPC.downedGolemBoss) ||
+                    (怪物节.月总条件 == -1 && NPC.downedMoonlord) ||
+                    (怪物节.月总条件 == 1 && !NPC.downedMoonlord) ||
+                    怪物节.出没率子 <= 0 ||
+                    怪物节.出没率母 <= 0 ||
+                    (怪物节.出没率子 < 怪物节.出没率母 &&
+                    random.Next(1, 怪物节.出没率母 + 1) > 怪物节.出没率子) ||
+                    Sundry.NPCKillRequirement(怪物节.杀怪条件) ||
+                    Sundry.MonsterRequirement(怪物节.怪物条件, Main.npc[args.NpcId]))
                 {
                     continue;
                 }
             }
 
             // 检查并计算时间限制
-            if (_配置.启动怪物时间限制 && (怪物节.人秒系数 != 0 || 怪物节.出没秒数 != 0 || 怪物节.开服系秒 != 0 || 怪物节.杀数系秒 != 0))
+            if (Config.启动怪物时间限制 &&
+                (怪物节.人秒系数 != 0 ||
+                怪物节.出没秒数 != 0 ||
+                怪物节.开服系秒 != 0 ||
+                怪物节.杀数系秒 != 0))
             {
-                int num4 = activePlayerCount * 怪物节.人秒系数;
-                num4 += 怪物节.出没秒数;
-                num4 += num2 * 怪物节.开服系秒;
-                num4 += (int)lNKC * 怪物节.杀数系秒;
-                if (num4 < 1)
+                int timer = activePlayerCount * 怪物节.人秒系数;
+                timer += 怪物节.出没秒数;
+                timer += num2 * 怪物节.开服系秒;
+                timer += (int)lNKC * 怪物节.杀数系秒;
+                if (timer < 1)
                 {
                     args.Handled = true;
                     Main.npc[args.NpcId].active = false;
                     Console.WriteLine(Main.npc[args.NpcId].FullName + "定义时间过小被阻止生成");
                     return;
                 }
-                maxtime = num4;
+                maxtime = timer;
             }
 
             //  NPC属性配置
             if (怪物节.初始属性玩家系数 > 0 || 怪物节.初始属性强化系数 > 0f)
             {
-                NPCSpawnParams val2 = new NPCSpawnParams();
+                var SpawnParams = new NPCSpawnParams();
                 if (怪物节.初始属性玩家系数 > 0)
                 {
-                    val2.playerCountForMultiplayerDifficultyOverride = 怪物节.初始属性玩家系数;
-                    if (val2.playerCountForMultiplayerDifficultyOverride > 1000)
+                    SpawnParams.playerCountForMultiplayerDifficultyOverride = 怪物节.初始属性玩家系数;
+                    if (SpawnParams.playerCountForMultiplayerDifficultyOverride > 1000)
                     {
-                        val2.playerCountForMultiplayerDifficultyOverride = 1000;
+                        SpawnParams.playerCountForMultiplayerDifficultyOverride = 1000;
                     }
                 }
                 if (怪物节.初始属性强化系数 > 0f)
                 {
-                    val2.strengthMultiplierOverride = 怪物节.初始属性强化系数;
-                    if (val2.strengthMultiplierOverride > 1000f)
+                    SpawnParams.difficultyOverride = 怪物节.初始属性强化系数;
+                    if (SpawnParams.difficultyOverride > 1000f)
                     {
-                        val2.strengthMultiplierOverride = 1000f;
+                        SpawnParams.difficultyOverride = 1000f;
                     }
                 }
-                Main.npc[args.NpcId].SetDefaults(Main.npc[args.NpcId].netID, val2);
+
+                Main.npc[args.NpcId].SetDefaults(Main.npc[args.NpcId].netID, SpawnParams);
                 lifeMax = Main.npc[args.NpcId].lifeMax;
-                strengthMultiplier = Main.npc[args.NpcId].strengthMultiplier;
+                strengthMultiplier = Main.npc[args.NpcId].difficulty;
             }
             if (怪物节.初始属性对怪物伤害修正 == 1f)
             {
@@ -954,7 +962,7 @@ public class TestPlugin : TerrariaPlugin
                 num6 += (float)(int)lNKC * 怪物节.杀数强化系数;
                 if (!怪物节.覆盖原强化)
                 {
-                    num6 += Main.npc[args.NpcId].strengthMultiplier;
+                    num6 += Main.npc[args.NpcId].difficulty;
                 }
                 if (num6 > 1000f)
                 {
@@ -964,9 +972,9 @@ public class TestPlugin : TerrariaPlugin
                 {
                     num6 = 0f;
                 }
-                if ((!(Main.npc[args.NpcId].strengthMultiplier >= num6) || !怪物节.不小于正常) && num6 > 0f)
+                if ((!(Main.npc[args.NpcId].difficulty >= num6) || !怪物节.不小于正常) && num6 > 0f)
                 {
-                    Main.npc[args.NpcId].strengthMultiplier = num6;
+                    Main.npc[args.NpcId].difficulty = num6;
                     flag = true;
                 }
             }
@@ -982,12 +990,12 @@ public class TestPlugin : TerrariaPlugin
         }
 
         // 应用统一设置（如果NPC不在例外列表中）
-        if (!_配置.统一设置例外怪物.Contains(Main.npc[args.NpcId].netID))
+        if (!Config.统一设置例外怪物.Contains(Main.npc[args.NpcId].netID))
         {
             // 统一血量倍数
-            if (_配置.统一怪物血量倍数 != 1.0 && _配置.统一怪物血量倍数 > 0.0)
+            if (Config.统一怪物血量倍数 != 1.0 && Config.统一怪物血量倍数 > 0.0)
             {
-                Main.npc[args.NpcId].lifeMax = (int)((double)Main.npc[args.NpcId].lifeMax * _配置.统一怪物血量倍数);
+                Main.npc[args.NpcId].lifeMax = (int)((double)Main.npc[args.NpcId].lifeMax * Config.统一怪物血量倍数);
                 if (Main.npc[args.NpcId].lifeMax < 1)
                 {
                     Main.npc[args.NpcId].lifeMax = 1;
@@ -996,61 +1004,61 @@ public class TestPlugin : TerrariaPlugin
             }
 
             // 统一血量保护
-            if (Main.npc[args.NpcId].lifeMax < lifeMax && _配置.统一血量不低于正常)
+            if (Main.npc[args.NpcId].lifeMax < lifeMax && Config.统一血量不低于正常)
             {
                 Main.npc[args.NpcId].lifeMax = lifeMax;
                 flag = false;
             }
 
             // 统一强化倍数
-            if (_配置.统一怪物强化倍数 != 1.0 && _配置.统一怪物强化倍数 > 0.0)
+            if (Config.统一怪物强化倍数 != 1.0 && Config.统一怪物强化倍数 > 0.0)
             {
-                float num7 = (float)((double)Main.npc[args.NpcId].strengthMultiplier * _配置.统一怪物强化倍数);
+                float num7 = (float)((double)Main.npc[args.NpcId].difficulty * Config.统一怪物强化倍数);
                 if (num7 > 1000f)
                 {
                     num7 = 1000f;
                 }
                 if (num7 > 0f)
                 {
-                    Main.npc[args.NpcId].strengthMultiplier = num7;
+                    Main.npc[args.NpcId].difficulty = num7;
                     flag = false;
                 }
             }
 
             // 统一强化保护
-            if (Main.npc[args.NpcId].strengthMultiplier < strengthMultiplier && _配置.统一强化不低于正常)
+            if (Main.npc[args.NpcId].difficulty < strengthMultiplier && Config.统一强化不低于正常)
             {
-                Main.npc[args.NpcId].strengthMultiplier = strengthMultiplier;
+                Main.npc[args.NpcId].difficulty = strengthMultiplier;
                 flag = false;
             }
 
             // 统一免疫设置
-            if (_配置.统一免疫熔岩类型 == 1)
+            if (Config.统一免疫熔岩类型 == 1)
             {
                 Main.npc[args.NpcId].lavaImmune = true;
                 Main.npc[args.NpcId].netUpdate = true;
             }
-            if (_配置.统一免疫熔岩类型 == -1)
+            if (Config.统一免疫熔岩类型 == -1)
             {
                 Main.npc[args.NpcId].lavaImmune = false;
                 Main.npc[args.NpcId].netUpdate = true;
             }
-            if (_配置.统一免疫陷阱类型 == 1)
+            if (Config.统一免疫陷阱类型 == 1)
             {
                 Main.npc[args.NpcId].trapImmune = true;
                 Main.npc[args.NpcId].netUpdate = true;
             }
-            if (_配置.统一免疫陷阱类型 == -1)
+            if (Config.统一免疫陷阱类型 == -1)
             {
                 Main.npc[args.NpcId].trapImmune = false;
                 Main.npc[args.NpcId].netUpdate = true;
             }
 
             // 统一伤害修正
-            if (_配置.统一对怪物伤害修正 != 1f)
+            if (Config.统一对怪物伤害修正 != 1f)
             {
                 NPC obj2 = Main.npc[args.NpcId];
-                obj2.takenDamageMultiplier *= _配置.统一对怪物伤害修正;
+                obj2.takenDamageMultiplier *= Config.统一对怪物伤害修正;
             }
         }
 
@@ -1343,7 +1351,7 @@ public class TestPlugin : TerrariaPlugin
                                     args.npc.DropItemInstanced(args.npc.Center, args.npc.Size, item4.物品ID, num2, true);
                                     continue;
                                 }
-                                int num3 = Item.NewItem((IEntitySource)new EntitySource_DebugCommand(), args.npc.Center, args.npc.Size, item4.物品ID, num2, false, item4.物品前缀, false, false);
+                                int num3 = Item.NewItem(null, (int)args.npc.Center.X, (int)args.npc.Center.Y, (int)args.npc.Size.X, (int)args.npc.Size.Y, item4.物品ID, num2, false, item4.物品前缀, false);
                                 NetMessage.TrySendData(21, -1, -1, null, num3, 0f, 0f, 0f, 0, 0, 0);
                             }
                             else if (item4.独立掉落)
@@ -1352,7 +1360,7 @@ public class TestPlugin : TerrariaPlugin
                             }
                             else
                             {
-                                int num4 = Item.NewItem((IEntitySource)new EntitySource_DebugCommand(), args.npc.Center, args.npc.Size, item4.物品ID, num2, false, 0, false, false);
+                                int num4 = Item.NewItem(null, (int)args.npc.Center.X, (int)args.npc.Center.Y, (int)args.npc.Size.X, (int)args.npc.Size.Y, item4.物品ID, num2, false, 0, false);
                                 NetMessage.TrySendData(21, -1, -1, null, num4, 0f, 0f, 0f, 0, 0, 0);
                             }
                         }
@@ -1437,7 +1445,7 @@ public class TestPlugin : TerrariaPlugin
     public void OnUpdate(object sender, ElapsedEventArgs e)
     {
         // 检查插件是否启用
-        if (!_配置.启用插件) return;
+        if (!Config.启用插件) return;
 
         // 使用锁机制防止重复执行
         if (ULock)
@@ -1529,7 +1537,7 @@ public class TestPlugin : TerrariaPlugin
                     if (lNPC2.PlayerCount < activePlayerCount)
                     {
                         lNPC2.PlayerCount = activePlayerCount;
-                        if (_配置.启动动态时间限制 && (lNPC2.Config.人秒系数 != 0 || lNPC2.Config.出没秒数 != 0 || lNPC2.Config.开服系秒 != 0 || lNPC2.Config.杀数系秒 != 0))
+                        if (Config.启动动态时间限制 && (lNPC2.Config.人秒系数 != 0 || lNPC2.Config.出没秒数 != 0 || lNPC2.Config.开服系秒 != 0 || lNPC2.Config.杀数系秒 != 0))
                         {
                             // 计算基于各种系数的时间限制
                             int num4 = lNPC2.PlayerCount * lNPC2.Config.人秒系数;
@@ -1562,7 +1570,7 @@ public class TestPlugin : TerrariaPlugin
                         }
 
                         // 动态调整血量上限
-                        if (_配置.启动动态血量上限 && (lNPC2.Config.玩家系数 != 0 || lNPC2.Config.怪物血量 != 0 || lNPC2.Config.开服系数 != 0 || lNPC2.Config.杀数系数 != 0))
+                        if (Config.启动动态血量上限 && (lNPC2.Config.玩家系数 != 0 || lNPC2.Config.怪物血量 != 0 || lNPC2.Config.开服系数 != 0 || lNPC2.Config.杀数系数 != 0))
                         {
                             // 计算基于各种系数的血量
                             int num6 = activePlayerCount * lNPC2.Config.玩家系数;
@@ -1583,17 +1591,17 @@ public class TestPlugin : TerrariaPlugin
                                 int num7 = num6;
 
                                 // 应用统一血量倍数设置
-                                if (!_配置.统一设置例外怪物.Contains(val3.netID))
+                                if (!Config.统一设置例外怪物.Contains(val3.netID))
                                 {
-                                    if (_配置.统一怪物血量倍数 != 1.0 && _配置.统一怪物血量倍数 > 0.0)
+                                    if (Config.统一怪物血量倍数 != 1.0 && Config.统一怪物血量倍数 > 0.0)
                                     {
-                                        num7 = (int)((double)num7 * _配置.统一怪物血量倍数);
+                                        num7 = (int)((double)num7 * Config.统一怪物血量倍数);
                                         if (num7 < 1)
                                         {
                                             num7 = 1;
                                         }
                                     }
-                                    if (_配置.统一血量不低于正常 && num7 < lNPC2.MaxLife)
+                                    if (Config.统一血量不低于正常 && num7 < lNPC2.MaxLife)
                                     {
                                         num7 = lNPC2.MaxLife;
                                     }
@@ -2814,9 +2822,9 @@ public class TestPlugin : TerrariaPlugin
             }
 
             // 处理队友视角功能
-            if (_配置.启动死亡队友视角 && (!_配置.队友视角仅BOSS时 || flag))
+            if (Config.启动死亡队友视角 && (!Config.队友视角仅BOSS时 || flag))
             {
-                if (TeamP <= _配置.队友视角流畅度)
+                if (TeamP <= Config.队友视角流畅度)
                 {
                     TeamP++;
                 }
@@ -2858,7 +2866,7 @@ public class TestPlugin : TerrariaPlugin
                         }
 
                         // 传送玩家到队友位置
-                        if (num35 != -1 && !Sundry.WithinRange(val8.TPlayer.Center, Main.player[num35].Center, _配置.队友视角等待范围 * 16))
+                        if (num35 != -1 && !Sundry.WithinRange(val8.TPlayer.Center, Main.player[num35].Center, Config.队友视角等待范围 * 16))
                         {
                             val8.TPlayer.position = Main.player[num35].position;
                             NetMessage.SendData(13, -1, -1, NetworkText.Empty, val8.Index, 0f, 0f, 0f, 0, 0, 0);
@@ -2869,7 +2877,7 @@ public class TestPlugin : TerrariaPlugin
         }
         catch (Exception ex)
         {
-            if (_配置.启动错误报告)
+            if (Config.启动错误报告)
             {
                 TShock.Log.ConsoleError("自定义怪物血量时钟:" + ex.ToString());
             }
