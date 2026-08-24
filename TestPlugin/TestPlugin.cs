@@ -254,9 +254,9 @@ public class TestPlugin : TerrariaPlugin
         lock (LPrjs)
         {
             // 检查并清理自定义弹幕数据
-            if (LPrjs[self.identity] != null)
+            if (LPrjs[self.key.Index] != null)
             {
-                LPrjs[self.identity] = null;
+                LPrjs[self.key.Index] = null;
             }
         }
 
@@ -1336,32 +1336,22 @@ public class TestPlugin : TerrariaPlugin
                         // ===== 物品掉落执行 =====
                         foreach (物品节 item4 in item3.掉落物品)
                         {
-                            // 计算实际掉落数量（基础数量 + 指示物注入）
                             int num2 = item4.物品数量 + LNpcs[args.npc.whoAmI].getMarkers(item4.指示物数量注入物品数量名);
-                            if (num2 <= 0 || item4.物品ID <= 0)
-                            {
-                                continue;
-                            }
+                            if (num2 <= 0 || item4.物品ID <= 0) continue;
 
-                            // 根据前缀和独立掉落设置选择掉落方式
-                            if (item4.物品前缀 >= 0)
+                            if (item4.独立掉落)
                             {
-                                if (item4.独立掉落)
-                                {
-                                    args.npc.DropItemInstanced(args.npc.Center, args.npc.Size, item4.物品ID, num2, true);
-                                    continue;
-                                }
-                                int num3 = Item.NewItem(null, (int)args.npc.Center.X, (int)args.npc.Center.Y, (int)args.npc.Size.X, (int)args.npc.Size.Y, item4.物品ID, num2, false, item4.物品前缀, false);
-                                NetMessage.TrySendData(21, -1, -1, null, num3, 0f, 0f, 0f, 0, 0, 0);
-                            }
-                            else if (item4.独立掉落)
-                            {
-                                args.npc.DropItemInstanced(args.npc.Center, args.npc.Size, item4.物品ID, num2, true);
+                                // 使用 MakeInstanced 实现独立掉落
+                                int index = Item.NewItem(null, args.npc.Center, item4.物品ID, num2, item4.物品前缀 >= 0 ? item4.物品前缀 : 0);
+
+                                if (index >= 0)
+                                    Main.item[index].MakeInstanced(p => p.active, 0);
                             }
                             else
                             {
-                                int num4 = Item.NewItem(null, (int)args.npc.Center.X, (int)args.npc.Center.Y, (int)args.npc.Size.X, (int)args.npc.Size.Y, item4.物品ID, num2, false, 0, false);
-                                NetMessage.TrySendData(21, -1, -1, null, num4, 0f, 0f, 0f, 0, 0, 0);
+                                // 普通掉落，向所有人广播
+                                int index = Item.NewItem(null, args.npc.Center, item4.物品ID, num2, item4.物品前缀 >= 0 ? item4.物品前缀 : 0);
+                                NetMessage.TrySendData(21, -1, -1, null, index, 0f, 0f, 0f, 0, 0, 0);
                             }
                         }
 

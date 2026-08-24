@@ -17,6 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="OTAPI.Upcoming" Version="3.3.14" />
 	  <PackageReference Include="TShock" Version="6.1.0" />
 	</ItemGroup>
 
