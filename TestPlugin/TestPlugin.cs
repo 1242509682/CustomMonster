@@ -16,9 +16,9 @@ public class TestPlugin : TerrariaPlugin
 {
     #region 插件信息
     public override string Name => "自定义怪物血量";
-    public override string Author => "GK 阁下 羽学";
-    public override Version Version => new Version(1, 0, 4, 45);
-    public override string Description => "自定义怪物,羽学重构版";
+    public override string Author => "GK 羽学";
+    public override Version Version => new Version(1, 0, 5, 1);
+    public override string Description => "自定义怪物血量,羽学重构版";
     #endregion
 
     #region 全局变量
@@ -89,7 +89,7 @@ public class TestPlugin : TerrariaPlugin
     /// <summary>
     /// 版本标识 - 用于标识插件版本或配置版本
     /// </summary>
-    public int Beta = 3;
+    public int Beta = 1;
 
     /// <summary>
     /// 队友视角计数器 - 用于控制队友视角功能的更新频率
@@ -101,8 +101,8 @@ public class TestPlugin : TerrariaPlugin
     public TestPlugin(Terraria.Main game) : base(game)
     {
         this.Order = 1;
-        LNpcs = new LNPC[201];
-        LPrjs = new LPrj[1001];
+        LNpcs = new LNPC[Main.maxNPCs + 1];
+        LPrjs = new LPrj[Main.maxProjectiles + 1];
         LNkc = new List<LNKC>();
         LLSMNPCs = new List<LSMNPC>();
         NPCKillDataTime = DateTime.UtcNow;
@@ -120,9 +120,9 @@ public class TestPlugin : TerrariaPlugin
         ServerApi.Hooks.NpcKilled.Register(this, NpcKilled);
         ServerApi.Hooks.NpcStrike.Register(this, NpcStrike);
         ServerApi.Hooks.NetSendData.Register(this, SendData);
-        On.Terraria.NPC.SetDefaults += NPC_SetDefaults;
-        On.Terraria.Projectile.Kill += Projectile_Kill;
-        On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier += Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier;
+        On.Terraria.NPC.SetDefaults += OnSetDefaults;
+        On.Terraria.Projectile.Kill += OnProjectileKill;
+        On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier += OnNewProjectile;
     }
 
     protected override void Dispose(bool disposing)
@@ -142,9 +142,9 @@ public class TestPlugin : TerrariaPlugin
             ServerApi.Hooks.GamePostInitialize.Deregister(this, PostInitialize);
             ServerApi.Hooks.NpcStrike.Deregister(this, NpcStrike);
             ServerApi.Hooks.NetSendData.Deregister(this, SendData);
-            On.Terraria.NPC.SetDefaults -= NPC_SetDefaults;
-            On.Terraria.Projectile.Kill -= Projectile_Kill;
-            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier -= Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier;
+            On.Terraria.NPC.SetDefaults -= OnSetDefaults;
+            On.Terraria.Projectile.Kill -= OnProjectileKill;
+            On.Terraria.Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier -= OnNewProjectile;
         }
         base.Dispose(disposing);
     }
@@ -224,13 +224,13 @@ public class TestPlugin : TerrariaPlugin
     /// 此钩子方法在弹幕创建时拦截并统一修正怪物弹幕的伤害值
     /// 只对怪物发射的弹幕生效（Owner == Main.myPlayer）
     /// </remarks>
-    private int Projectile_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier orig, IEntitySource spawnSource, float X, float Y, float SpeedX, float SpeedY, int Type, int Damage, float KnockBack, int Owner, float ai0, float ai1, float ai2, NewProjectileModifier modifer)
+    private int OnNewProjectile(On.Terraria.Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float_NewProjectileModifier orig, IEntitySource spawnSource, float X, float Y, float SpeedX, float SpeedY, int Type, int Damage, float KnockBack, int Owner, float ai0, float ai1, float ai2, NewProjectileModifier modifer)
     {
         // 检查是否为怪物弹幕且需要伤害修正
         if (Owner == Terraria.Main.myPlayer && Config.统一怪物弹幕伤害修正 != 1f)
         {
             // 应用统一的伤害修正系数
-            Damage = (int)((float)Damage * Config.统一怪物弹幕伤害修正);
+            Damage = (int)(Damage * Config.统一怪物弹幕伤害修正);
         }
 
         // 调用原始方法创建弹幕
@@ -248,7 +248,7 @@ public class TestPlugin : TerrariaPlugin
     /// 当弹幕被销毁时，自动清理自定义弹幕管理系统中的对应数据
     /// 使用锁机制确保线程安全
     /// </remarks>
-    private void Projectile_Kill(On.Terraria.Projectile.orig_Kill orig, Terraria.Projectile self)
+    private void OnProjectileKill(On.Terraria.Projectile.orig_Kill orig, Terraria.Projectile self)
     {
         // 使用锁确保线程安全地访问弹幕数据
         lock (LPrjs)
@@ -277,7 +277,7 @@ public class TestPlugin : TerrariaPlugin
     /// 此钩子方法在NPC设置默认值时调用，用于统一调整怪物的难度系数
     /// 支持基于玩家数量和固定系数的难度调整
     /// </remarks>
-    private void NPC_SetDefaults(On.Terraria.NPC.orig_SetDefaults orig, Terraria.NPC self, int Type, Terraria.NPCSpawnParams spawnparams)
+    private void OnSetDefaults(On.Terraria.NPC.orig_SetDefaults orig, NPC self, int Type, NPCSpawnParams spawnparams)
     {
         // 检查是否需要应用统一难度调整
         if (Config.统一初始怪物玩家系数 > 0 || Config.统一初始怪物玩家单体系数 > 0 || Config.统一初始怪物强化系数 > 0f)
@@ -597,10 +597,10 @@ public class TestPlugin : TerrariaPlugin
                 }
             }
             // 特殊处理：肉墙召唤
-            else if (nPCById.netID == 113)
+            else if (nPCById.netID == NPCID.WallofFlesh)
             {
                 // 检查肉墙召唤条件
-                if (Main.wofNPCIndex != -1 || args.Player.Y / 16f < (float)(Main.maxTilesY - 205))
+                if (Main.wofNPCIndex != -1 || args.Player.Y / 16f < Main.maxTilesY - 205)
                 {
                     args.Player.SendErrorMessage("无法根据肉墙的当前状态或您的当前位置生成肉墙。");
                     return;
@@ -1345,7 +1345,7 @@ public class TestPlugin : TerrariaPlugin
                                 int index = Item.NewItem(null, args.npc.Center, item4.物品ID, num2, item4.物品前缀 >= 0 ? item4.物品前缀 : 0);
 
                                 if (index >= 0)
-                                    Main.item[index].MakeInstanced(p => p.active, 0);
+                                    Main.item[index].MakeInstanced(p => p.active);
                             }
                             else
                             {

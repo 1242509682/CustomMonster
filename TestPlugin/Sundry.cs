@@ -112,8 +112,8 @@ public class Sundry
                                 {
                                     double num11 = Math.Atan2(num10, num9) * 180.0 / Math.PI; // 玩家角度
                                     double num12 = Math.Atan2(npc.directionY, npc.direction) * 180.0 / Math.PI; // NPC朝向角度
-                                    double num13 = num12 + (double)Projectile.扇形半偏角; // 扇形右边界
-                                    double num14 = num12 - (double)Projectile.扇形半偏角; // 扇形左边界
+                                    double num13 = num12 + Projectile.扇形半偏角; // 扇形右边界
+                                    double num14 = num12 - Projectile.扇形半偏角; // 扇形左边界
 
                                     // 角度周期修正
                                     if (num13 > 360.0) num13 -= 360.0;
@@ -179,8 +179,8 @@ public class Sundry
                         {
                             if (Main.npc[num18] != null && Main.npc[num18].netID != 0 && Main.npc[num18].active)
                             {
-                                num16 = Main.npc[num18].Center.X + Projectile.锁定点X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
-                                num17 = Main.npc[num18].Center.Y + Projectile.锁定点Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
+                                num16 = Main.npc[num18].Center.X + Projectile.锁定点X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
+                                num17 = Main.npc[num18].Center.Y + Projectile.锁定点Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
                             }
                             else
                             {
@@ -192,8 +192,8 @@ public class Sundry
                         if (num18 == -1)
                         {
                             // 锁定到固定点（基于发射点）
-                            num16 = num + Projectile.锁定点X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
-                            num17 = num2 + Projectile.锁定点Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
+                            num16 = num + Projectile.锁定点X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
+                            num17 = num2 + Projectile.锁定点Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
                         }
                     }
                     else
@@ -205,21 +205,21 @@ public class Sundry
                             continue; // 跳过无效玩家
                         }
 
-                        num16 = val.Center.X + Projectile.锁定点X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
-                        num17 = val.Center.Y + Projectile.锁定点Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
+                        num16 = val.Center.X + Projectile.锁定点X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
+                        num17 = val.Center.Y + Projectile.锁定点Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
                     }
 
                     // ===== 计算弹幕参数 =====
                     // 面向修正
-                    float num19 = Projectile.怪面向X偏移修正 * (float)npc.direction;
-                    float num20 = Projectile.怪面向Y偏移修正 * (float)npc.directionY;
+                    float num19 = Projectile.怪面向X偏移修正 * npc.direction;
+                    float num20 = Projectile.怪面向Y偏移修正 * npc.directionY;
 
                     // AI参数（注入指示物系统）
-                    float ai = Projectile.弹幕Ai0 + (float)lnpc.getMarkers(Projectile.指示物数量注入Ai0名) * Projectile.指示物数量注入Ai0系数;
-                    float ai2 = Projectile.弹幕Ai1 + (float)lnpc.getMarkers(Projectile.指示物数量注入Ai1名) * Projectile.指示物数量注入Ai1系数;
-                    float ai3 = Projectile.弹幕Ai2 + (float)lnpc.getMarkers(Projectile.指示物数量注入Ai2名) * Projectile.指示物数量注入Ai2系数;
-                    int aiStyle = Projectile.AI风格 + (int)((float)lnpc.getMarkers(Projectile.指示物数量注入AI风格名) * Projectile.指示物数量注入AI风格系数);
-                    float num21 = Projectile.锁定速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定速度名) * Projectile.指示物数量注入锁定速度系数;
+                    float ai = Projectile.弹幕Ai0 + lnpc.getMarkers(Projectile.指示物数量注入Ai0名) * Projectile.指示物数量注入Ai0系数;
+                    float ai2 = Projectile.弹幕Ai1 + lnpc.getMarkers(Projectile.指示物数量注入Ai1名) * Projectile.指示物数量注入Ai1系数;
+                    float ai3 = Projectile.弹幕Ai2 + lnpc.getMarkers(Projectile.指示物数量注入Ai2名) * Projectile.指示物数量注入Ai2系数;
+                    int aiStyle = Projectile.AI风格 + (int)(lnpc.getMarkers(Projectile.指示物数量注入AI风格名) * Projectile.指示物数量注入AI风格系数);
+                    float num21 = Projectile.锁定速度 + lnpc.getMarkers(Projectile.指示物数量注入锁定速度名) * Projectile.指示物数量注入锁定速度系数;
 
                     // 速度向量计算
                     float num22, num23;    // 发射点坐标
@@ -231,15 +231,15 @@ public class Sundry
                         // 模式1：以锁定点为发射点
                         num22 = num16;
                         num23 = num17;
-                        num24 = Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * (float)npc.direction;
-                        num25 = Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * (float)npc.directionY;
+                        num24 = Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
+                        num25 = Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
 
                         // 计算速度和角度
                         float num26 = (float)Math.Sqrt(Math.Pow(num24, 2.0) + Math.Pow(num25, 2.0));
                         num27 = Math.Atan2(num25, num24) * 180.0 / Math.PI;
 
                         // 应用角度偏移
-                        float num28 = Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
+                        float num28 = Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
                         if (num28 != 0f)
                         {
                             num27 += (double)num28;
@@ -252,8 +252,8 @@ public class Sundry
                         // 模式2：以NPC为发射点，朝向锁定点
                         num22 = num;
                         num23 = num2;
-                        num24 = num16 - (num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                        num25 = num17 - (num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                        num24 = num16 - (num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
+                        num25 = num17 - (num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
 
                         // 避免零向量
                         if (num24 == 0f && num25 == 0f)
@@ -263,26 +263,26 @@ public class Sundry
 
                         // 计算角度并应用偏移
                         num27 = Math.Atan2(num25, num24) * 180.0 / Math.PI;
-                        num27 += (double)(Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                        num27 += (Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
 
                         // 重新计算速度向量
                         num24 = (float)((double)num21 * Math.Cos(num27 * Math.PI / 180.0));
                         num25 = (float)((double)num21 * Math.Sin(num27 * Math.PI / 180.0));
 
                         // 添加额外速度
-                        num24 += Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * (float)npc.direction;
-                        num25 += Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * (float)npc.directionY;
+                        num24 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
+                        num25 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
                     }
 
                     // 以弹为位模式：动态调整发射点
                     if (Projectile.以弹为位)
                     {
-                        float num29 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                        float num30 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                        float num29 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                        float num30 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
 
                         // 重新计算朝向锁定点的向量
-                        num24 = num16 - (num29 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                        num25 = num17 - (num30 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                        num24 = num16 - (num29 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
+                        num25 = num17 - (num30 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
 
                         if (num24 == 0f && num25 == 0f)
                         {
@@ -291,15 +291,15 @@ public class Sundry
 
                         // 重新计算角度和速度
                         num27 = Math.Atan2(num25, num24) * 180.0 / Math.PI;
-                        num27 += (double)(Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                        num27 += (Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
 
                         // 重新计算速度向量
                         num24 = (float)((double)num21 * Math.Cos(num27 * Math.PI / 180.0));
                         num25 = (float)((double)num21 * Math.Sin(num27 * Math.PI / 180.0));
 
                         // 添加额外速度
-                        num24 += Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * (float)npc.direction;
-                        num25 += Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * (float)npc.directionY;
+                        num24 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
+                        num25 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
                     }
 
                     // 速度注入AI0：将速度角度存入AI0并重置速度
@@ -311,8 +311,8 @@ public class Sundry
                     }
 
                     // 计算最终发射坐标
-                    float num31 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                    float num32 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                    float num31 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                    float num32 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
 
                     // ===== 首个弹幕的特殊处理 =====
                     if (list.IndexOf(item) == 0)
@@ -374,35 +374,35 @@ public class Sundry
 
                     // ===== 复杂弹幕模式处理 =====
                     // 获取指示物注入的复杂模式参数
-                    int num33 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位射数名) * Projectile.指示物数量注入差度位射数系数);
-                    int num34 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位射角名) * Projectile.指示物数量注入差度位射角系数);
-                    int num35 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位半径名) * Projectile.指示物数量注入差度位半径系数);
-                    int num36 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度射数名) * Projectile.指示物数量注入差度射数系数);
-                    int num37 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度射角名) * Projectile.指示物数量注入差度射角系数);
-                    int num38 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差位射数名) * Projectile.指示物数量注入差位射数系数);
-                    int num39 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差位偏移X名) * Projectile.指示物数量注入差位偏移X系数);
-                    int num40 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差位偏移Y名) * Projectile.指示物数量注入差位偏移Y系数);
+                    int num33 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射数名) * Projectile.指示物数量注入差度位射数系数);
+                    int num34 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射角名) * Projectile.指示物数量注入差度位射角系数);
+                    int num35 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位半径名) * Projectile.指示物数量注入差度位半径系数);
+                    int num36 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射数名) * Projectile.指示物数量注入差度射数系数);
+                    int num37 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射角名) * Projectile.指示物数量注入差度射角系数);
+                    int num38 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位射数名) * Projectile.指示物数量注入差位射数系数);
+                    int num39 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移X名) * Projectile.指示物数量注入差位偏移X系数);
+                    int num40 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移Y名) * Projectile.指示物数量注入差位偏移Y系数);
 
                     // 差度位射模式：圆形分布弹幕
                     if (Projectile.差度位射数 + num33 > 0 && Projectile.差度位射角 + num34 != 0 && Projectile.差度位半径 + num35 > 0)
                     {
-                        double num41 = Projectile.差度位始角 + (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位始角名) * Projectile.指示物数量注入差度位始角系数);
+                        double num41 = Projectile.差度位始角 + (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位始角名) * Projectile.指示物数量注入差度位始角系数);
                         for (int k = 0; k < Projectile.差度位射数 + num33; k++)
                         {
-                            num41 += (double)(Projectile.差度位射角 + num34);
+                            num41 += (Projectile.差度位射角 + num34);
 
                             // 计算圆形分布坐标
-                            float num42 = (float)((double)(Projectile.差度位半径 + num35) * Math.Cos(num41 * Math.PI / 180.0));
-                            float num43 = (float)((double)(Projectile.差度位半径 + num35) * Math.Sin(num41 * Math.PI / 180.0));
+                            float num42 = (float)((Projectile.差度位半径 + num35) * Math.Cos(num41 * Math.PI / 180.0));
+                            float num43 = (float)((Projectile.差度位半径 + num35) * Math.Sin(num41 * Math.PI / 180.0));
 
                             // 以弹为位模式的特殊处理
                             if (Projectile.以弹为位)
                             {
                                 // 重新计算朝向锁定点的向量
-                                float num44 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num42 + num19;
-                                float num45 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num43 + num20;
-                                num24 = num16 - (num44 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                                num25 = num17 - (num45 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                                float num44 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num42 + num19;
+                                float num45 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num43 + num20;
+                                num24 = num16 - (num44 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
+                                num25 = num17 - (num45 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
 
                                 // 避免零向量
                                 if (num24 == 0f && num25 == 0f)
@@ -412,15 +412,15 @@ public class Sundry
 
                                 // 重新计算角度和速度
                                 num27 = Math.Atan2(num25, num24) * 180.0 / Math.PI;
-                                num27 += (double)(Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                                num27 += (Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
 
                                 // 重新计算速度向量
                                 num24 = (float)((double)num21 * Math.Cos(num27 * Math.PI / 180.0));
                                 num25 = (float)((double)num21 * Math.Sin(num27 * Math.PI / 180.0));
 
                                 // 添加额外速度
-                                num24 += Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * (float)npc.direction;
-                                num25 += Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * (float)npc.directionY;
+                                num24 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
+                                num25 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
                             }
 
                             // 速度注入AI0处理
@@ -432,8 +432,8 @@ public class Sundry
                             }
 
                             // 计算最终发射坐标
-                            num31 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num42 + num19;
-                            num32 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num43 + num20;
+                            num31 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num42 + num19;
+                            num32 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num43 + num20;
 
                             // 生成差度位弹幕
                             if (!Projectile.不射差度位)
@@ -449,11 +449,11 @@ public class Sundry
                             }
 
                             // 差度射模式：角度分散弹幕
-                            if (Projectile.差度射数 + num36 > 0 && Projectile.差度射角 + (float)num37 != 0f)
+                            if (Projectile.差度射数 + num36 > 0 && Projectile.差度射角 + num37 != 0f)
                             {
                                 for (int l = 0; l < Projectile.差度射数 + num36; l++)
                                 {
-                                    num27 += (double)(Projectile.差度射角 + (float)num37);
+                                    num27 += Projectile.差度射角 + num37;
 
                                     // 重新计算速度向量
                                     num24 = (float)((double)num21 * Math.Cos(num27 * Math.PI / 180.0));
@@ -468,8 +468,8 @@ public class Sundry
                                     }
 
                                     // 生成差度射弹幕
-                                    num31 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                                    num32 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                                    num31 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                                    num32 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
 
                                     // 生成差度射弹幕
                                     if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
@@ -482,17 +482,17 @@ public class Sundry
                                     }
 
                                     // 差位射模式：位置偏移弹幕
-                                    if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + (float)num39 == 0f && Projectile.差位偏移Y + (float)num40 == 0f))
+                                    if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + num39 == 0f && Projectile.差位偏移Y + num40 == 0f))
                                     {
                                         continue;
                                     }
 
-                                    float num46 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                                    float num47 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                                    float num46 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                                    float num47 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
                                     for (int m = 0; m < Projectile.差位射数 + num38; m++)
                                     {
-                                        num46 += Projectile.差位偏移X + (float)num39;
-                                        num47 += Projectile.差位偏移Y + (float)num40;
+                                        num46 += Projectile.差位偏移X + num39;
+                                        num47 += Projectile.差位偏移Y + num40;
                                         num31 = num46;
                                         num32 = num47;
 
@@ -511,30 +511,30 @@ public class Sundry
                             else
                             {
                                 // 仅差位射模式（无差度射）
-                                if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + (float)num39 == 0f && Projectile.差位偏移Y + (float)num40 == 0f))
+                                if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + num39 == 0f && Projectile.差位偏移Y + num40 == 0f))
                                 {
                                     continue;
                                 }
-                                float num48 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                                float num49 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                                float num48 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                                float num49 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
                                 for (int n = 0; n < Projectile.差位射数; n++)
                                 {
-                                    num48 += Projectile.差位偏移X + (float)num39;
-                                    num49 += Projectile.差位偏移Y + (float)num40;
+                                    num48 += Projectile.差位偏移X + num39;
+                                    num49 += Projectile.差位偏移Y + num40;
                                     if (Projectile.以弹为位)
                                     {
-                                        num24 = num16 - (num48 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
-                                        num25 = num17 - (num49 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
+                                        num24 = num16 - (num48 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数);
+                                        num25 = num17 - (num49 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数);
                                         if (num24 == 0f && num25 == 0f)
                                         {
                                             num24 = 1f;
                                         }
                                         num27 = Math.Atan2(num25, num24) * 180.0 / Math.PI;
-                                        num27 += (double)(Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                                        num27 += (Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
                                         num24 = (float)((double)num21 * Math.Cos(num27 * Math.PI / 180.0));
                                         num25 = (float)((double)num21 * Math.Sin(num27 * Math.PI / 180.0));
-                                        num24 += Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * (float)npc.direction;
-                                        num25 += Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * (float)npc.directionY;
+                                        num24 += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
+                                        num25 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
                                         if (Projectile.速度注入AI0)
                                         {
                                             ai = (float)Math.Atan2(num25, num24);
@@ -558,11 +558,11 @@ public class Sundry
                     }
 
                     // 仅差度射模式（无差度位）
-                    else if (Projectile.差度射数 + num36 > 0 && Projectile.差度射角 + (float)num37 != 0f)
+                    else if (Projectile.差度射数 + num36 > 0 && Projectile.差度射角 + num37 != 0f)
                     {
                         for (int num50 = 0; num50 < Projectile.差度射数 + num36; num50++)
                         {
-                            num27 += (double)(Projectile.差度射角 + (float)num37);
+                            num27 += (Projectile.差度射角 + num37);
                             num24 = (float)((double)num21 * Math.Cos(num27 * Math.PI / 180.0));
                             num25 = (float)((double)num21 * Math.Sin(num27 * Math.PI / 180.0));
                             if (Projectile.速度注入AI0)
@@ -571,8 +571,8 @@ public class Sundry
                                 num24 = Projectile.速度注入AI0后X轴速度;
                                 num25 = Projectile.速度注入AI0后Y轴速度;
                             }
-                            num31 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                            num32 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                            num31 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                            num32 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
                             if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
                             {
                                 NewProjectile(npc.whoAmI, Projectile.标志, Terraria.Projectile.GetNoneSource(), num31, num32, num24, num25, Projectile.弹幕ID, Projectile.弹幕伤害, Projectile.弹幕击退, Main.myPlayer, ai, ai2, ai3, Projectile.持续时间, aiStyle);
@@ -581,16 +581,16 @@ public class Sundry
                             {
                                 LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num31, num32);
                             }
-                            if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + (float)num39 == 0f && Projectile.差位偏移Y + (float)num40 == 0f))
+                            if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + num39 == 0f && Projectile.差位偏移Y + num40 == 0f))
                             {
                                 continue;
                             }
-                            float num51 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                            float num52 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                            float num51 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                            float num52 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
                             for (int num53 = 0; num53 < Projectile.差位射数 + num38; num53++)
                             {
-                                num51 += Projectile.差位偏移X + (float)num39;
-                                num52 += Projectile.差位偏移Y + (float)num40;
+                                num51 += Projectile.差位偏移X + num39;
+                                num52 += Projectile.差位偏移Y + num40;
                                 num31 = num51;
                                 num32 = num52;
                                 if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
@@ -608,16 +608,16 @@ public class Sundry
                     // 仅差位射模式（无差度位和差度射）
                     else
                     {
-                        if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + (float)num39 == 0f && Projectile.差位偏移Y + (float)num40 == 0f))
+                        if (Projectile.差位射数 + num38 <= 0 || (Projectile.差位偏移X + num39 == 0f && Projectile.差位偏移Y + num40 == 0f))
                         {
                             continue;
                         }
-                        float num54 = num22 + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
-                        float num55 = num23 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
+                        float num54 = num22 + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num19;
+                        float num55 = num23 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num20;
                         for (int num56 = 0; num56 < Projectile.差位射数 + num38; num56++)
                         {
-                            num54 += Projectile.差位偏移X + (float)num39;
-                            num55 += Projectile.差位偏移Y + (float)num40;
+                            num54 += Projectile.差位偏移X + num39;
+                            num55 += Projectile.差位偏移Y + num40;
                             num31 = num54;
                             num32 = num55;
                             if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
@@ -638,25 +638,25 @@ public class Sundry
 
             // ===== 无锁定模式的弹幕生成 =====
             // 计算基础速度
-            float num57 = Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * (float)npc.direction;
-            float num58 = Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * (float)npc.directionY;
+            float num57 = Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数 + Projectile.怪面向X速度修正 * npc.direction;
+            float num58 = Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数 + Projectile.怪面向Y速度修正 * npc.directionY;
            
             // 计算速度和角度
             float num59 = (float)Math.Sqrt(Math.Pow(num57, 2.0) + Math.Pow(num58, 2.0));
             double num60 = Math.Atan2(num58, num57) * 180.0 / Math.PI;
 
             // 面向修正
-            float num61 = Projectile.怪面向X偏移修正 * (float)npc.direction;
-            float num62 = Projectile.怪面向Y偏移修正 * (float)npc.directionY;
+            float num61 = Projectile.怪面向X偏移修正 * npc.direction;
+            float num62 = Projectile.怪面向Y偏移修正 * npc.directionY;
 
             // AI参数
-            float ai4 = Projectile.弹幕Ai0 + (float)lnpc.getMarkers(Projectile.指示物数量注入Ai0名) * Projectile.指示物数量注入Ai0系数;
-            float ai5 = Projectile.弹幕Ai1 + (float)lnpc.getMarkers(Projectile.指示物数量注入Ai1名) * Projectile.指示物数量注入Ai1系数;
-            float ai6 = Projectile.弹幕Ai2 + (float)lnpc.getMarkers(Projectile.指示物数量注入Ai2名) * Projectile.指示物数量注入Ai2系数;
-            int aiStyle2 = Projectile.AI风格 + (int)((float)lnpc.getMarkers(Projectile.指示物数量注入AI风格名) * Projectile.指示物数量注入AI风格系数);
+            float ai4 = Projectile.弹幕Ai0 + lnpc.getMarkers(Projectile.指示物数量注入Ai0名) * Projectile.指示物数量注入Ai0系数;
+            float ai5 = Projectile.弹幕Ai1 + lnpc.getMarkers(Projectile.指示物数量注入Ai1名) * Projectile.指示物数量注入Ai1系数;
+            float ai6 = Projectile.弹幕Ai2 + lnpc.getMarkers(Projectile.指示物数量注入Ai2名) * Projectile.指示物数量注入Ai2系数;
+            int aiStyle2 = Projectile.AI风格 + (int)(lnpc.getMarkers(Projectile.指示物数量注入AI风格名) * Projectile.指示物数量注入AI风格系数);
 
             // 角度偏移
-            float num63 = Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
+            float num63 = Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
             if (num63 != 0f)
             {
                 num60 += (double)num63;
@@ -673,8 +673,8 @@ public class Sundry
             }
 
             // 计算发射坐标
-            float num64 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-            float num65 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+            float num64 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+            float num65 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
             // 首个弹幕的特殊处理
             if (Projectile.射出始弹X轴注入指示物名 != "")
@@ -721,27 +721,27 @@ public class Sundry
             }
 
             // 无锁定模式的复杂弹幕模式处理（逻辑与锁定模式类似）
-            int num66 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位射数名) * Projectile.指示物数量注入差度位射数系数);
-            int num67 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位射角名) * Projectile.指示物数量注入差度位射角系数);
-            int num68 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位半径名) * Projectile.指示物数量注入差度位半径系数);
-            int num69 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度射数名) * Projectile.指示物数量注入差度射数系数);
-            int num70 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度射角名) * Projectile.指示物数量注入差度射角系数);
-            int num71 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差位射数名) * Projectile.指示物数量注入差位射数系数);
-            int num72 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差位偏移X名) * Projectile.指示物数量注入差位偏移X系数);
-            int num73 = (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差位偏移Y名) * Projectile.指示物数量注入差位偏移Y系数);
+            int num66 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射数名) * Projectile.指示物数量注入差度位射数系数);
+            int num67 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位射角名) * Projectile.指示物数量注入差度位射角系数);
+            int num68 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位半径名) * Projectile.指示物数量注入差度位半径系数);
+            int num69 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射数名) * Projectile.指示物数量注入差度射数系数);
+            int num70 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差度射角名) * Projectile.指示物数量注入差度射角系数);
+            int num71 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位射数名) * Projectile.指示物数量注入差位射数系数);
+            int num72 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移X名) * Projectile.指示物数量注入差位偏移X系数);
+            int num73 = (int)(lnpc.getMarkers(Projectile.指示物数量注入差位偏移Y名) * Projectile.指示物数量注入差位偏移Y系数);
 
             if (Projectile.差度位射数 + num66 > 0 && Projectile.差度位射角 + num67 != 0 && Projectile.差度位半径 + num68 > 0)
             {
-                double num74 = Projectile.差度位始角 + (int)((float)lnpc.getMarkers(Projectile.指示物数量注入差度位始角名) * Projectile.指示物数量注入差度位始角系数);
+                double num74 = Projectile.差度位始角 + (int)(lnpc.getMarkers(Projectile.指示物数量注入差度位始角名) * Projectile.指示物数量注入差度位始角系数);
                 for (int num75 = 0; num75 < Projectile.差度位射数 + num66; num75++)
                 {
-                    num74 += (double)(Projectile.差度位射角 + num67);
+                    num74 += (Projectile.差度位射角 + num67);
 
-                    float num76 = (float)((double)(Projectile.差度位半径 + num68) * Math.Cos(num74 * Math.PI / 180.0));
-                    float num77 = (float)((double)(Projectile.差度位半径 + num68) * Math.Sin(num74 * Math.PI / 180.0));
+                    float num76 = (float)((Projectile.差度位半径 + num68) * Math.Cos(num74 * Math.PI / 180.0));
+                    float num77 = (float)((Projectile.差度位半径 + num68) * Math.Sin(num74 * Math.PI / 180.0));
 
-                    num64 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num76 + num61;
-                    num65 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num77 + num62;
+                    num64 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num76 + num61;
+                    num65 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num77 + num62;
 
                     if (!Projectile.不射差度位)
                     {
@@ -755,11 +755,11 @@ public class Sundry
                         }
                     }
 
-                    if (Projectile.差度射数 + num69 > 0 && Projectile.差度射角 + (float)num70 != 0f)
+                    if (Projectile.差度射数 + num69 > 0 && Projectile.差度射角 + num70 != 0f)
                     {
                         for (int num78 = 0; num78 < Projectile.差度射数 + num69; num78++)
                         {
-                            num60 += (double)(Projectile.差度射角 + (float)num70);
+                            num60 += (Projectile.差度射角 + num70);
 
                             num57 = (float)((double)num59 * Math.Cos(num60 * Math.PI / 180.0));
                             num58 = (float)((double)num59 * Math.Sin(num60 * Math.PI / 180.0));
@@ -771,8 +771,8 @@ public class Sundry
                                 num58 = Projectile.速度注入AI0后Y轴速度;
                             }
 
-                            num64 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-                            num65 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+                            num64 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+                            num65 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
                             if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
                             {
@@ -782,18 +782,18 @@ public class Sundry
                             {
                                 LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num64, num65);
                             }
-                            if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + (float)num72 == 0f && Projectile.差位偏移Y + (float)num73 == 0f))
+                            if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + num72 == 0f && Projectile.差位偏移Y + num73 == 0f))
                             {
                                 continue;
                             }
 
-                            float num79 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-                            float num80 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+                            float num79 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+                            float num80 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
                             for (int num81 = 0; num81 < Projectile.差位射数 + num71; num81++)
                             {
-                                num79 += Projectile.差位偏移X + (float)num72;
-                                num80 += Projectile.差位偏移Y + (float)num73;
+                                num79 += Projectile.差位偏移X + num72;
+                                num80 += Projectile.差位偏移Y + num73;
                                 num64 = num79;
                                 num65 = num80;
 
@@ -810,18 +810,18 @@ public class Sundry
                     }
                     else
                     {
-                        if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + (float)num72 == 0f && Projectile.差位偏移Y + (float)num73 == 0f))
+                        if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + num72 == 0f && Projectile.差位偏移Y + num73 == 0f))
                         {
                             continue;
                         }
 
-                        float num82 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-                        float num83 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+                        float num82 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+                        float num83 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
                         for (int num84 = 0; num84 < Projectile.差位射数 + num71; num84++)
                         {
-                            num82 += Projectile.差位偏移X + (float)num72;
-                            num83 += Projectile.差位偏移Y + (float)num73;
+                            num82 += Projectile.差位偏移X + num72;
+                            num83 += Projectile.差位偏移Y + num73;
 
                             num64 = num82;
                             num65 = num83;
@@ -838,11 +838,11 @@ public class Sundry
                     }
                 }
             }
-            else if (Projectile.差度射数 + num69 > 0 && Projectile.差度射角 + (float)num70 != 0f)
+            else if (Projectile.差度射数 + num69 > 0 && Projectile.差度射角 + num70 != 0f)
             {
                 for (int num85 = 0; num85 < Projectile.差度射数 + num69; num85++)
                 {
-                    num60 += (double)(Projectile.差度射角 + (float)num70);
+                    num60 += (Projectile.差度射角 + num70);
 
                     num57 = (float)((double)num59 * Math.Cos(num60 * Math.PI / 180.0));
                     num58 = (float)((double)num59 * Math.Sin(num60 * Math.PI / 180.0));
@@ -854,8 +854,8 @@ public class Sundry
                         num58 = Projectile.速度注入AI0后Y轴速度;
                     }
 
-                    num64 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-                    num65 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+                    num64 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+                    num65 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
                     if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
                     {
@@ -866,18 +866,18 @@ public class Sundry
                         LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, num64, num65);
                     }
 
-                    if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + (float)num72 == 0f && Projectile.差位偏移Y + (float)num73 == 0f))
+                    if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + num72 == 0f && Projectile.差位偏移Y + num73 == 0f))
                     {
                         continue;
                     }
 
-                    float num86 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-                    float num87 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+                    float num86 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+                    float num87 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
                     for (int num88 = 0; num88 < Projectile.差位射数 + num71; num88++)
                     {
-                        num86 += Projectile.差位偏移X + (float)num72;
-                        num87 += Projectile.差位偏移Y + (float)num73;
+                        num86 += Projectile.差位偏移X + num72;
+                        num87 += Projectile.差位偏移Y + num73;
                         num64 = num86;
                         num65 = num87;
                         if (Projectile.弹点召唤怪物 == 0 || !Projectile.弹点召唤怪物无弹)
@@ -893,18 +893,18 @@ public class Sundry
             }
             else
             {
-                if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + (float)num72 == 0f && Projectile.差位偏移Y + (float)num73 == 0f))
+                if (Projectile.差位射数 + num71 <= 0 || (Projectile.差位偏移X + num72 == 0f && Projectile.差位偏移Y + num73 == 0f))
                 {
                     continue;
                 }
 
-                float num89 = num + Projectile.X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
-                float num90 = num2 + Projectile.Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
+                float num89 = num + Projectile.X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入X轴偏移名) * Projectile.指示物数量注入X轴偏移系数 + num61;
+                float num90 = num2 + Projectile.Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入Y轴偏移名) * Projectile.指示物数量注入Y轴偏移系数 + num62;
 
                 for (int num91 = 0; num91 < Projectile.差位射数 + num71; num91++)
                 {
-                    num89 += Projectile.差位偏移X + (float)num72;
-                    num90 += Projectile.差位偏移Y + (float)num73;
+                    num89 += Projectile.差位偏移X + num72;
+                    num90 += Projectile.差位偏移Y + num73;
                     num64 = num89;
                     num65 = num90;
 
@@ -923,7 +923,6 @@ public class Sundry
     #endregion
 
     #region 辅助方法：根据弹点召唤NPC
-
     /// <summary>
     /// 在指定坐标位置召唤NPC
     /// </summary>
@@ -1057,7 +1056,7 @@ public class Sundry
             int 造成伤害 = item.造成伤害;
 
             // 添加指示物注入的伤害值
-            造成伤害 += (int)((float)lNPC.getMarkers(item.指示物数量注入造成伤害名) * item.指示物数量注入造成伤害系数);
+            造成伤害 += (int)(lNPC.getMarkers(item.指示物数量注入造成伤害名) * item.指示物数量注入造成伤害系数);
 
             // 如果伤害为0且不需要直接清除，则跳过
             if (造成伤害 == 0 && !item.直接清除)
@@ -1070,15 +1069,15 @@ public class Sundry
             {
                 // 复杂条件筛选：检查NPC是否符合伤害条件
                 if (Main.npc[i] == null ||
-                    !Terraria.Main.npc[i].active ||
+                    !Main.npc[i].active ||
                     (item.怪物ID != 0 && Main.npc[i].netID != item.怪物ID) ||
-                    Terraria.Main.npc[i].whoAmI == npc.whoAmI || // 排除自身
-                    (item.范围内 > 0 && !npc.WithinRange(Terraria.Main.npc[i].Center, (float)(item.范围内 << 4))) || // 范围检查
-                    (item.指示物 != null && TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI] != null &&
-                     !TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].haveMarkers(item.指示物, npc)) || // 指示物条件检查
-                    (item.查标志 != "" && TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI] != null &&
-                     TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].Config != null &&
-                     TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].Config.标志 != item.查标志)) // 标志匹配检查
+                    Main.npc[i].whoAmI == npc.whoAmI || // 排除自身
+                    (item.范围内 > 0 && !npc.WithinRange(Main.npc[i].Center, (float)(item.范围内 << 4))) || // 范围检查
+                    (item.指示物 != null && TestPlugin.LNpcs[Main.npc[i].whoAmI] != null &&
+                     !TestPlugin.LNpcs[Main.npc[i].whoAmI].haveMarkers(item.指示物, npc)) || // 指示物条件检查
+                    (item.查标志 != "" && TestPlugin.LNpcs[Main.npc[i].whoAmI] != null &&
+                     TestPlugin.LNpcs[Main.npc[i].whoAmI].Config != null &&
+                     TestPlugin.LNpcs[Main.npc[i].whoAmI].Config.标志 != item.查标志)) // 标志匹配检查
                 {
                     continue; // 跳过不符合条件的NPC
                 }
@@ -1088,13 +1087,12 @@ public class Sundry
                 {
                     // 直接清除：立即移除怪物
                     Main.npc[i] = new NPC();
-                    NetMessage.SendData(23, -1, -1, NetworkText.Empty, i, 0f, 0f, 0f, 0, 0, 0);
+                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, NetworkText.Empty, i, 0f, 0f, 0f, 0, 0, 0);
                 }
                 else if (item.直接伤害)
                 {
                     // 直接伤害：直接修改生命值（不触发死亡）
-                    NPC obj = Main.npc[i];
-                    obj.life -= 造成伤害;
+                    Main.npc[i].life -= 造成伤害;
 
                     // 确保生命值不低于1（防止死亡）
                     if (Main.npc[i].life <= 0)
@@ -1111,7 +1109,7 @@ public class Sundry
                     // 如果是治疗效果（负伤害），显示治疗特效
                     if (造成伤害 < 0)
                     {
-                        Main.npc[i].HealEffect(Math.Abs(造成伤害), true);
+                        Main.npc[i].HealEffect(Math.Abs(造成伤害));
                     }
 
                     // 标记网络同步
@@ -1162,18 +1160,18 @@ public class Sundry
             {
                 // 复杂条件筛选：检查NPC是否符合修改条件
                 if (Main.npc[i] == null ||
-                    !Terraria.Main.npc[i].active ||
+                    !Main.npc[i].active ||
                     (item.怪物ID != 0 && Main.npc[i].netID != item.怪物ID) ||
-                    Terraria.Main.npc[i].whoAmI == npc.whoAmI || // 排除自身
-                    (item.范围内 > 0 && !npc.WithinRange(Terraria.Main.npc[i].Center, (float)(item.范围内 << 4))) || // 范围检查
-                    (item.指示物条件 != null && TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI] != null &&
-                     !TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].haveMarkers(item.指示物条件, npc)) || // 指示物条件检查
-                    (item.查标志 != "" && TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI] != null &&
-                     TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].Config != null &&
-                     TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].Config.标志 != item.查标志) || // 标志匹配检查
+                    Main.npc[i].whoAmI == npc.whoAmI || // 排除自身
+                    (item.范围内 > 0 && !npc.WithinRange(Main.npc[i].Center, item.范围内 << 4)) || // 范围检查
+                    (item.指示物条件 != null && TestPlugin.LNpcs[Main.npc[i].whoAmI] != null &&
+                     !TestPlugin.LNpcs[Main.npc[i].whoAmI].haveMarkers(item.指示物条件, npc)) || // 指示物条件检查
+                    (item.查标志 != "" && TestPlugin.LNpcs[Main.npc[i].whoAmI] != null &&
+                     TestPlugin.LNpcs[Main.npc[i].whoAmI].Config != null &&
+                     TestPlugin.LNpcs[Main.npc[i].whoAmI].Config.标志 != item.查标志) || // 标志匹配检查
                     item.指示物修改 == null ||
-                    TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI] == null ||
-                    TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].Config == null)
+                    TestPlugin.LNpcs[Main.npc[i].whoAmI] == null ||
+                    TestPlugin.LNpcs[Main.npc[i].whoAmI].Config == null)
                 {
                     continue; // 跳过不符合条件的NPC
                 }
@@ -1181,7 +1179,7 @@ public class Sundry
                 // 对符合条件的NPC应用所有指示物修改
                 foreach (指示物节 item2 in item.指示物修改)
                 {
-                    TestPlugin.LNpcs[Terraria.Main.npc[i].whoAmI].setMarkers(
+                    TestPlugin.LNpcs[Main.npc[i].whoAmI].setMarkers(
                         item2.名称,           // 指示物名称
                         item2.数量,           // 指示物数量
                         item2.清除,           // 是否清除指示物
@@ -1200,7 +1198,6 @@ public class Sundry
     #endregion
 
     #region 拉取玩家传送方法
-
     /// <summary>
     /// 将玩家拉取传送到指定位置或区域边界
     /// </summary>
@@ -1219,7 +1216,7 @@ public class Sundry
         // 如果范围为0，直接传送到目标点
         if (r == 0)
         {
-            user.Teleport(x, y, (byte)1);
+            user.Teleport(x, y, 1);
             return;
         }
 
@@ -1269,10 +1266,9 @@ public class Sundry
             }
 
             // 执行传送
-            user.Teleport(x2, y2, (byte)1);
+            user.Teleport(x2, y2, 1);
         }
     }
-
     #endregion
 
     #region 玩家击退相关方法
@@ -1321,7 +1317,6 @@ public class Sundry
             NetMessage.SendData(13, -1, -1, NetworkText.Empty, user.Index, 0f, 0f, 0f, 0, 0, 0);
         }
     }
-
     #endregion
 
     #region 解析字符串运算符
@@ -1411,7 +1406,6 @@ public class Sundry
 
         return result; // 返回条件检查结果
     }
-
     #endregion
 
     #region 怪物AI运算符条件
@@ -1562,7 +1556,6 @@ public class Sundry
         Vector2 pos2 = new Vector2(x2, y2);
         return Vector2.DistanceSquared(pos1, pos2) <= MaxRange * MaxRange;
     }
-
     #endregion
 
     #region 地图种子条件
@@ -1714,16 +1707,14 @@ public class Sundry
     #endregion
 
     #region 怪物玩家条件
-
     /// <summary>
     /// 检查NPC周围玩家条件是否满足
     /// </summary>
     /// <param name="Rmonster">玩家条件列表</param>
-    /// <param name="Npc">要检查的NPC对象</param>
+    /// <param name="npc">要检查的NPC对象</param>
     /// <returns>true: 条件不满足, false: 条件满足</returns>
-    public static bool PlayerRequirement(List<玩家条件节> Rmonster, NPC Npc)
+    public static bool PlayerRequirement(List<玩家条件节> Rmonster, NPC npc)
     {
-        NPC npc = Npc;
         bool result = false; // 默认条件满足
 
         // 遍历所有玩家条件
@@ -1786,7 +1777,6 @@ public class Sundry
     #endregion
 
     #region 弹幕玩家条件
-
     /// <summary>
     /// 检查弹幕周围玩家条件是否满足
     /// </summary>
@@ -1795,7 +1785,6 @@ public class Sundry
     /// <returns>true: 条件不满足, false: 条件满足</returns>
     public static bool PlayerRequirement(List<玩家条件节> Rmonster, Projectile projectiles)
     {
-        Projectile Projectiles = projectiles;
         bool result = false; // 默认条件满足
 
         // 遍历所有玩家条件
@@ -1817,7 +1806,7 @@ public class Sundry
                     (monster.状态条件.Length == 0 || monster.状态条件.All((int x) => p.TPlayer.buffType.Contains(x))) && // 状态条件检查
                     (monster.生命值 == 0 || ((monster.生命值 > 0) ? (p.TPlayer.statLife >= monster.生命值) : (p.TPlayer.statLife < Math.Abs(monster.生命值)))) && // 生命值条件检查
                     (monster.生命比 == 0 || p.TPlayer.statLifeMax2 < 1 || ((monster.生命比 > 0) ? (p.TPlayer.statLife * 100 / p.TPlayer.statLifeMax2 >= monster.生命比) : (p.TPlayer.statLife * 100 / p.TPlayer.statLifeMax2 < Math.Abs(monster.生命比)))) && // 生命百分比条件检查
-                    Projectiles.WithinRange(p.TPlayer.Center, (float)(monster.范围内 << 4))) // 范围条件检查（以弹幕为中心）
+                    projectiles.WithinRange(p.TPlayer.Center, (float)(monster.范围内 << 4))) // 范围条件检查（以弹幕为中心）
                 :
                 // 双范围检测：在指定起始范围外，但在最大范围内（环形区域）
                 TShock.Players.Count((TSPlayer p) =>
@@ -1825,8 +1814,8 @@ public class Sundry
                     (monster.状态条件.Length == 0 || monster.状态条件.All((int x) => p.TPlayer.buffType.Contains(x))) && // 状态条件检查
                     (monster.生命值 == 0 || ((monster.生命值 > 0) ? (p.TPlayer.statLife >= monster.生命值) : (p.TPlayer.statLife < Math.Abs(monster.生命值)))) && // 生命值条件检查
                     (monster.生命比 == 0 || p.TPlayer.statLifeMax2 < 1 || ((monster.生命比 > 0) ? (p.TPlayer.statLife * 100 / p.TPlayer.statLifeMax2 >= monster.生命比) : (p.TPlayer.statLife * 100 / p.TPlayer.statLifeMax2 < Math.Abs(monster.生命比)))) && // 生命百分比条件检查
-                    !Projectiles.WithinRange(p.TPlayer.Center, (float)(monster.范围起 << 4)) && // 不在起始范围内
-                    Projectiles.WithinRange(p.TPlayer.Center, (float)(monster.范围内 << 4)))); // 但在最大范围内
+                    !projectiles.WithinRange(p.TPlayer.Center, (float)(monster.范围起 << 4)) && // 不在起始范围内
+                    projectiles.WithinRange(p.TPlayer.Center, (float)(monster.范围内 << 4)))); // 但在最大范围内
 
             // 跳过无效的符合数条件
             if (monster.符合数 == 0)
@@ -1854,7 +1843,6 @@ public class Sundry
 
         return result; // 返回条件检查结果
     }
-
     #endregion
 
     #region 怪物条件
@@ -1862,11 +1850,10 @@ public class Sundry
     /// 检查NPC周围其他怪物条件是否满足
     /// </summary>
     /// <param name="Rmonster">怪物条件列表</param>
-    /// <param name="Npc">要检查的NPC对象</param>
+    /// <param name="npc">要检查的NPC对象</param>
     /// <returns>true: 条件不满足, false: 条件满足</returns>
-    public static bool MonsterRequirement(List<怪物条件节> Rmonster, NPC Npc)
+    public static bool MonsterRequirement(List<怪物条件节> Rmonster, NPC npc)
     {
-        NPC npc = Npc;
         bool result = false; // 默认条件满足
 
         // 遍历所有怪物条件
@@ -1921,7 +1908,6 @@ public class Sundry
 
         return result; // 返回条件检查结果
     }
-
     #endregion
 
     #region 弹幕条件
@@ -1929,11 +1915,10 @@ public class Sundry
     /// 检查NPC周围弹幕条件是否满足
     /// </summary>
     /// <param name="Rmonster">弹幕条件列表</param>
-    /// <param name="Npc">要检查的NPC对象</param>
+    /// <param name="npc">要检查的NPC对象</param>
     /// <returns>true: 条件不满足, false: 条件满足</returns>
-    public static bool ProjectileRequirement(List<弹幕条件节> Rmonster, NPC Npc)
+    public static bool ProjectileRequirement(List<弹幕条件节> Rmonster, NPC npc)
     {
-        NPC npc = Npc;
         bool result = false; // 默认条件满足
 
         // 遍历所有弹幕条件
@@ -1986,11 +1971,9 @@ public class Sundry
 
         return result; // 返回条件检查结果
     }
-
     #endregion
 
     #region 字符串转浮点数
-
     /// <summary>
     /// 将字符串安全地转换为浮点数
     /// </summary>
@@ -2014,7 +1997,6 @@ public class Sundry
         // 字符串为空或null，返回默认值
         return DefaultFloat;
     }
-
     #endregion
 
     #region 更改时间
@@ -2060,11 +2042,9 @@ public class Sundry
             }
         }
     }
-
     #endregion
 
     #region 范围Buff
-
     /// <summary>
     /// 在指定区域内为玩家施加Buff效果
     /// </summary>
@@ -2106,7 +2086,6 @@ public class Sundry
             }
         }
     }
-
     #endregion
 
     #region 更新弹幕
@@ -2150,7 +2129,7 @@ public class Sundry
                     }
 
                     // 获取弹幕当前位置
-                    float x2 = Main.projectile[index].Center.X;
+                    float x = Main.projectile[index].Center.X;
                     float y = Main.projectile[index].Center.Y;
 
                     // 处理首个匹配弹幕的特殊效果
@@ -2159,7 +2138,7 @@ public class Sundry
                         // 注入弹幕位置到指示物
                         if (Projectile.弹幕X轴注入指示物名 != "")
                         {
-                            lnpc.setMarkers(Projectile.弹幕X轴注入指示物名, (int)(x2 * Projectile.弹幕X轴注入指示物系数), reset: true);
+                            lnpc.setMarkers(Projectile.弹幕X轴注入指示物名, (int)(x * Projectile.弹幕X轴注入指示物系数), reset: true);
                         }
                         if (Projectile.弹幕Y轴注入指示物名 != "")
                         {
@@ -2167,18 +2146,18 @@ public class Sundry
                         }
                         if (Projectile.弹点怪物传送)
                         {
-                            npc.Teleport(new Vector2(x2, y), Projectile.弹点怪物传送类型, Projectile.弹点怪物传送信息);
+                            npc.Teleport(new Vector2(x, y), Projectile.弹点怪物传送类型, Projectile.弹点怪物传送信息);
                         }
                     }
 
                     // 弹幕点怪物传送
                     if (Projectile.弹点召唤怪物 != 0)
                     {
-                        LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, x2, y);
+                        LaunchProjectileSpawnNPC(Projectile.弹点召唤怪物, x, y);
                     }
 
                     // 弹幕周围状态效果
-                    regionBuff(new Vector2(x2, y), Projectile.弹周状态范围, Projectile.弹周状态);
+                    regionBuff(new Vector2(x, y), Projectile.弹周状态范围, Projectile.弹周状态);
 
                     // 弹幕周围击退效果
                     if (Projectile.弹周击退范围 > 0 && Projectile.弹周击退力度 != 0f)
@@ -2189,30 +2168,30 @@ public class Sundry
                         foreach (TSPlayer uesr in players)
                         {
                             // 检查玩家是否有效：非空、未死亡、生命值大于0且在指定范围内
-                            if (uesr != null && !uesr.Dead && uesr.TPlayer.statLife >= 1 && WithinRange(uesr.TPlayer.Center, new Vector2(x2, y), Projectile.弹周击退范围 * 16))
+                            if (uesr != null && !uesr.Dead && uesr.TPlayer.statLife >= 1 && WithinRange(uesr.TPlayer.Center, new Vector2(x, y), Projectile.弹周击退范围 * 16))
                             {
                                 // 应用击退效果
-                                UserRepel(uesr, x2, y, Projectile.弹周击退力度, Projectile.弹周柔和击退);
+                                UserRepel(uesr, x, y, Projectile.弹周击退力度, Projectile.弹周柔和击退);
                             }
                         }
                     }
 
 
                     // 获取弹幕当前属性
-                    float x3 = Main.projectile[index].velocity.X;
+                    float x2 = Main.projectile[index].velocity.X;
                     float y2 = Main.projectile[index].velocity.Y;
                     int damage = Main.projectile[index].damage;
                     float knockBack = Main.projectile[index].knockBack;
 
                     // 创建属性副本用于修改
-                    float num = x3;
+                    float num = x;
                     float num2 = y2;
                     int num3 = damage;
                     float num4 = knockBack;
 
                     // 应用基础属性修改
                     num3 += Projectile.弹幕伤害;
-                    num4 += (float)Projectile.弹幕击退;
+                    num4 += Projectile.弹幕击退;
 
                     // 目标锁定逻辑
                     if (Projectile.锁定范围 > 0 || Projectile.锁定范围 == -1)
@@ -2247,41 +2226,41 @@ public class Sundry
                             // 未锁定指定玩家时，寻找最近的符合条件玩家
                             if (num5 == -2)
                             {
-                                int j;
+                                int k;
                                 // 遍历所有玩家以寻找目标
-                                for (j = 0; j < 255; j++)
+                                for (k = 0; k < 255; k++)
                                 {
                                     // 跳过不符合锁定条件的玩家
-                                    if (num5 == j || Main.player[j] == null || !Main.player[j].active || Main.player[j].dead || (Projectile.仅攻击对象 && j != npc.target) || (Projectile.锁定状态条件.Length != 0 && !Projectile.锁定状态条件.All((int x) => Main.player[j].buffType.Contains(x))))
+                                    if (num5 == k || Main.player[k] == null || !Main.player[k].active || Main.player[k].dead || (Projectile.仅攻击对象 && k != npc.target) || (Projectile.锁定状态条件.Length != 0 && !Projectile.锁定状态条件.All((int x) => Main.player[k].buffType.Contains(x))))
                                     {
                                         continue;
                                     }
 
                                     // 计算玩家与弹幕的距离
-                                    float num12 = Math.Abs(Main.player[j].Center.X - x2 + Math.Abs(Main.player[j].Center.Y - y));
-                                    if ((num7 == -1f || num12 < num7) && (!Projectile.计入仇恨 || !num9.HasValue || (Projectile.逆仇恨锁定 ? (Main.player[j].aggro < num9) : (Main.player[j].aggro > num9))) && (!Projectile.锁定血少 || !num8.HasValue || (Projectile.逆血量锁定 ? (Main.player[j].statLife > num8) : (Main.player[j].statLife < num8))) && (!Projectile.锁定低防 || !num10.HasValue || (Projectile.逆防御锁定 ? (Main.player[j].statDefense > num10) : (Main.player[j].statDefense < num10))))
+                                    float num12 = Math.Abs(Main.player[k].Center.X - x + Math.Abs(Main.player[k].Center.Y - y));
+                                    if ((num7 == -1f || num12 < num7) && (!Projectile.计入仇恨 || !num9.HasValue || (Projectile.逆仇恨锁定 ? (Main.player[k].aggro < num9) : (Main.player[k].aggro > num9))) && (!Projectile.锁定血少 || !num8.HasValue || (Projectile.逆血量锁定 ? (Main.player[k].statLife > num8) : (Main.player[k].statLife < num8))) && (!Projectile.锁定低防 || !num10.HasValue || (Projectile.逆防御锁定 ? (Main.player[k].statDefense > num10) : (Main.player[k].statDefense < num10))))
                                     {
                                         // 更新锁定目标信息
                                         if (Projectile.计入仇恨)
                                         {
-                                            num9 = Main.player[j].aggro;
+                                            num9 = Main.player[k].aggro;
                                         }
 
                                         // 锁定血量最少的玩家
                                         if (Projectile.锁定血少)
                                         {
-                                            num8 = Main.player[j].statLife;
+                                            num8 = Main.player[k].statLife;
                                         }
 
                                         // 锁定防御最低的玩家
                                         if (Projectile.锁定低防)
                                         {
-                                            num10 = Main.player[j].statDefense;
+                                            num10 = Main.player[k].statDefense;
                                         }
 
                                         // 记录当前锁定的玩家
                                         num7 = num12;
-                                        num6 = j;
+                                        num6 = k;
                                     }
                                 }
                             }
@@ -2297,7 +2276,7 @@ public class Sundry
                         if (num5 != -2)
                         {
                             // 计算锁定目标位置
-                            float x4 = npc.Center.X;
+                            float x3 = npc.Center.X;
                             float y3 = npc.Center.Y;
                             float num13 = 0f;
                             float num14 = 0f;
@@ -2316,13 +2295,13 @@ public class Sundry
                                 }
 
                                 // 尝试锁定指定怪物
-                                if (num15 >= 0 && num15 < 200)
+                                if (num15 >= 0 && num15 < Main.maxNPCs)
                                 {
                                     // 检查指定怪物是否有效
                                     if (Main.npc[num15] != null && Main.npc[num15].netID != 0 && Main.npc[num15].active)
                                     {
-                                        num13 = Main.npc[num15].Center.X + Projectile.锁定点X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
-                                        num14 = Main.npc[num15].Center.Y + Projectile.锁定点Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
+                                        num13 = Main.npc[num15].Center.X + Projectile.锁定点X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
+                                        num14 = Main.npc[num15].Center.Y + Projectile.锁定点Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
                                     }
                                     else
                                     {
@@ -2333,30 +2312,30 @@ public class Sundry
                                 // 未锁定指定怪物时，寻找最近的符合条件怪物
                                 if (num15 == -1)
                                 {
-                                    num13 = x4 + Projectile.锁定点X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
-                                    num14 = y3 + Projectile.锁定点Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
+                                    num13 = x3 + Projectile.锁定点X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
+                                    num14 = y3 + Projectile.锁定点Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
                                 }
                             }
                             else
                             {
                                 // 锁定玩家
-                                Player val2 = Main.player[num5];
-                                if (val2 == null)
+                                Player player = Main.player[num5];
+                                if (player == null)
                                 {
                                     flag2 = true;
                                 }
-                                else if (val2.dead || val2.statLife < 1) // 无效目标
+                                else if (player.dead || player.statLife < 1) // 无效目标
                                 {
                                     flag2 = true;
                                 }
-                                else if (!WithinRange(x4, y3, val2.Center, Projectile.锁定范围 << 4))  // 超出锁定范围
+                                else if (!WithinRange(x3, y3, player.Center, Projectile.锁定范围 << 4))  // 超出锁定范围
                                 {
                                     flag2 = true;
                                 }
                                 else // 有效目标
                                 {
-                                    num13 = val2.Center.X + Projectile.锁定点X轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
-                                    num14 = val2.Center.Y + Projectile.锁定点Y轴偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
+                                    num13 = player.Center.X + Projectile.锁定点X轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点X轴偏移名) * Projectile.指示物数量注入锁定点X轴偏移系数;
+                                    num14 = player.Center.Y + Projectile.锁定点Y轴偏移 + lnpc.getMarkers(Projectile.指示物数量注入锁定点Y轴偏移名) * Projectile.指示物数量注入锁定点Y轴偏移系数;
                                 }
                             }
 
@@ -2372,8 +2351,8 @@ public class Sundry
                                 }
 
                                 // 应用锁定速度调整
-                                num16 += Projectile.锁定速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入锁定速度名) * Projectile.指示物数量注入锁定速度系数;
-                                float num17 = num13 - x2;
+                                num16 += Projectile.锁定速度 + lnpc.getMarkers(Projectile.指示物数量注入锁定速度名) * Projectile.指示物数量注入锁定速度系数;
+                                float num17 = num13 - x;
                                 float num18 = num14 - y;
 
                                 // 避免除以零错误
@@ -2384,11 +2363,11 @@ public class Sundry
 
                                 // 计算新的速度方向和分量
                                 double num19 = Math.Atan2(num18, num17) * 180.0 / Math.PI;
-                                num19 += (double)(Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
+                                num19 += (Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数);
                                 num = (float)((double)num16 * Math.Cos(num19 * Math.PI / 180.0));
                                 num2 = (float)((double)num16 * Math.Sin(num19 * Math.PI / 180.0));
-                                num += Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数;
-                                num2 += Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数;
+                                num += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数;
+                                num2 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数;
                             }
                         }
                     }
@@ -2407,11 +2386,11 @@ public class Sundry
                         }
 
                         // 应用速度增量和角度偏移
-                        num += Projectile.X轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数;
-                        num2 += Projectile.Y轴速度 + (float)lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数;
+                        num += Projectile.X轴速度 + lnpc.getMarkers(Projectile.指示物数量注入X轴速度名) * Projectile.指示物数量注入X轴速度系数;
+                        num2 += Projectile.Y轴速度 + lnpc.getMarkers(Projectile.指示物数量注入Y轴速度名) * Projectile.指示物数量注入Y轴速度系数;
                         float num20 = (float)Math.Sqrt(Math.Pow(num, 2.0) + Math.Pow(num2, 2.0));
                         double num21 = Math.Atan2(num2, num) * 180.0 / Math.PI;
-                        float num22 = Projectile.角度偏移 + (float)lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
+                        float num22 = Projectile.角度偏移 + lnpc.getMarkers(Projectile.指示物数量注入角度名) * Projectile.指示物数量注入角度系数;
 
                         // 应用角度偏移
                         if (num22 != 0f)
@@ -2439,7 +2418,7 @@ public class Sundry
                             list.Add(index);
                         }
                     }
-                    if (num != x3)
+                    if (num != x)
                     {
                         Main.projectile[index].velocity.X = num;
                         if (!list.Contains(index))
@@ -2498,7 +2477,7 @@ public class Sundry
                                 {
                                     value2 = array[0];
                                 }
-                                Main.projectile[index].ai[m] = (float)lnpc.getMarkers(value2) * result;
+                                Main.projectile[index].ai[m] = lnpc.getMarkers(value2) * result;
                                 if (!list.Contains(index))
                                 {
                                     list.Add(index);
